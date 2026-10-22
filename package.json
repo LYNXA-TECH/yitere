@@ -1,0 +1,9 @@
+{
+  "name": "yitere",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Observatoire des conditions reseau du developpement africain",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node index.js" }
+}
