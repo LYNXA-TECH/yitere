@@ -4,6 +4,7 @@
 'use strict';
 const https = require('node:https');
 const dns = require('node:dns');
+const os = require('node:os');
 const { performance } = require('node:perf_hooks');
 
 const API = process.env.YITERE_API || 'https://yitere.lynxatech.com';
@@ -28,6 +29,25 @@ function typeErreur(e) {
   if (c.startsWith('ERR_TLS') || c.startsWith('CERT_') || c === 'EPROTO') return 'tls';
   if (c === 'ETIMEDOUT' || c === 'delai') return 'delai depasse';
   return c ? c.toLowerCase() : 'inconnue';
+}
+
+// Refus de l'auto-mesure : une sonde ne mesure jamais une cible servie par elle-meme.
+// Sans ce garde-fou, la sonde de Madrid relevait 349 Mbit/s sur un objet temoin servi
+// par ce meme serveur, c'est-a-dire la boucle locale et non un chemin reseau.
+function adressesLocales() {
+  const set = new Set(['127.0.0.1', '::1']);
+  const ifs = os.networkInterfaces();
+  for (const nom of Object.keys(ifs)) for (const a of ifs[nom] || []) set.add(a.address);
+  return set;
+}
+
+async function servieParNous(cible, locales) {
+  let hote;
+  try { hote = new URL(cible.url).hostname; } catch { return false; }
+  try {
+    const adrs = await dns.promises.lookup(hote, { all: true });
+    return adrs.some(a => locales.has(a.address));
+  } catch { return false; }
 }
 
 // Mesure HTTPS. mode 'objet' telecharge tout, mode 'entete' s'arrete aux en-tetes.
@@ -125,7 +145,17 @@ function envoyer(mesures) {
   // Mode econome : une cible n'est mesuree que si son tour est venu.
   const duTour = cibles.filter(c => minute % c.cadence_minutes < 10);
   const mesures = [];
+  const locales = adressesLocales();
+  const retenues = [];
   for (const c of duTour) {
+    if (await servieParNous(c, locales)) {
+      console.log(`ignoree, servie par cette machine : ${c.cle}`);
+      continue;
+    }
+    retenues.push(c);
+  }
+
+  for (const c of retenues) {
     mesures.push(c.methode === 'dns' ? await mesurerDns(c) : await mesurerHttp(c));
   }
   const bilan = await envoyer(mesures);
