@@ -1,0 +1,5 @@
+# Fins de ligne : LF partout, quel que soit le poste de travail.
+* text=auto eol=lf
+
+# Binaires : jamais convertis. La somme de controle de l'objet temoin doit rester identique.
+*.bin binary
