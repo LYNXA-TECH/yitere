@@ -1,0 +1,25 @@
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espace-2);
+  font-weight: 600;
+}
+
+.symbole {
+  flex: 0 0 auto;
+}
+
+/* Chaque etat prend sa couleur dans variables.css ; le texte et le symbole la partagent. */
+.pastille[data-etat="normal"] {
+  color: var(--etat-normal);
+}
+.pastille[data-etat="degrade"] {
+  color: var(--etat-degrade);
+}
+.pastille[data-etat="service"] {
+  color: var(--etat-service);
+}
+.pastille[data-etat="indetermine"],
+.pastille[data-etat="pas-de-donnee"] {
+  color: var(--etat-indetermine);
+}
