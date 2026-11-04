@@ -42,6 +42,9 @@ jobs:
       - name: Installer les dependances, exactement celles du verrou
         run: npm ci
 
+      - name: Verifier le formatage
+        run: npm run format:verifier
+
       - name: Verifier les licences
         run: npm run licences
 
@@ -53,6 +56,3 @@ jobs:
 
       - name: Compiler
         run: npm run build
-
-      - name: Verifier le formatage
-        run: npm run format:verifier
