@@ -5,7 +5,8 @@
   "license": "MIT",
   "description": "Interface web de YITERE",
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "npm": ">=11"
   },
   "scripts": {
     "dev": "next dev",
@@ -25,9 +26,13 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "typescript": "5.9.3",
-    "vitest": "3.2.4"
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
   },
   "overrides": {
-    "sharp": "$sharp"
+    "sharp": "$sharp",
+    "next": {
+      "postcss": "8.5.29"
+    }
   }
 }
