@@ -53,3 +53,6 @@ jobs:
 
       - name: Compiler
         run: npm run build
+
+      - name: Verifier le formatage
+        run: npm run format:verifier
