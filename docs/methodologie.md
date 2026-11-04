@@ -26,7 +26,7 @@ du service lui-même.
 
 ## 2. Les cibles
 
-Dix cibles, dont huit mesurées et deux de référence. Nous avons préféré un petit
+Neuf cibles, dont sept mesurées et deux de référence. Nous avons préféré un petit
 nombre de cibles suivies sérieusement à un grand nombre suivies mal.
 
 | Famille | Cible | Cadence |
@@ -38,7 +38,6 @@ nombre de cibles suivies sérieusement à un grand nombre suivies mal.
 | Registres | `registry-1.docker.io` | 10 min |
 | Diffusion | `cdn.jsdelivr.net`, petite requête | 10 min |
 | Diffusion | `cdn.jsdelivr.net`, objet témoin | 3 h |
-| Plateforme | objet servi par la plateforme Datacloud | 3 h |
 | Référence | `cloudflare.com/cdn-cgi/trace` | 10 min |
 | Référence | résolution DNS via `1.1.1.1` | 10 min |
 
