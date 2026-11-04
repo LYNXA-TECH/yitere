@@ -1,0 +1,75 @@
+# Feuille de route de l'interface web
+
+Une case n'est cochée que lorsque son commit est sur GitHub et que son test a été
+montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
+
+## 0. Socle · PR #3, en relecture
+
+- [x] Fins de ligne LF dans tout le dépôt · `845df93`
+- [x] Décision d'architecture de l'interface · `924301b`
+- [x] Réglages communs des éditeurs · `662dbb4`
+- [x] Squelette Next.js et premier test · `cade6e7`
+- [x] Retrait de `sharp` (LGPL) et vérification des licences · `8474c84`
+- [x] Zéro faille signalée par `npm audit` · `033fa84`
+- [x] Intégration continue · `bae870f`, `7cce9b9`
+- [x] Hypothèses écartées consignées · `9fa3b5a`
+- [ ] Réversibilité du test d'accueil montrée
+
+## 1. Système visuel · branche `interface-styles`
+
+- [x] Variables de la direction artistique et tests de contraste · `46e1bfa`
+- [x] Formatage Prettier vérifié par la CI · `b58746c`, `4944116`
+- [x] Variables appliquées à toutes les pages · `5ecb7e3`
+- [x] Pastille d'état · `663fe16`
+- [x] Bloc verdict · `4808586`
+- [ ] Contrôles positifs de la pastille et du verdict montrés
+- [ ] ESLint
+- [ ] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple »
+- [ ] Chiffre de mesure : valeur, nombre de mesures, période
+- [ ] Carte de publication
+- [ ] États vides et états d'erreur
+
+## 2. Données
+
+- [ ] Couche d'accès typée, avec la source « exemple »
+- [ ] Routes demandées à Cellou : verdicts, séries, sondes, échanges
+- [ ] Source « api », branchée sur le serveur de Cellou
+
+## 3. Pages de la maquette v3
+
+- [ ] Services
+- [ ] Fiche service, cas npm (cause probable : opérateur)
+- [ ] Fiche service, cas Docker (cause indéterminée)
+- [ ] Méthodologie, lue directement dans `docs/methodologie.md`
+- [ ] Carte : globe, trois niveaux, marqueurs, frise, vue Liste
+- [ ] Échanges
+- [ ] Détail d'une publication
+- [ ] Publier
+- [ ] Mesurer depuis chez moi (sonde navigateur)
+- [ ] Contribuer
+- [ ] Héberger une sonde
+- [ ] Mon espace : sondes, contributions, notifications
+- [ ] Données ouvertes et API
+- [ ] Confidentialité
+
+## 4. Connexion et échanges
+
+- [ ] Connexion GitHub
+- [ ] Migration du schéma des échanges, écrite ici, appliquée par Cellou (protocole, section 9)
+- [ ] Votes, confirmations « a marché pour moi aussi », réponses, signalement
+
+## 5. Qualité et mise en ligne
+
+- [ ] Tests Playwright des parcours A à D de la conception
+- [ ] En-têtes de sécurité HTTP
+- [ ] Vérification à 390 px, au clavier et en mouvement réduit
+- [ ] Service `yitere-web` en production, avec Cellou
+- [ ] Non-régression de la section 7 rejouée après la mise en ligne
+
+## Questions ouvertes pour Cellou
+
+- [ ] `datacloud-obj` : retirer du seed (ligne 8) et de la méthodologie (section 2) ?
+- [ ] Référence de contenu : `cloudflare.com/cdn-cgi/trace` ou `connectivity-check.gstatic.com/generate_204` ?
+- [ ] Région du projet Supabase, pour la page Confidentialité
+- [ ] Un seul terme pour tout le projet : « verdict » ou « diagnostic »
+- [ ] Avertissement `install-scripts` sur `esbuild` avec npm 11
