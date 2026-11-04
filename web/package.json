@@ -1,0 +1,38 @@
+{
+  "name": "yitere-web",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Interface web de YITERE",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run",
+    "licences": "node scripts/verifier-licences.mjs"
+  },
+  "dependencies": {
+    "next": "15.5.28",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "sharp": "file:stubs/sharp"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "typescript": "5.9.3",
+    "vite": "7.3.7",
+    "vitest": "4.1.12"
+  },
+  "overrides": {
+    "sharp": "$sharp",
+    "next": {
+      "postcss": "8.5.29"
+    }
+  }
+}

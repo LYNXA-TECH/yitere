@@ -1,0 +1,55 @@
+# Integration continue de l'interface web.
+# A chaque envoi qui touche web/, GitHub rejoue sur une machine neuve
+# les verifications que l'on fait a la main : licences, failles, tests, compilation.
+name: Interface web
+
+on:
+  push:
+    paths:
+      - "web/**"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - ".github/workflows/web.yml"
+
+# Le robot lit le depot, il n'a aucun droit d'ecriture.
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v7
+
+      - name: Installer Node 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # Node 22 est livre avec npm 10, qui ne sait pas installer Vitest 4 (erreur edgesOut).
+      - name: Installer npm 11
+        run: npm install --global npm@11.6.2
+
+      - name: Installer les dependances, exactement celles du verrou
+        run: npm ci
+
+      - name: Verifier les licences
+        run: npm run licences
+
+      - name: Verifier les failles connues
+        run: npm audit
+
+      - name: Lancer les tests
+        run: npm test
+
+      - name: Compiler
+        run: npm run build
