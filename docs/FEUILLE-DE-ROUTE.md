@@ -31,7 +31,7 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 
 ## 2. Données
 
-- [ ] Couche d'accès typée, avec la source « exemple »
+- - [x] Couche d'accès typée, avec la source « exemple »
 - [ ] Routes demandées à Cellou : verdicts, séries, sondes, échanges
 - [ ] Source « api », branchée sur le serveur de Cellou
 
