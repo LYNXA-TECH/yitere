@@ -6,10 +6,20 @@ import type { Etat } from "../lib/donnees/types";
 const LIBELLES: Record<Etat, string> = {
   normal: "Normal",
   degrade: "Dégradation observée",
-  service: "Cause probable : le service",
-  indetermine: "Cause indéterminée",
   "pas-de-donnee": "Pas de donnée",
 };
+
+// Verifie par le compilateur (npm run build, npx tsc --noEmit) : une cause n'est pas une observation.
+// Si le type Etat acceptait encore ces valeurs, les directives @ts-expect-error seraient en trop et la
+// verification des types echouerait.
+export function causesRefusees() {
+  return [
+    // @ts-expect-error « service » est une cause (type Cause), pas un etat observe
+    <PastilleEtat key="service" etat="service" />,
+    // @ts-expect-error « indetermine » qualifie l'hypothese, pas la mesure
+    <PastilleEtat key="indetermine" etat="indetermine" />,
+  ];
+}
 
 describe("PastilleEtat", () => {
   for (const [etat, libelle] of Object.entries(LIBELLES) as [Etat, string][]) {

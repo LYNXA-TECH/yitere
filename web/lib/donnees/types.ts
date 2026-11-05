@@ -1,9 +1,9 @@
 /**
- * Les etats qu'un service peut avoir pour une sonde ou dans un verdict.
- * Ils viennent de l'API ; l'interface ne les calcule jamais (decision 0001, principe directeur).
+ * Ce que les mesures montrent pour un service, sans aucune interpretation.
+ * La cause, elle, est une hypothese : elle vit dans le type Cause, jamais ici.
+ * Ces etats viennent de l'API ; l'interface ne les calcule jamais (decision 0001, principe directeur).
  */
-export type Etat =
-  "normal" | "degrade" | "service" | "indetermine" | "pas-de-donnee";
+export type Etat = "normal" | "degrade" | "pas-de-donnee";
 
 /** Les causes que les regles de la methodologie peuvent proposer (section 7). */
 export type Cause = "service" | "operateur" | "connexion-locale";

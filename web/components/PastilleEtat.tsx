@@ -5,8 +5,6 @@ import styles from "./PastilleEtat.module.css";
 const ETATS: Record<Etat, { libelle: string; forme: string }> = {
   normal: { libelle: "Normal", forme: "point" },
   degrade: { libelle: "Dégradation observée", forme: "point-anneau" },
-  service: { libelle: "Cause probable : le service", forme: "triangle" },
-  indetermine: { libelle: "Cause indéterminée", forme: "anneau-pointille" },
   "pas-de-donnee": { libelle: "Pas de donnée", forme: "anneau" },
 };
 
@@ -46,20 +44,6 @@ function Symbole({ forme }: { forme: string }) {
           />
           <circle cx="8" cy="8" r="3.5" fill="currentColor" />
         </>
-      );
-    case "triangle":
-      return <path d="M8 2 L14.5 13.5 H1.5 Z" fill="currentColor" />;
-    case "anneau-pointille":
-      return (
-        <circle
-          cx="8"
-          cy="8"
-          r="6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeDasharray="2.5 2"
-        />
       );
     default:
       return (

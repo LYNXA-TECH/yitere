@@ -16,10 +16,6 @@
 .pastille[data-etat="degrade"] {
   color: var(--etat-degrade);
 }
-.pastille[data-etat="service"] {
-  color: var(--etat-service);
-}
-.pastille[data-etat="indetermine"],
 .pastille[data-etat="pas-de-donnee"] {
   color: var(--etat-indetermine);
 }
