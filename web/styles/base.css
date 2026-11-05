@@ -1,0 +1,46 @@
+/* Regles de base communes a toutes les pages. Les valeurs viennent de variables.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark; /* barres de defilement et champs natifs en theme sombre */
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-texte);
+  font-size: var(--taille-texte);
+  line-height: var(--interligne);
+}
+
+a {
+  color: var(--interaction);
+}
+
+a:hover {
+  color: var(--focus);
+}
+
+/* Focus visible au clavier sur tout element interactif (contraste verifie par les tests) */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Mouvement reduit : les animations et transitions deviennent instantanees */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

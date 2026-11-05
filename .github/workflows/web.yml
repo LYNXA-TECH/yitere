@@ -35,12 +35,11 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
-      # Node 22 est livre avec npm 10, qui ne sait pas installer Vitest 4 (erreur edgesOut).
-      - name: Installer npm 11
-        run: npm install --global npm@11.6.2
-
       - name: Installer les dependances, exactement celles du verrou
         run: npm ci
+
+      - name: Verifier le formatage
+        run: npm run format:verifier
 
       - name: Verifier les licences
         run: npm run licences

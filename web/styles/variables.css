@@ -1,0 +1,58 @@
+/*
+ * Direction artistique de YITERE : chaque couleur, police et espacement est defini ici, une seule fois.
+ * Les contrastes sont verifies par tests/contrastes.test.ts.
+ */
+:root {
+  /* Fonds, du plus profond au plus proche */
+  --fond: #0b1220;
+  --surface: #111a2b;
+  --surface-haute: #18233a;
+  --trait: #26324a; /* separateurs uniquement, jamais seul porteur de sens */
+
+  /* Textes */
+  --texte: #e8edf5;
+  --texte-secondaire: #9aa8bc;
+  --texte-discret: #6b7a90; /* grands textes (18 px et plus) ou decoratif seulement */
+
+  /* Interaction : une seule couleur pour les liens, boutons et selections */
+  --interaction: #2fd0c8;
+  --interaction-texte: #06111c; /* texte pose sur un bouton --interaction */
+  --focus: #7fe7e1;
+
+  /* Etats des mesures. La couleur n'est jamais seule : chaque etat a aussi une forme. */
+  --etat-normal: #5bcb8f;
+  --etat-degrade: #f5a04a;
+  --etat-service: #f2706b;
+  --etat-indetermine: #9aa8bc;
+
+  /* Typographie : polices du systeme, rien a telecharger sur une connexion lente */
+  --police-texte:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --police-chiffres:
+    ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --taille-texte: 1rem;
+  --taille-petite: 0.875rem;
+  --taille-titre-1: 2.5rem;
+  --taille-titre-2: 1.75rem;
+  --taille-titre-3: 1.25rem;
+  --interligne: 1.55;
+
+  /* Espacements, sur une grille de 4 px */
+  --espace-1: 0.25rem;
+  --espace-2: 0.5rem;
+  --espace-3: 0.75rem;
+  --espace-4: 1rem;
+  --espace-6: 1.5rem;
+  --espace-8: 2rem;
+
+  /* Formes */
+  --rayon: 12px;
+  --rayon-grand: 20px;
+  --zone-tactile: 44px; /* taille minimale d'un element cliquable */
+
+  /* Animations d'interface */
+  --duree-courte: 150ms;
+  --duree-moyenne: 250ms;
+}
