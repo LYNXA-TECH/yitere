@@ -3,7 +3,7 @@
 Une case n'est cochée que lorsque son commit est sur GitHub et que son test a été
 montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 
-## 0. Socle · PR #3, en relecture
+## 0. Socle · PR #3, fusionnée
 
 - [x] Fins de ligne LF dans tout le dépôt · `845df93`
 - [x] Décision d'architecture de l'interface · `924301b`
@@ -22,7 +22,7 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 - [x] Variables appliquées à toutes les pages · `5ecb7e3`
 - [x] Pastille d'état · `663fe16`
 - [x] Bloc verdict · `4808586`
-- [ ] Contrôles positifs de la pastille et du verdict montrés
+- [x] Contrôles positifs de la pastille et du verdict montrés · rejoués par Cellou, revue de la PR #4
 - [ ] ESLint
 - [ ] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple »
 - [ ] Chiffre de mesure : valeur, nombre de mesures, période
@@ -31,7 +31,7 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 
 ## 2. Données
 
-- - [x] Couche d'accès typée, avec la source « exemple »
+- [x] Couche d'accès typée, avec la source « exemple » · `d2e0e87`
 - [ ] Routes demandées à Cellou : verdicts, séries, sondes, échanges
 - [ ] Source « api », branchée sur le serveur de Cellou
 
@@ -68,8 +68,8 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 
 ## Questions ouvertes pour Cellou
 
-- [ ] `datacloud-obj` : retirer du seed (ligne 8) et de la méthodologie (section 2) ?
+- [x] `datacloud-obj` retiré du seed et de la méthodologie · PR #5
 - [ ] Référence de contenu : `cloudflare.com/cdn-cgi/trace` ou `connectivity-check.gstatic.com/generate_204` ?
 - [ ] Région du projet Supabase, pour la page Confidentialité
-- [ ] Un seul terme pour tout le projet : « verdict » ou « diagnostic »
+- [x] Un seul terme pour tout le projet : « verdict »
 - [ ] Avertissement `install-scripts` sur `esbuild` avec npm 11
