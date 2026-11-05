@@ -1,6 +1,6 @@
 # 0001 · Architecture de l'interface web
 
-Statut : proposée · Auteure : Aissatou · Relecture : Cellou
+Statut : acceptée le 4 novembre 2026, à la fusion de la PR #3 · Auteure : Aissatou · Relecture : Cellou
 
 ## Contexte
 
@@ -112,11 +112,13 @@ ajoutée doit être sous licence MIT, Apache-2.0, BSD ou ISC.
 1. L'objet témoin Datacloud : `db/seed.sql` (ligne 8) et la section 2 de
    la méthodologie le contiennent encore, alors que la section 4 dit
    « un seul objet ».
+   **Réglé** : objet Datacloud retiré, PR #5.
 2. La référence de contenu : la méthodologie (section 2) indique
    `cloudflare.com/cdn-cgi/trace`, le seed (ligne 13) indique
    `connectivity-check.gstatic.com/generate_204`.
 3. Le vocabulaire : « verdict », comme dans la méthodologie, plutôt que
    « diagnostic », comme dans la maquette.
+   **Réglé** : « verdict » partout (revue de Cellou, 5 novembre 2026).
 4. Le schéma des échanges : il faut ajouter à `posts` un titre, la ville,
    l'opérateur, le contexte de mesure, les réponses et les confirmations.
    La migration est écrite par l'interface et appliquée par Cellou
