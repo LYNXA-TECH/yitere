@@ -73,4 +73,30 @@ describe("BlocVerdict", () => {
     expect(html).not.toContain("Hypothèse");
     expect(html).not.toContain("Indéterminé");
   });
+
+  it("accorde aussi le possessif : une sonde dans ses valeurs habituelles", () => {
+    const html = rendu({
+      ...npm,
+      observation: { etat: "normal", depuis: null },
+      hypothese: null,
+      preuves: { ...npm.preuves, sondesTouchees: 0, sondesEpargnees: 1 },
+    });
+    expect(html).toContain("1 sonde dans ses valeurs habituelles");
+  });
+
+  it("sans donnée, dit qu'aucune mesure n'est exploitable au lieu d'afficher des zéros", () => {
+    const html = rendu({
+      ...npm,
+      observation: { etat: "pas-de-donnee", depuis: null },
+      hypothese: null,
+      preuves: {
+        ...npm.preuves,
+        sondesTouchees: 0,
+        sondesEpargnees: 0,
+        mesures: 0,
+      },
+    });
+    expect(html).toContain("Aucune mesure exploitable, dernière heure");
+    expect(html).not.toMatch(/\b0 (sonde|mesure)/);
+  });
 });

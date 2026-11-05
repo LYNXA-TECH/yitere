@@ -7,8 +7,8 @@ import styles from "./BlocVerdict.module.css";
  */
 export function BlocVerdict({ verdict }: { verdict: Verdict }) {
   const { observation, hypothese, preuves } = verdict;
-  const degrade =
-    observation.etat !== "normal" && observation.etat !== "pas-de-donnee";
+  const degrade = observation.etat === "degrade";
+  const sondes = texteSondes(verdict);
 
   return (
     <section
@@ -44,23 +44,9 @@ export function BlocVerdict({ verdict }: { verdict: Verdict }) {
       )}
 
       <ul className={styles.preuves}>
-        {degrade ? (
-          <li>
-            {compter(
-              preuves.sondesTouchees,
-              "sonde touchée",
-              "sondes touchées",
-            )}
-            , {compter(preuves.sondesEpargnees, "épargnée", "épargnées")}
-          </li>
-        ) : (
-          <li>
-            {compter(preuves.sondesEpargnees, "sonde", "sondes")} dans leurs
-            valeurs habituelles
-          </li>
-        )}
+        {sondes && <li>{sondes}</li>}
         <li>
-          {compter(preuves.mesures, "mesure", "mesures")}, {preuves.periode}
+          {texteMesures(verdict)}, {preuves.periode}
         </li>
         {preuves.sondesEnRodage > 0 && (
           <li>
@@ -93,6 +79,23 @@ function texteObservation({ observation }: Verdict): string {
   return observation.depuis
     ? `Dégradation depuis ${heure(observation.depuis)}`
     : "Dégradation";
+}
+
+/** Les sondes sur lesquelles repose le verdict. Rien quand aucune n'a mesure. */
+function texteSondes({ observation, preuves }: Verdict): string | null {
+  if (observation.etat === "pas-de-donnee") return null;
+  if (observation.etat === "degrade") {
+    return `${compter(preuves.sondesTouchees, "sonde touchée", "sondes touchées")}, ${compter(preuves.sondesEpargnees, "épargnée", "épargnées")}`;
+  }
+  return preuves.sondesEpargnees > 1
+    ? `${preuves.sondesEpargnees} sondes dans leurs valeurs habituelles`
+    : `${preuves.sondesEpargnees} sonde dans ses valeurs habituelles`;
+}
+
+/** Jamais « 0 mesure » : une absence de donnee n'est pas un zero (specification, regle 4). */
+function texteMesures({ observation, preuves }: Verdict): string {
+  if (observation.etat === "pas-de-donnee") return "Aucune mesure exploitable";
+  return compter(preuves.mesures, "mesure", "mesures");
 }
 
 function texteCause(h: NonNullable<Verdict["hypothese"]>): string {
