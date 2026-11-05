@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { choisirSource, lireVerdicts } from "../lib/donnees";
+import { choisirSource, lireVerdicts } from "@/lib/donnees";
 
 describe("choix de la source de données", () => {
   it("prend la source « exemple » quand YITERE_SOURCE n'est pas définie", () => {
