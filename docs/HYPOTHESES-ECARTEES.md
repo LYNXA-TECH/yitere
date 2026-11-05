@@ -5,6 +5,17 @@ la retester plus tard (protocole, section 6). Les plus récentes en premier.
 
 ## Interface web
 
+### 2026-11-05 · La CI a besoin de npm 11 pour installer les dépendances
+
+- **Hypothèse.** L'étape « Installer npm 11 » de la CI est nécessaire, puisque Vitest 4
+  ne s'installe pas avec npm 10 (entrée « Installer Vitest 4 avec npm 10 »).
+- **Preuve qui l'écarte.** L'échec ne concerne que `npm install`, qui reconstruit l'arbre des
+  dépendances. La CI lance `npm ci`, qui lit le verrou sans le reconstruire. Avec npm 10.9.9,
+  `npm ci` réussit sur `d2e0e87`, puis licences, `npm audit`, 48 tests et compilation passent.
+  Constat de Cellou en revue (npm 10.9.4), reproduit ici avec npm 10.9.9.
+- **Retenu.** Étape retirée de la CI. `"engines": { "npm": ">=11" }` reste dans
+  `web/package.json` : il vaut pour `npm install`, c'est-à-dire pour quiconque modifie les dépendances.
+
 ### 2026-11-03 · Laisser Vitest 4 choisir sa version de Vite
 
 - **Hypothèse.** Déclarer `vitest@4.1.12` suffit : Vitest installe une version de Vite compatible.
@@ -35,9 +46,9 @@ la retester plus tard (protocole, section 6). Les plus récentes en premier.
 - **Preuve qui l'écarte.** Avec npm 10.9.9, `npm install` échoue trois fois de suite avec
   `npm error Cannot read properties of null (reading 'edgesOut')`, levée dans
   `@npmcli/arborist/lib/arborist/build-ideal-tree.js`, dans `#loadPeerSet`.
-  Avec npm 11.6.2, la même installation réussit.
-- **Retenu.** `"engines": { "npm": ">=11" }` dans `web/package.json`, et une étape
-  « Installer npm 11 » dans la CI (commits `033fa84` et `bae870f`).
+  Avec npm 11.6.2, la même installation réussit. L'échec vise `npm install` seulement :
+  `npm ci` réussit avec npm 10 (entrée du 5 novembre).
+- **Retenu.** `"engines": { "npm": ">=11" }` dans `web/package.json` (commit `033fa84`).
 
 ### 2026-11-03 · Remplacer `sharp` directement dans `overrides`
 
