@@ -1,0 +1,51 @@
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+  padding: var(--espace-4);
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-grand);
+}
+
+.carte p {
+  margin: 0;
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-2);
+  font-size: var(--taille-petite);
+}
+
+.type {
+  padding: 2px var(--espace-2);
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  font-weight: 600;
+}
+
+.carte[data-type="contournement"] .type {
+  color: var(--etat-normal);
+}
+
+.carte[data-type="demande"] .type {
+  color: var(--etat-degrade);
+}
+
+.commande {
+  margin: 0;
+  padding: var(--espace-2) var(--espace-3);
+  overflow-x: auto;
+  background: var(--fond);
+  border-radius: var(--rayon);
+  font-family: var(--police-chiffres);
+  font-size: var(--taille-petite);
+}
+
+.meta {
+  color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+}
