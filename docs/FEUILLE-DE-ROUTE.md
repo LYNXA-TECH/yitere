@@ -25,9 +25,10 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 - [x] Contrôles positifs de la pastille et du verdict montrés · rejoués par Cellou, revue de la PR #4
 - [ ] ESLint
 - [x] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple » · branche `interface-pages`
-- [ ] Chiffre de mesure : valeur, nombre de mesures, période
+- [x] Chiffre de mesure : valeur, nombre de mesures, période · branche `interface-pages`
 - [x] Carte de publication · branche `interface-pages`
-- [ ] États vides et états d'erreur
+- [x] États vides (pas de donnée, aucune publication) · branche `interface-pages`
+- [ ] États d'erreur de l'API
 
 ## 2. Données
 
@@ -42,17 +43,17 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 - [x] Fiche service, cas npm (cause probable : opérateur) · branche `interface-pages`
 - [x] Fiche service, cas Docker (cause indéterminée) · branche `interface-pages`
 - [x] Méthodologie, lue directement dans `docs/methodologie.md` · branche `interface-pages`
-- [x] Carte : SVG serveur, marqueurs par ville, vue Liste · branche `interface-pages`
+- [x] Carte en page d'accueil, comme la maquette : frise de 24 h, calques, vue Liste, panneau · branche `interface-pages`
 - [ ] Carte : zoom par pays et frise temporelle (après le concours)
 - [x] Échanges, en lecture · branche `interface-pages`
-- [ ] Détail d'une publication
-- [ ] Publier
-- [ ] Mesurer depuis chez moi (sonde navigateur)
+- [x] Détail d'une publication · branche `interface-pages`
+- [x] Publier (écran complet, envoi à la connexion GitHub) · branche `interface-pages`
+- [x] Mesurer depuis chez moi : mesure réelle dans le navigateur, rien n'est envoyé · branche `interface-pages`
 - [x] Contribuer · branche `interface-pages`
-- [ ] Héberger une sonde
-- [ ] Mon espace : sondes, contributions, notifications
-- [ ] Données ouvertes et API
-- [ ] Confidentialité
+- [x] Héberger une sonde · branche `interface-pages`
+- [x] Mon espace : sondes, contributions, notifications (démonstration) · branche `interface-pages`
+- [x] Données ouvertes et API · branche `interface-pages`
+- [x] Confidentialité (brouillon, passages à compléter en orange) · branche `interface-pages`
 
 ## 3 bis. Langues et performance (décision 0002)
 
