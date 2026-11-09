@@ -25,6 +25,9 @@
   --etat-service: #f2706b;
   --etat-indetermine: #9aa8bc;
 
+  /* Carte : pays qui ont au moins une sonde, a peine plus clairs que les autres */
+  --carte-pays-sonde: #1e3350;
+
   /* Typographie : polices du systeme, rien a telecharger sur une connexion lente */
   --police-texte:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
