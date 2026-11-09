@@ -1,0 +1,245 @@
+/* Mise en page commune a toutes les pages. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--espace-8) var(--espace-4);
+}
+
+/* Un enfant de colonne ne s'elargit jamais au-dela de l'ecran : ce qui deborde (tableau, commande) defile. */
+.page > *,
+.colonne > *,
+.etapes > li {
+  min-width: 0;
+}
+
+/* Une adresse ou une commande dans une phrase peut se couper n'importe ou. */
+.page :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+/* Contenu d'une page en francais seulement, sous la mention destinee aux autres langues. */
+.colonne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-6);
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  margin: 0;
+}
+
+.titre {
+  font-size: var(--taille-titre-1);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.devise {
+  font-size: var(--taille-titre-3);
+  color: var(--texte);
+}
+
+.intro {
+  max-width: 44em;
+  color: var(--texte-secondaire);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+}
+
+.section h2 {
+  font-size: var(--taille-titre-2);
+}
+
+.section h3 {
+  font-size: var(--taille-titre-3);
+}
+
+.liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.element {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espace-3);
+}
+
+/* Bouton principal : un lien qui ressemble a un bouton, sans JavaScript. */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  padding: 0 var(--espace-4);
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bouton:hover {
+  background: var(--focus);
+  color: var(--interaction-texte);
+}
+
+.boutonSecondaire {
+  composes: bouton;
+  background: transparent;
+  border: 1px solid var(--trait);
+  color: var(--texte);
+}
+
+.boutonSecondaire:hover {
+  background: var(--surface);
+  color: var(--texte);
+}
+
+.encadre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-3);
+  padding: var(--espace-6);
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-grand);
+}
+
+.etapes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-4);
+  margin: 0;
+  padding-left: var(--espace-6);
+}
+
+.code {
+  margin: var(--espace-2) 0 0;
+  padding: var(--espace-3);
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  font-family: var(--police-chiffres);
+  font-size: var(--taille-petite);
+}
+
+.retour {
+  font-size: var(--taille-petite);
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--espace-2) var(--espace-4);
+  margin: 0;
+}
+
+.details dt {
+  color: var(--texte-secondaire);
+}
+
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableau th,
+.tableau td {
+  padding: var(--espace-2) var(--espace-3);
+  border-top: 1px solid var(--trait);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableau thead th {
+  border-top: 0;
+  color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+}
+
+.defilement {
+  overflow-x: auto;
+}
+
+/* Ligne de service : pastille et nom ouvrent la fiche. */
+.ligneService {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem 7rem;
+  align-items: center;
+  gap: var(--espace-2) var(--espace-4);
+  min-height: var(--zone-tactile);
+  padding: var(--espace-3) var(--espace-4);
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.ligneService:hover {
+  border-color: var(--interaction);
+  color: var(--texte);
+}
+
+.nomService {
+  font-weight: 600;
+}
+
+.onglets {
+  display: flex;
+  gap: var(--espace-2);
+}
+
+@media (max-width: 720px) {
+  .ligneService {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .page {
+    padding-top: var(--espace-6);
+  }
+
+  .titre {
+    font-size: var(--taille-titre-2);
+  }
+
+  .details {
+    grid-template-columns: 1fr;
+  }
+
+  .details dd {
+    margin-bottom: var(--espace-2);
+  }
+}

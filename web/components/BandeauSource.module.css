@@ -1,0 +1,18 @@
+.bandeau {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espace-2);
+  margin: 0;
+  color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+}
+
+/* Trait pointille, comme une hypothese : ce n'est pas une mesure. */
+.badge {
+  padding: 2px var(--espace-2);
+  border: 1px dashed var(--texte-secondaire);
+  border-radius: 999px;
+  color: var(--texte);
+  font-weight: 600;
+}

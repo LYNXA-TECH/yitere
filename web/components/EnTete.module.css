@@ -1,0 +1,34 @@
+.entete {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-4);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--espace-2) var(--espace-4);
+  border-bottom: 1px solid var(--trait);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  color: var(--texte);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+/* Lien d'evitement : invisible tant qu'il n'a pas le focus clavier. */
+.evitement {
+  position: absolute;
+  left: var(--espace-2);
+  top: -100px;
+  padding: var(--espace-2) var(--espace-3);
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  border-radius: var(--rayon);
+}
+
+.evitement:focus {
+  top: var(--espace-2);
+}

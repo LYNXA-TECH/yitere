@@ -1,0 +1,7 @@
+.mention {
+  margin: 0;
+  padding: var(--espace-3) var(--espace-4);
+  border: 1px dashed var(--texte-secondaire);
+  border-radius: var(--rayon);
+  color: var(--texte-secondaire);
+}
