@@ -24,33 +24,45 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 - [x] Bloc verdict · `4808586`
 - [x] Contrôles positifs de la pastille et du verdict montrés · rejoués par Cellou, revue de la PR #4
 - [ ] ESLint
-- [ ] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple »
+- [x] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple » · branche `interface-pages`
 - [ ] Chiffre de mesure : valeur, nombre de mesures, période
-- [ ] Carte de publication
+- [x] Carte de publication · branche `interface-pages`
 - [ ] États vides et états d'erreur
 
 ## 2. Données
 
 - [x] Couche d'accès typée, avec la source « exemple » · `d2e0e87`
 - [ ] Routes demandées à Cellou : verdicts, séries, sondes, échanges
-- [ ] Source « api », branchée sur le serveur de Cellou
+- [x] Source « api » pour les cibles (`GET /api/v1/cibles`) · branche `interface-pages`
+- [ ] Source « api » pour les verdicts, les sondes et les publications, dès que les routes existent
 
 ## 3. Pages de la maquette v3
 
-- [ ] Services
-- [ ] Fiche service, cas npm (cause probable : opérateur)
-- [ ] Fiche service, cas Docker (cause indéterminée)
-- [ ] Méthodologie, lue directement dans `docs/methodologie.md`
-- [ ] Carte : globe, trois niveaux, marqueurs, frise, vue Liste
-- [ ] Échanges
+- [x] Services · branche `interface-pages`
+- [x] Fiche service, cas npm (cause probable : opérateur) · branche `interface-pages`
+- [x] Fiche service, cas Docker (cause indéterminée) · branche `interface-pages`
+- [x] Méthodologie, lue directement dans `docs/methodologie.md` · branche `interface-pages`
+- [x] Carte : SVG serveur, marqueurs par ville, vue Liste · branche `interface-pages`
+- [ ] Carte : zoom par pays et frise temporelle (après le concours)
+- [x] Échanges, en lecture · branche `interface-pages`
 - [ ] Détail d'une publication
 - [ ] Publier
 - [ ] Mesurer depuis chez moi (sonde navigateur)
-- [ ] Contribuer
+- [x] Contribuer · branche `interface-pages`
 - [ ] Héberger une sonde
 - [ ] Mon espace : sondes, contributions, notifications
 - [ ] Données ouvertes et API
 - [ ] Confidentialité
+
+## 3 bis. Langues et performance (décision 0002)
+
+- [x] Formatage `Intl` : nombres, heures, dates, pluriels, noms de pays · branche `format-intl`
+- [x] Dictionnaires français et anglais, repli visible `[FR]` · branche `interface-pages`
+- [x] Adresses `/fr` et `/en`, langue du navigateur à la racine · branche `interface-pages`
+- [x] Accueil, services, fiche et carte entièrement traduits, vérifiés par un test · branche `interface-pages`
+- [x] Budget : socle 103 ko, moins de 1 ko par page (sortie de `next build`)
+- [ ] Test automatique du budget (après le concours)
+- [ ] Clé anglaise manquante refusée à la compilation (après le 23 novembre)
 
 ## 4. Connexion et échanges
 
