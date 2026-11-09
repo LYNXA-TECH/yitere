@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { categoriePluriel, heureUTC, nombre } from "@/lib/format";
+import {
+  categoriePluriel,
+  dateCourte,
+  heureUTC,
+  nombre,
+  nomPays,
+} from "@/lib/format";
 
 describe("categoriePluriel", () => {
   it("accorde zéro au singulier en français", () => {
@@ -30,5 +36,19 @@ describe("heureUTC", () => {
 
   it("écrit minuit 00, et non 12 ou 24", () => {
     expect(heureUTC("en", "2026-11-03T00:05:00Z")).toBe("00:05");
+  });
+});
+
+describe("dateCourte", () => {
+  it("écrit le jour et le mois dans l'ordre de chaque langue", () => {
+    expect(dateCourte("fr", "2026-11-03T23:30:00Z")).toBe("3 nov.");
+    expect(dateCourte("en", "2026-11-03T23:30:00Z")).toBe("Nov 3");
+  });
+});
+
+describe("nomPays", () => {
+  it("nomme un pays dans la langue de la page", () => {
+    expect(nomPays("fr", "GN")).toBe("Guinée");
+    expect(nomPays("en", "GN")).toBe("Guinea");
   });
 });

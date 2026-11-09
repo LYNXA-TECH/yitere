@@ -9,6 +9,8 @@
 const reglesPluriel = new Map<string, Intl.PluralRules>();
 const formatsNombre = new Map<string, Intl.NumberFormat>();
 const formatsHeure = new Map<string, Intl.DateTimeFormat>();
+const formatsDate = new Map<string, Intl.DateTimeFormat>();
+const nomsRegions = new Map<string, Intl.DisplayNames>();
 
 function memoriser<T>(
   cache: Map<string, T>,
@@ -58,4 +60,29 @@ export function heureUTC(locale: string, iso: string): string {
       }),
   );
   return format.format(new Date(iso));
+}
+
+/** Jour et mois en temps universel : « 3 nov. », « Nov 3 ». */
+export function dateCourte(locale: string, iso: string): string {
+  const format = memoriser(
+    formatsDate,
+    locale,
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        day: "numeric",
+        month: "short",
+        timeZone: "UTC",
+      }),
+  );
+  return format.format(new Date(iso));
+}
+
+/** Nom d'un pays d'apres son code ISO : « GN » donne « Guinée », « Guinea ». */
+export function nomPays(locale: string, iso: string): string {
+  const noms = memoriser(
+    nomsRegions,
+    locale,
+    () => new Intl.DisplayNames(locale, { type: "region" }),
+  );
+  return noms.of(iso) ?? iso;
 }
