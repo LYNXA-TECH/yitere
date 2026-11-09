@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BlocVerdict } from "../components/BlocVerdict";
 import type { Verdict } from "../lib/donnees/types";
+import { dictionnaire, type Langue } from "../lib/i18n";
 
 const npm: Verdict = {
   cible: { cle: "npm", nom: "registry.npmjs.org" },
@@ -12,7 +13,7 @@ const npm: Verdict = {
     sondesEpargnees: 2,
     sondesEnRodage: 1,
     mesures: 24,
-    periode: "dernière heure",
+    periodeMinutes: 60,
     repere: "normal",
   },
 };
@@ -25,7 +26,14 @@ const docker: Verdict = {
   preuves: { ...npm.preuves, sondesTouchees: 1, sondesEpargnees: 3 },
 };
 
-const rendu = (v: Verdict) => renderToStaticMarkup(<BlocVerdict verdict={v} />);
+const rendu = (v: Verdict, langue: Langue = "fr") =>
+  renderToStaticMarkup(
+    <BlocVerdict
+      verdict={v}
+      textes={dictionnaire(langue).verdict}
+      lienMethode={`/${langue}/methodologie`}
+    />,
+  );
 
 describe("BlocVerdict", () => {
   it("sépare ce qui est observé de l'hypothèse", () => {
@@ -48,6 +56,11 @@ describe("BlocVerdict", () => {
     expect(html).toContain("2 sondes touchées, 2 épargnées");
     expect(html).toContain("24 mesures, dernière heure");
     expect(html).toContain("1 sonde en rodage, non comptée");
+  });
+
+  it("écrit les grands nombres à la française", () => {
+    const html = rendu({ ...npm, preuves: { ...npm.preuves, mesures: 1220 } });
+    expect(html).toContain("1\u202f220 mesures, dernière heure");
   });
 
   it("accorde au singulier", () => {
@@ -98,5 +111,17 @@ describe("BlocVerdict", () => {
     });
     expect(html).toContain("Aucune mesure exploitable, dernière heure");
     expect(html).not.toMatch(/\b0 (sonde|mesure)/);
+  });
+
+  it("parle anglais avec le dictionnaire anglais, nombres compris", () => {
+    const html = rendu(
+      { ...npm, preuves: { ...npm.preuves, mesures: 1220 } },
+      "en",
+    );
+    expect(html).toContain("Degraded since 14:10 GMT");
+    expect(html).toContain("Probable cause: Opérateur A in Conakry");
+    expect(html).toContain("2 probes affected, 2 spared");
+    expect(html).toContain("1,220 measurements, last hour");
+    expect(html).toContain('href="/en/methodologie"');
   });
 });

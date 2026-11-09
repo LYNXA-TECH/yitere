@@ -1,15 +1,22 @@
 import type { Etat } from "@/lib/donnees/types";
 import styles from "./PastilleEtat.module.css";
 
-/** Libelle et forme de chaque etat. La forme double la couleur : un etat se lit sans voir les couleurs. */
-const ETATS: Record<Etat, { libelle: string; forme: string }> = {
-  normal: { libelle: "Normal", forme: "point" },
-  degrade: { libelle: "Dégradation observée", forme: "point-anneau" },
-  "pas-de-donnee": { libelle: "Pas de donnée", forme: "anneau" },
+/** Forme de chaque etat. La forme double la couleur : un etat se lit sans voir les couleurs. */
+const FORMES: Record<Etat, string> = {
+  normal: "point",
+  degrade: "point-anneau",
+  "pas-de-donnee": "anneau",
 };
 
-export function PastilleEtat({ etat }: { etat: Etat }) {
-  const { libelle, forme } = ETATS[etat];
+/** Le libelle vient du dictionnaire de la langue de la page (textes.etats). */
+export function PastilleEtat({
+  etat,
+  libelle,
+}: {
+  etat: Etat;
+  libelle: string;
+}) {
+  const forme = FORMES[etat];
   return (
     <span className={styles.pastille} data-etat={etat}>
       <svg

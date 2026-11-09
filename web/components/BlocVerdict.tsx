@@ -1,122 +1,106 @@
-import type { Cause, Verdict } from "@/lib/donnees/types";
+import type { Verdict } from "@/lib/donnees/types";
+import type { Dictionnaire } from "@/lib/i18n";
 import styles from "./BlocVerdict.module.css";
+
+type Props = {
+  verdict: Verdict;
+  textes: Dictionnaire["verdict"];
+  /** Adresse de la page Méthodologie dans la langue courante. */
+  lienMethode: string;
+};
 
 /**
  * Le verdict d'un service, en trois parties jamais melangees :
  * ce qui est observe, l'hypothese sur la cause, et les preuves.
  */
-export function BlocVerdict({ verdict }: { verdict: Verdict }) {
+export function BlocVerdict({ verdict, textes: t, lienMethode }: Props) {
   const { observation, hypothese, preuves } = verdict;
   const degrade = observation.etat === "degrade";
-  const sondes = texteSondes(verdict);
+  const sondes = texteSondes(verdict, t);
 
   return (
-    <section
-      className={styles.bloc}
-      aria-label={`Verdict pour ${verdict.cible.nom}`}
-    >
+    <section className={styles.bloc} aria-label={t.aria(verdict.cible.nom)}>
       <p className={styles.ligne}>
         <span
           className={styles.etiquette}
           data-nature="observe"
           data-etat={observation.etat}
         >
-          Observé
+          {t.observe}
         </span>
-        {texteObservation(verdict)}
+        {texteObservation(verdict, t)}
       </p>
 
       {degrade && (
         <p className={styles.ligne}>
           {hypothese ? (
             <span className={styles.etiquette} data-nature="hypothese">
-              Hypothèse
+              {t.hypothese}
             </span>
           ) : (
             <span className={styles.etiquette} data-nature="indetermine">
-              Indéterminé
+              {t.indetermine}
             </span>
           )}
           {hypothese
-            ? texteCause(hypothese)
-            : "Cause indéterminée : données insuffisantes"}
+            ? t.causeProbable(texteCause(hypothese, t))
+            : t.causeIndeterminee}
         </p>
       )}
 
       <ul className={styles.preuves}>
         {sondes && <li>{sondes}</li>}
         <li>
-          {texteMesures(verdict)}, {preuves.periode}
+          {observation.etat === "pas-de-donnee"
+            ? t.aucuneMesure(preuves.periodeMinutes)
+            : t.mesures(preuves.mesures, preuves.periodeMinutes)}
         </li>
         {preuves.sondesEnRodage > 0 && (
-          <li>
-            {compter(preuves.sondesEnRodage, "sonde", "sondes")} en rodage,{" "}
-            {preuves.sondesEnRodage > 1 ? "non comptées" : "non comptée"}
-          </li>
+          <li>{t.rodage(preuves.sondesEnRodage)}</li>
         )}
-        <li>Repère de Madrid (hors calcul) : {TEXTE_REPERE[preuves.repere]}</li>
+        <li>{t.repere(preuves.repere)}</li>
       </ul>
 
       {hypothese && (
         <p className={styles.limite}>
-          Hypothèse calculée par des règles publiques. Elle oriente, elle ne
-          prouve pas. <a href="/methodologie">Comment c'est calculé</a>
+          {t.limite} <a href={lienMethode}>{t.lienMethode}</a>
         </p>
       )}
     </section>
   );
 }
 
-const TEXTE_REPERE: Record<Verdict["preuves"]["repere"], string> = {
-  normal: "normal",
-  degrade: "dégradé aussi",
-  exclu: "exclu pour ce service",
-};
+type Textes = Dictionnaire["verdict"];
 
-function texteObservation({ observation }: Verdict): string {
-  if (observation.etat === "normal") return "Aucune dégradation observée";
-  if (observation.etat === "pas-de-donnee") return "Pas de donnée";
+function texteObservation({ observation }: Verdict, t: Textes): string {
+  if (observation.etat === "normal") return t.aucuneDegradation;
+  if (observation.etat === "pas-de-donnee") return t.pasDeDonnee;
   return observation.depuis
-    ? `Dégradation depuis ${heure(observation.depuis)}`
-    : "Dégradation";
+    ? t.degradationDepuis(observation.depuis)
+    : t.degradation;
 }
 
-/** Les sondes sur lesquelles repose le verdict. Rien quand aucune n'a mesure. */
-function texteSondes({ observation, preuves }: Verdict): string | null {
+/**
+ * Les sondes sur lesquelles repose le verdict. Rien quand aucune n'a mesure :
+ * une absence de donnee n'est pas un zero (specification, regle 4).
+ */
+function texteSondes(
+  { observation, preuves }: Verdict,
+  t: Textes,
+): string | null {
   if (observation.etat === "pas-de-donnee") return null;
-  if (observation.etat === "degrade") {
-    return `${compter(preuves.sondesTouchees, "sonde touchée", "sondes touchées")}, ${compter(preuves.sondesEpargnees, "épargnée", "épargnées")}`;
+  if (observation.etat === "degrade")
+    return t.sondesDegrade(preuves.sondesTouchees, preuves.sondesEpargnees);
+  return t.sondesNormal(preuves.sondesEpargnees);
+}
+
+function texteCause(h: NonNullable<Verdict["hypothese"]>, t: Textes): string {
+  switch (h.cause) {
+    case "service":
+      return t.causeService;
+    case "operateur":
+      return t.causeOperateur(h.operateur, h.ville);
+    case "connexion-locale":
+      return t.causeConnexionLocale;
   }
-  return preuves.sondesEpargnees > 1
-    ? `${preuves.sondesEpargnees} sondes dans leurs valeurs habituelles`
-    : `${preuves.sondesEpargnees} sonde dans ses valeurs habituelles`;
-}
-
-/** Jamais « 0 mesure » : une absence de donnee n'est pas un zero (specification, regle 4). */
-function texteMesures({ observation, preuves }: Verdict): string {
-  if (observation.etat === "pas-de-donnee") return "Aucune mesure exploitable";
-  return compter(preuves.mesures, "mesure", "mesures");
-}
-
-function texteCause(h: NonNullable<Verdict["hypothese"]>): string {
-  const libelles: Record<Cause, string> = {
-    service: "le service lui-même",
-    operateur: [h.operateur ?? "l'opérateur", h.ville]
-      .filter(Boolean)
-      .join(" à "),
-    "connexion-locale": "la connexion locale de la sonde",
-  };
-  return `Cause probable : ${libelles[h.cause]}`;
-}
-
-/** Heure de l'horodatage serveur, en temps universel, qui est aussi l'heure de la Guinee. */
-function heure(iso: string): string {
-  const d = new Date(iso);
-  const hh = String(d.getUTCHours()).padStart(2, "0");
-  const mm = String(d.getUTCMinutes()).padStart(2, "0");
-  return `${hh}:${mm} GMT`;
-}
-
-function compter(n: number, singulier: string, pluriel: string): string {
-  return `${n} ${n > 1 ? pluriel : singulier}`;
 }
