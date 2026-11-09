@@ -1,73 +1,80 @@
-.rubriques ul,
-.langues ul {
+.rubriques {
   display: flex;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: 0 22px;
+  flex: 1 1 auto;
 }
 
-.rubriques ul {
-  gap: var(--espace-1);
+.rubriques a {
+  padding: 12px 0;
+  color: var(--texte-secondaire);
+  font-weight: 500;
+  text-decoration: none;
 }
 
-.rubriques a,
+.rubriques a:hover {
+  color: var(--texte);
+}
+
+.rubriques a[aria-current="page"] {
+  color: var(--texte);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--interaction);
+}
+
+.langues {
+  display: flex;
+  gap: 2px;
+}
+
 .langues a {
   display: inline-flex;
   align-items: center;
   min-height: var(--zone-tactile);
-  padding: 0 var(--espace-3);
-  border-radius: var(--rayon);
+  padding: 0 6px;
   color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 500;
 }
 
-.rubriques a:hover,
-.langues a:hover {
-  color: var(--texte);
-  background: var(--surface);
-}
-
-.rubriques a[aria-current="page"],
 .langues a[aria-current="true"] {
   color: var(--interaction);
-  font-weight: 600;
 }
 
-.langues {
-  margin-left: auto;
+/* Barre d'onglets : seulement sur telephone, collee en bas, a portee de pouce. */
+.onglets {
+  display: none;
 }
 
-.langues a {
-  padding: 0 var(--espace-2);
-  font-size: var(--taille-petite);
-}
-
-/* Telephone : les rubriques deviennent une barre d'onglets en bas, a portee de pouce. */
-@media (max-width: 720px) {
+@media (max-width: 860px) {
   .rubriques {
-    position: fixed;
-    inset: auto 0 0 0;
+    display: none;
+  }
+
+  .onglets {
+    position: sticky;
+    bottom: 0;
     z-index: 10;
+    display: flex;
+    justify-content: space-around;
+    padding: 4px 0 env(safe-area-inset-bottom);
     background: var(--fond);
     border-top: 1px solid var(--trait);
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .rubriques ul {
-    gap: 0;
-  }
-
-  .rubriques li {
-    flex: 1 1 0;
-  }
-
-  .rubriques a {
+  .onglets a {
+    flex: 1;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    width: 100%;
-    min-height: 56px;
-    padding: 0 var(--espace-1);
-    border-radius: 0;
-    font-size: 0.75rem;
+    min-height: 52px;
+    color: var(--texte-secondaire);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .onglets a[aria-current="page"] {
+    color: var(--interaction);
+    font-weight: 600;
   }
 }

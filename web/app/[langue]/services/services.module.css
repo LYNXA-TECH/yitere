@@ -1,0 +1,362 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+
+.page h1,
+.page h2,
+.page p {
+  margin: 0;
+}
+
+.entete {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 48em;
+}
+
+.entete h1 {
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.entete p {
+  font-size: 18px;
+  color: var(--texte-corps);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section h2 {
+  font-size: 22px;
+}
+
+.titreSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px 10px;
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.corps {
+  color: var(--texte-corps);
+}
+
+.gras {
+  font-weight: 600;
+}
+
+.nomService {
+  font-family: var(--police-chiffres);
+  font-weight: 600;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.alertes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 14px;
+}
+
+.alerte {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.alerte[data-teinte="degrade"],
+.alerte[data-teinte="service"] {
+  border-color: var(--etat-degrade-trait);
+}
+
+.alerteTitre {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.rangee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.liens a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Choix du type de sonde : des boutons radio habilles en onglets. */
+.choix {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.choix label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.choix input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choix label:has(input:checked) {
+  background: var(--surface-haute);
+}
+
+.choix label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.panneau {
+  display: none;
+}
+
+.toutes:has(input[value="dev"]:checked) [data-type="dev"],
+.toutes:has(input[value="repere"]:checked) [data-type="repere"] {
+  display: block;
+}
+
+.toutes:has(input[value="navigateur"]:checked) [data-type="navigateur"] {
+  display: flex;
+}
+
+.tableau {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.tableau table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableau caption {
+  padding: 14px 16px 0;
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  text-align: left;
+}
+
+.tableau th,
+.tableau td {
+  padding: 12px 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tableau th:first-child,
+.tableau td:last-child {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.tableau thead th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: var(--texte-secondaire);
+  font-weight: 600;
+}
+
+.tableau tbody tr {
+  border-top: 1px solid var(--trait);
+}
+
+.tableau tbody th {
+  font-weight: 400;
+}
+
+.nombre {
+  text-align: right !important;
+}
+
+td.nombre {
+  font-family: var(--police-chiffres);
+  font-variant-numeric: tabular-nums;
+}
+
+.sousNombre {
+  color: var(--texte-secondaire);
+  font-family: var(--police-texte);
+  font-size: 12px;
+}
+
+.communaute {
+  color: var(--texte-corps);
+  font-size: 13px;
+}
+
+.listeMobile {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listeMobile a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.etatMobile {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--etat-normal);
+}
+.etatMobile[data-teinte="degrade"] {
+  color: var(--etat-degrade);
+}
+.etatMobile[data-teinte="service"] {
+  color: var(--etat-service);
+}
+.etatMobile[data-teinte="vide"] {
+  color: var(--etat-indetermine);
+}
+
+.navigateur {
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px dashed var(--demande-trait);
+  border-radius: 18px;
+}
+
+.navigateur a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-weight: 600;
+}
+
+.appel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  padding: 22px;
+  background: var(--surface-haute);
+  border-radius: 20px;
+}
+
+.appel > div {
+  flex: 1 1 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.appelTitre {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.appel a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.bouton {
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte) !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bouton:hover {
+  background: var(--focus);
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding: 20px 16px 88px;
+  }
+
+  .entete h1 {
+    font-size: 30px;
+  }
+
+  .tableau {
+    display: none;
+  }
+
+  .listeMobile {
+    display: flex;
+  }
+}

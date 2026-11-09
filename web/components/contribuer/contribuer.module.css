@@ -1,0 +1,400 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  margin: 0;
+}
+
+.page h1 {
+  font-size: 44px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.page h2 {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.chapeau {
+  max-width: 40em;
+  color: var(--texte-corps);
+  font-size: 19px;
+}
+
+.entete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ariane {
+  display: flex;
+  gap: 6px;
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.ariane [aria-current] {
+  color: var(--texte);
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 20px;
+}
+
+.carte[data-mise-en-avant] {
+  border-color: var(--interaction);
+}
+
+.carte h3 {
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.duree {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.carte[data-mise-en-avant] .duree {
+  color: var(--interaction);
+}
+
+.corps {
+  flex: 1 1 auto;
+  color: var(--texte-corps);
+  font-size: 15px;
+}
+
+.lienCarte {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section > p {
+  max-width: 44em;
+  color: var(--texte-corps);
+}
+
+.manque {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px dashed var(--demande-trait);
+  border-radius: 18px;
+}
+
+.manque a {
+  font-weight: 600;
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-weight: 400;
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.gras {
+  font-weight: 600;
+}
+
+.bilan {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 20px;
+}
+
+.bilanTitre {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.bilan dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.bilan dl > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.bilan dd {
+  margin: 0;
+  font-family: var(--police-chiffres);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.bilan dt {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+/* Page « Heberger une sonde » */
+.haut {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  align-items: center;
+  gap: 24px 40px;
+}
+
+.puces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.puces li {
+  padding: 6px 12px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.terminal {
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  background: var(--fond-profond);
+  border: 1px solid var(--trait);
+  border-radius: 16px;
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  line-height: 1.85;
+  white-space: pre;
+}
+
+.terminal [data-ton="discret"] {
+  color: var(--texte-secondaire);
+}
+
+.terminal [data-ton="accent"] {
+  color: var(--interaction);
+}
+
+.etape {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.etape[data-active] {
+  border-color: var(--interaction);
+}
+
+.numero {
+  color: var(--texte-secondaire);
+  font-family: var(--police-chiffres);
+  font-weight: 600;
+}
+
+.etape[data-active] .numero {
+  color: var(--interaction);
+}
+
+.etape h3 {
+  font-size: 19px;
+}
+
+.github {
+  align-self: flex-start;
+  min-height: var(--zone-tactile);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--texte);
+  color: var(--fond);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.champ label {
+  font-weight: 600;
+}
+
+.champ input,
+.champ select {
+  min-height: var(--zone-tactile);
+  padding: 0 12px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+}
+
+.case {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.case input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--interaction);
+}
+
+.bouton {
+  align-self: flex-start;
+  min-height: var(--zone-tactile);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.systemes {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  background: var(--surface-creuse);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.systemes label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.systemes input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.systemes label:has(input:checked) {
+  background: var(--surface-haute);
+}
+
+.systemes label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+}
+
+.commande {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  white-space: pre;
+}
+
+.lancer [data-systeme] {
+  display: none;
+}
+
+.lancer:has(input[value="unix"]:checked) [data-systeme="unix"],
+.lancer:has(input[value="windows"]:checked) [data-systeme="windows"] {
+  display: block;
+}
+
+.faq {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 20px 40px;
+}
+
+.faq h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.faq p {
+  color: var(--texte-corps);
+}
+
+.page kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 6px;
+  font-family: var(--police-chiffres);
+  font-size: 0.9em;
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding: 20px 16px 88px;
+  }
+
+  .page h1 {
+    font-size: 32px;
+  }
+}

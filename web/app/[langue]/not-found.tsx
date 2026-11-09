@@ -1,4 +1,4 @@
-import styles from "@/styles/page.module.css";
+import styles from "@/styles/document.module.css";
 
 /**
  * Next.js ne transmet pas la langue a cette page : elle parle donc les deux,
@@ -7,16 +7,16 @@ import styles from "@/styles/page.module.css";
 export default function Introuvable() {
   return (
     <main className={styles.page}>
-      <h1 className={styles.titre}>
+      <h1>
         <span lang="fr">Page introuvable</span> ·{" "}
         <span lang="en">Page not found</span>
       </h1>
-      <p className={styles.actions}>
+      <p className={styles.ligne}>
         <a href="/fr" lang="fr">
-          Retour à l&apos;accueil
+          Retour à la carte
         </a>
         <a href="/en" lang="en">
-          Back to the home page
+          Back to the map
         </a>
       </p>
     </main>

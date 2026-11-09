@@ -1,0 +1,445 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+
+.page h1,
+.page h2,
+.page p {
+  margin: 0;
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px 24px;
+}
+
+.entete > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 46em;
+}
+
+.entete h1 {
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.entete p {
+  color: var(--texte-corps);
+  font-size: 18px;
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.principal,
+.secondaire {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  padding: 0 18px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.principal {
+  border: 0;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+}
+
+.principal:hover {
+  background: var(--focus);
+  color: var(--interaction-texte);
+}
+
+.secondaire {
+  border: 1px solid var(--trait-fort);
+  background: transparent;
+  color: var(--texte);
+}
+
+.filtres {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.ligneFiltres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.onglets {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface-creuse);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.onglets button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.onglets button[aria-pressed="true"] {
+  background: var(--surface-haute);
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 150px;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.champ label {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.champ select {
+  min-height: var(--zone-tactile);
+  padding: 0 10px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  background: var(--surface-creuse);
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+}
+
+.ligneEtiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.libelleEtiquettes {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.puce {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.puce[aria-pressed="true"] {
+  border-color: var(--interaction);
+  background: var(--surface-haute);
+}
+
+.ressort {
+  flex: 1 1 auto;
+}
+
+.case {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.case input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--interaction);
+}
+
+.colonnes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.publications {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.carte {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.carte[data-confirmee] {
+  border-color: var(--etat-normal-trait);
+}
+
+.votes {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 52px;
+  padding-top: 2px;
+}
+
+.votes span:first-child {
+  font-family: var(--police-chiffres);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.votes span:last-child {
+  color: var(--texte-secondaire);
+  font-size: 11px;
+}
+
+.corpsCarte {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.genre,
+.confirmee {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--etat-normal-fond);
+  color: var(--etat-normal-clair);
+}
+
+.genre[data-type="demande"] {
+  background: var(--etat-degrade-fond);
+  color: var(--etat-degrade-clair);
+}
+
+.cible {
+  color: var(--texte-corps);
+  font-family: var(--police-chiffres);
+}
+
+.etiquette {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface-haute);
+  color: var(--texte-secondaire);
+  font-family: var(--police-chiffres);
+  font-weight: 400;
+}
+
+.titre {
+  color: var(--texte);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.titre:hover {
+  color: var(--interaction);
+}
+
+.texte {
+  color: var(--texte-corps);
+  font-size: 15px;
+}
+
+.contexte {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--surface-creuse);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  color: var(--texte-corps);
+  font-size: 13px;
+}
+
+.contexte svg {
+  color: var(--texte-secondaire);
+}
+
+.contexte[data-incident] svg {
+  color: var(--etat-degrade);
+}
+
+.statut {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.statut[data-statut="confirmee"],
+.statut[data-statut="repondue"] {
+  color: var(--etat-normal);
+}
+
+.statut[data-statut="attente"] {
+  color: var(--etat-degrade-clair);
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.gras {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.vide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 22px;
+  border: 1px dashed var(--trait-fort);
+  border-radius: 18px;
+}
+
+.encadres {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.encadre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+  font-size: 14px;
+}
+
+.encadre h2 {
+  font-size: 16px;
+}
+
+.encadre[data-genre="attente"] {
+  gap: 8px;
+  border-style: dashed;
+  border-color: var(--demande-trait);
+}
+
+.encadre[data-genre="regle"] {
+  gap: 6px;
+  background: var(--surface-creuse);
+  color: var(--texte-corps);
+}
+
+.encadre[data-genre="regle"] h2 {
+  color: var(--texte);
+}
+
+.incident {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.incident:hover {
+  border-color: var(--interaction);
+  color: var(--texte);
+}
+
+.nomService {
+  font-family: var(--police-chiffres);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.orange {
+  color: var(--etat-degrade);
+  font-size: 13px;
+}
+
+.lien {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding: 20px 16px 88px;
+  }
+
+  .entete h1 {
+    font-size: 30px;
+  }
+}

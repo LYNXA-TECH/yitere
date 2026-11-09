@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { EnTete } from "@/components/EnTete";
-import { PiedDePage } from "@/components/PiedDePage";
+import { OngletsMobiles } from "@/components/NavigationPrincipale";
+import { siteEnExemple } from "@/lib/donnees";
 import { dictionnaire, LANGUES } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
+import { lien, ONGLETS_MOBILES } from "@/lib/navigation";
+import { geist, geistMono } from "@/lib/polices";
 import "@/styles/variables.css";
 import "@/styles/base.css";
 
@@ -29,11 +32,18 @@ export default async function Disposition({ children, params }: Props) {
   const langue = await langueDe(params);
   const t = dictionnaire(langue);
   return (
-    <html lang={langue}>
+    <html lang={langue} className={`${geist.variable} ${geistMono.variable}`}>
       <body>
-        <EnTete langue={langue} textes={t} />
+        <EnTete langue={langue} textes={t} exemple={await siteEnExemple()} />
         <div id="contenu">{children}</div>
-        <PiedDePage textes={t.pied} />
+        <OngletsMobiles
+          langue={langue}
+          libelle={t.navigation.mobile}
+          onglets={ONGLETS_MOBILES.map(({ cle, chemin }) => ({
+            href: lien(langue, chemin),
+            texte: t.navigation[cle],
+          }))}
+        />
       </body>
     </html>
   );

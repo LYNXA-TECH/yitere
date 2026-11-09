@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { en } from "@/lib/i18n/en";
 import {
   completer,
   dictionnaire,
@@ -47,34 +48,48 @@ describe("repli sur le français", () => {
   });
 });
 
-describe("pages traduites (revue de Cellou, point 4)", () => {
+describe("pages traduites : carte, services, fiche (revue de Cellou, point 4)", () => {
   const sections: (keyof Dictionnaire)[] = [
     "site",
     "navigation",
     "source",
-    "etats",
     "verdict",
-    "accueil",
     "services",
     "fiche",
     "carte",
-    "pied",
+    "publication",
     "pageEnFrancais",
   ];
 
   for (const section of sections) {
     it(`« ${section} » est entièrement traduite en anglais`, () => {
-      const anglais = textes(dictionnaire("en")[section]);
-      expect(anglais.filter((t) => t.startsWith(MARQUE_FRANCAIS))).toEqual([]);
+      expect(clesManquantes(dictionnaire("fr")[section], en[section])).toEqual(
+        [],
+      );
     });
   }
 });
 
-/** Tous les textes d'une branche du dictionnaire ; les fonctions sont appelees avec des valeurs types. */
+/** Les cles du francais que la traduction ne fournit pas, a toute profondeur. */
+function clesManquantes(
+  francais: unknown,
+  anglais: unknown,
+  chemin = "",
+): string[] {
+  if (typeof francais !== "object" || francais === null)
+    return anglais === undefined ? [chemin] : [];
+  return Object.entries(francais).flatMap(([cle, valeur]) =>
+    clesManquantes(
+      valeur,
+      (anglais as Record<string, unknown> | undefined)?.[cle],
+      `${chemin}.${cle}`,
+    ),
+  );
+}
+
+/** Tous les textes fixes d'une branche du dictionnaire. */
 function textes(valeur: unknown): string[] {
   if (typeof valeur === "string") return [valeur];
-  if (typeof valeur === "function")
-    return [String(valeur(2, 2, "2026-11-03T14:10:00Z"))];
   if (typeof valeur === "object" && valeur !== null)
     return Object.values(valeur).flatMap(textes);
   return [];

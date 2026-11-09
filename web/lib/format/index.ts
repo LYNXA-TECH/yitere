@@ -37,12 +37,19 @@ export function categoriePluriel(
   ).select(n);
 }
 
-/** n avec le séparateur de milliers de la langue : « 1 220 », « 1,220 ». */
-export function nombre(locale: string, n: number): string {
+/**
+ * n avec le séparateur de milliers de la langue : « 1 220 », « 1,220 ».
+ * Avec des décimales, toujours le même nombre de chiffres : « 12,0 ».
+ */
+export function nombre(locale: string, n: number, decimales = 0): string {
   return memoriser(
     formatsNombre,
-    locale,
-    () => new Intl.NumberFormat(locale),
+    `${locale}|${decimales}`,
+    () =>
+      new Intl.NumberFormat(locale, {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales,
+      }),
   ).format(n);
 }
 
@@ -85,4 +92,9 @@ export function nomPays(locale: string, iso: string): string {
     () => new Intl.DisplayNames(locale, { type: "region" }),
   );
   return noms.of(iso) ?? iso;
+}
+
+/** Minutes ecoulees entre deux instants ISO (positif si « avant » precede « apres »). */
+export function minutesEntre(avant: string, apres: string): number {
+  return (Date.parse(apres) - Date.parse(avant)) / 60_000;
 }

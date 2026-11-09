@@ -1,0 +1,507 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  margin: 0;
+}
+
+.entete {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ariane {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.ariane [aria-current] {
+  color: var(--texte);
+}
+
+.titre {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.titre h1 {
+  font-family: var(--police-chiffres);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.boutonSecondaire {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  padding: 0 16px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bouton:hover {
+  background: var(--focus);
+  color: var(--interaction-texte);
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.corps {
+  color: var(--texte-corps);
+}
+
+.gras {
+  font-weight: 600;
+}
+
+.chiffres {
+  font-family: var(--police-chiffres);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Diagnostic */
+.diagnostic {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 20px 32px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 20px;
+}
+
+.diagnostic[data-teinte="degrade"],
+.diagnostic[data-teinte="service"] {
+  border-color: var(--etat-degrade-trait);
+}
+
+.colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.surtitre {
+  color: var(--texte-secondaire);
+  font-size: 13px !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.observation {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.hypothese {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.titrePreuves {
+  font-size: 15px;
+}
+
+.preuves {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.preuves li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  --couleur: var(--texte-secondaire);
+}
+
+.preuves li[data-nature="touchee"] {
+  --couleur: var(--etat-degrade);
+}
+
+.preuves li[data-nature="epargnee"] {
+  --couleur: var(--etat-normal);
+}
+
+.preuves strong {
+  color: var(--couleur);
+  font-weight: 600;
+}
+
+.marque {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border: 1.5px solid var(--couleur);
+  border-radius: 50%;
+  background: var(--couleur);
+}
+
+.preuves li[data-nature="repere"] .marque {
+  border-radius: 2px;
+  background: transparent;
+}
+
+.preuves li[data-nature="rodage"] .marque {
+  background: transparent;
+}
+
+/* Solutions */
+.solutions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.solutions h2 {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.titreSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px 16px;
+}
+
+.titreSection > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.liste {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vide {
+  padding: 18px;
+  border: 1px dashed var(--trait-fort);
+  border-radius: 18px;
+  color: var(--texte-secondaire);
+}
+
+.lienSeul {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-weight: 600;
+}
+
+/* Chiffres cles */
+.tuiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 14px;
+}
+
+.tuile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.tuile > span:first-child {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.valeurTuile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.valeurTuile strong {
+  font-family: var(--police-chiffres);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.valeurTuile strong[data-teinte="degrade"] {
+  color: var(--etat-degrade);
+}
+
+/* Cadres : graphique, ou part le temps */
+.cadre {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 20px;
+}
+
+.cadre h2 {
+  font-size: 20px;
+}
+
+.titreCadre {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.titreCadre > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.periodes {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  background: var(--surface-creuse);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.periodes label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.periodes input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.periodes label:has(input:checked) {
+  background: var(--surface-haute);
+}
+
+.periodes label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.graphique [data-vue="7j"] {
+  display: none;
+}
+
+.graphique:has(input[value="7j"]:checked) [data-vue="7j"] {
+  display: block;
+}
+
+.graphique:has(input[value="7j"]:checked) [data-vue="24"] {
+  display: none;
+}
+
+.defilement {
+  overflow-x: auto;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  min-width: 560px;
+  height: auto;
+}
+
+.axe {
+  fill: var(--texte-secondaire);
+  font-family: var(--police-chiffres);
+  font-size: 12px;
+}
+
+.serie {
+  --couleur: var(--etat-normal);
+}
+
+.serie[data-statut="touchee"] {
+  --couleur: var(--etat-degrade);
+}
+
+.serie[data-statut="rodage"] {
+  --couleur: var(--texte-secondaire);
+}
+
+.serie path {
+  stroke: var(--couleur);
+  stroke-width: 1.6;
+}
+
+.serie[data-statut="touchee"] path {
+  stroke-width: 2.5;
+}
+
+.serie[data-statut="rodage"] path {
+  stroke-dasharray: 4 4;
+}
+
+.serie text {
+  fill: var(--couleur);
+  font-size: 12px;
+}
+
+.cascade {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cascadeTitre {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.barre {
+  display: flex;
+  gap: 2px;
+  height: 28px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.barre span,
+.carre {
+  background: var(--couleur);
+}
+
+.cascade [data-etape="dns"] {
+  --couleur: var(--etape-dns);
+}
+.cascade [data-etape="connexion"] {
+  --couleur: var(--etape-connexion);
+}
+.cascade [data-etape="tls"] {
+  --couleur: var(--etape-tls);
+}
+.cascade [data-etape="octet"] {
+  --couleur: var(--etat-normal);
+}
+.cascade [data-etape="octet-touchee"] {
+  --couleur: var(--etat-degrade);
+}
+
+.legendeCascade {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.legendeCascade > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendeCascade .chiffres {
+  color: var(--texte);
+}
+
+.carre {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding: 20px 16px 88px;
+  }
+
+  .titre h1 {
+    font-size: 26px;
+  }
+}

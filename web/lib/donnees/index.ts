@@ -1,14 +1,23 @@
 import {
   CIBLES_EXEMPLE,
+  detailExemple,
+  INCIDENTS_EXEMPLE,
+  MAINTENANT_EXEMPLE,
+  NAVIGATEUR_EXEMPLE,
   PUBLICATIONS_EXEMPLE,
+  RESUMES_EXEMPLE,
   SONDES_EXEMPLE,
   VERDICTS_EXEMPLE,
 } from "./exemple";
 import type {
   Cible,
+  DetailService,
+  Incident,
   Lecture,
+  MesureNavigateur,
   NomSource,
   Publication,
+  ResumeService,
   Sonde,
   Verdict,
 } from "./types";
@@ -81,18 +90,65 @@ export async function lireCibles(
 /*
  * Les routes suivantes ne sont pas encore servies par l'API (decision 0001, D4) :
  * quelle que soit la source demandee, ces lectures renvoient l'exemple, et le disent.
+ * L'heure de lecture est celle de l'horloge d'exemple (17:00).
  */
 
+const exemple = <T>(donnees: T): Lecture<T> => ({
+  donnees,
+  source: "exemple",
+  lueLe: MAINTENANT_EXEMPLE,
+});
+
 export async function lireVerdicts(): Promise<Lecture<Verdict[]>> {
-  return { donnees: VERDICTS_EXEMPLE, source: "exemple", lueLe: null };
+  return exemple(VERDICTS_EXEMPLE);
+}
+
+export async function lireResumes(): Promise<Lecture<ResumeService[]>> {
+  return exemple(RESUMES_EXEMPLE);
+}
+
+/** Le detail d'un service, ou null s'il n'en a pas (cible de reference, cible inconnue). */
+export async function lireDetail(
+  cle: string,
+): Promise<Lecture<DetailService | null>> {
+  return exemple(
+    VERDICTS_EXEMPLE.some((v) => v.cible.cle === cle)
+      ? detailExemple(cle)
+      : null,
+  );
+}
+
+export async function lireIncidents(): Promise<Lecture<Incident[]>> {
+  return exemple(INCIDENTS_EXEMPLE);
 }
 
 export async function lireSondes(): Promise<Lecture<Sonde[]>> {
-  return { donnees: SONDES_EXEMPLE, source: "exemple", lueLe: null };
+  return exemple(SONDES_EXEMPLE);
+}
+
+export async function lireMesuresNavigateur(): Promise<
+  Lecture<MesureNavigateur[]>
+> {
+  return exemple(NAVIGATEUR_EXEMPLE);
 }
 
 export async function lirePublications(): Promise<Lecture<Publication[]>> {
-  return { donnees: PUBLICATIONS_EXEMPLE, source: "exemple", lueLe: null };
+  return exemple(PUBLICATIONS_EXEMPLE);
+}
+
+/**
+ * Vrai tant qu'au moins une lecture du site renvoie l'exemple : l'en-tete affiche alors
+ * le badge « Donnees d'exemple » sur toutes les pages (directive de Cellou).
+ */
+export async function siteEnExemple(): Promise<boolean> {
+  const lectures = await Promise.all([
+    lireCibles(),
+    lireVerdicts(),
+    lireResumes(),
+    lireSondes(),
+    lirePublications(),
+  ]);
+  return lectures.some((l) => l.source === "exemple");
 }
 
 /** Les cibles de reference servent au calcul, pas aux developpeurs : on ne les liste pas. */

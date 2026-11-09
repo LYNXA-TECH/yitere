@@ -1,0 +1,460 @@
+/* Pages de reference : methodologie, confidentialite, donnees ouvertes, mon espace. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 36px 24px 72px;
+}
+
+.large {
+  max-width: 1200px;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page p {
+  margin: 0;
+}
+
+.entete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.surtitre {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.page h1 {
+  font-size: 42px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.page h2 {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.chapeau {
+  max-width: 44em;
+  color: var(--texte-corps);
+  font-size: 18px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section p,
+.section li {
+  max-width: 44em;
+  color: var(--texte-corps);
+}
+
+.section ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.aFaire {
+  color: var(--etat-degrade-clair);
+}
+
+.tableau {
+  overflow-x: auto;
+}
+
+.tableau table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.tableau th,
+.tableau td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--trait);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableau thead th {
+  border-top: 0;
+  color: var(--texte-secondaire);
+  font-weight: 600;
+}
+
+.cadre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 20px;
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 14px;
+}
+
+.mono {
+  font-family: var(--police-chiffres);
+  font-size: 0.92em;
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.gras {
+  font-weight: 600;
+}
+
+.statut {
+  flex: 0 0 auto;
+  padding: 2px 10px;
+  border: 1px dashed var(--etat-degrade-clair);
+  border-radius: 999px;
+  color: var(--etat-degrade-clair);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statut[data-statut="en-service"] {
+  border-style: solid;
+  border-color: var(--etat-normal);
+  color: var(--etat-normal);
+}
+
+.route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+}
+
+.route > span:nth-child(2) {
+  flex: 1 1 300px;
+  color: var(--texte-corps);
+  font-size: 14px;
+}
+
+.methode {
+  color: var(--interaction);
+  font-family: var(--police-chiffres);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.code {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: var(--fond-profond);
+  border: 1px solid var(--trait);
+  border-radius: 16px;
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.champ {
+  display: flex;
+  flex: 1 1 180px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.champ label {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.champ select {
+  min-height: var(--zone-tactile);
+  padding: 0 10px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+}
+
+.ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 16px;
+}
+
+.bouton {
+  min-height: var(--zone-tactile);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaire {
+  min-height: var(--zone-tactile);
+  padding: 0 16px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger {
+  composes: secondaire;
+  border-color: var(--etat-service);
+  color: var(--etat-service);
+}
+
+/* Onglets sans JavaScript : des boutons radio et :has(). */
+.onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--trait);
+}
+
+.onglets label {
+  padding: 10px 14px;
+  color: var(--texte-secondaire);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.onglets input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.onglets label:has(input:checked) {
+  color: var(--texte);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--interaction);
+}
+
+.onglets label:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+}
+
+.panneau {
+  display: none;
+}
+
+.espace:has(input[value="sondes"]:checked) [data-onglet="sondes"],
+.espace:has(input[value="contributions"]:checked) [data-onglet="contributions"],
+.espace:has(input[value="notifications"]:checked)
+  [data-onglet="notifications"] {
+  display: flex;
+}
+
+.profil {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 50%;
+  background: var(--surface-haute);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.chiffres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.chiffres > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+}
+
+.chiffres dd {
+  margin: 0;
+  font-family: var(--police-chiffres);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.chiffres dt {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.puces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.puces li {
+  padding: 4px 10px;
+  border: 1px solid var(--etat-normal);
+  border-radius: 999px;
+  color: var(--etat-normal);
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+}
+
+.puces li[data-etat="degrade"] {
+  border-color: var(--etat-degrade);
+  color: var(--etat-degrade);
+}
+
+.puces li[data-etat="pas-de-donnee"] {
+  border-color: var(--texte-secondaire);
+  color: var(--texte-secondaire);
+}
+
+.titreLigne {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.orange {
+  color: var(--etat-degrade);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--trait);
+}
+
+.ressort {
+  flex: 1 1 auto;
+}
+
+/* Methodologie : le Markdown de docs/methodologie.md */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 46em;
+}
+
+.prose h1 {
+  display: none;
+}
+
+.prose h2 {
+  margin-top: 20px !important;
+}
+
+.prose p,
+.prose li {
+  color: var(--texte-corps);
+}
+
+.prose ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.prose code {
+  font-family: var(--police-chiffres);
+  font-size: 0.9em;
+}
+
+.prose pre {
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background: var(--surface);
+  border-radius: var(--rayon);
+}
+
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.prose th,
+.prose td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--trait);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose thead th {
+  border-top: 0;
+  color: var(--texte-secondaire);
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding: 20px 16px 88px;
+  }
+
+  .page h1 {
+    font-size: 30px;
+  }
+}

@@ -44,3 +44,14 @@ a:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* Message d'un bouton qui demande la connexion (components/BoutonConnexion.tsx) */
+.message-connexion {
+  flex-basis: 100%;
+  padding: 8px 12px;
+  background: var(--surface-haute);
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  color: var(--texte-corps);
+  font-size: 14px;
+}

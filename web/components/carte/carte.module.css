@@ -1,0 +1,691 @@
+.disposition {
+  display: flex;
+  max-width: 1600px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.scene {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.plateau {
+  position: relative;
+  height: calc(100vh - 230px);
+  min-height: 560px;
+  overflow: hidden;
+  background: var(--fond);
+}
+
+.zoom {
+  position: absolute;
+  inset: 70px 20px 20px;
+  transition: transform var(--duree-moyenne) ease;
+}
+
+.zoom > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fond path {
+  fill: var(--carte-pays);
+  stroke: var(--carte-pays-trait);
+  stroke-width: 1;
+}
+
+.fond path[data-sondes] {
+  fill: var(--carte-pays-sonde);
+}
+
+.calque {
+  overflow: visible;
+}
+
+.arc {
+  fill: none;
+  stroke: var(--interaction);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.navigateur {
+  fill: var(--fond);
+  stroke: var(--interaction);
+  stroke-width: 1.5;
+}
+
+.ville {
+  cursor: pointer;
+  --couleur: var(--etat-normal);
+}
+
+.ville[data-etat="degrade"] {
+  --couleur: var(--etat-degrade);
+}
+
+.ville[data-etat="vide"] {
+  --couleur: var(--texte-secondaire);
+}
+
+.ville:focus-visible {
+  outline: none;
+}
+
+.ville:focus-visible .point {
+  stroke: var(--focus);
+}
+
+.point {
+  fill: var(--surface-creuse);
+  stroke: var(--couleur);
+  stroke-width: 3;
+}
+
+.ville[data-etat="vide"] .point {
+  stroke-dasharray: 4 3;
+}
+
+.anneau {
+  fill: none;
+  stroke: var(--etat-degrade);
+  stroke-opacity: 0.6;
+  stroke-width: 2;
+}
+
+.pulsation {
+  fill: none;
+  stroke: var(--couleur);
+  stroke-width: 2;
+  opacity: 0;
+}
+
+.ville[data-direct] .pulsation {
+  animation: pulsation 2.4s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes pulsation {
+  from {
+    opacity: 0.7;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+.nombre {
+  fill: var(--texte);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nomVille {
+  fill: var(--texte);
+  font-size: 14px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--fond);
+  stroke-width: 3px;
+}
+
+.controles {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.droite {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.groupe {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+}
+
+.groupe button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.groupe button[aria-pressed="true"],
+.groupe button[aria-current="true"] {
+  background: var(--surface-haute);
+  font-weight: 600;
+}
+
+.repere {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.carreRepere {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--texte-secondaire);
+  border-radius: 2px;
+  background: var(--texte-secondaire);
+}
+
+.legende {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+  color: var(--texte-secondaire);
+  font-size: 12px;
+}
+
+.legende .gras {
+  color: var(--texte);
+  font-size: 13px;
+}
+
+.legende [data-symbole] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legende [data-symbole]::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legende [data-symbole="normal"]::before {
+  background: var(--etat-normal);
+}
+
+.legende [data-symbole="degrade"]::before {
+  background: var(--etat-degrade);
+  box-shadow:
+    0 0 0 2px var(--fond),
+    0 0 0 3.5px var(--etat-degrade);
+}
+
+.legende [data-symbole="vide"]::before {
+  border: 1.5px dashed var(--texte-secondaire);
+}
+
+.legende [data-symbole="repere"]::before {
+  border-radius: 1px;
+  background: var(--texte-secondaire);
+}
+
+.legende [data-symbole="lien"]::before {
+  width: 18px;
+  height: 0;
+  border-radius: 0;
+  border-top: 1.5px dashed var(--interaction);
+}
+
+.zooms {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zooms button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--texte);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.zooms button:disabled {
+  color: var(--texte-discret);
+  cursor: default;
+}
+
+.liste {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 72px 20px 20px;
+}
+
+.liste h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.liste > p {
+  margin: 0 0 16px;
+  color: var(--texte-secondaire);
+  font-size: 14px;
+}
+
+.liste ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.liste > ul > li {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+}
+
+.liste li ul {
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.liste li li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 14px;
+}
+
+.etatListe {
+  min-width: 120px;
+  font-weight: 600;
+  color: var(--etat-normal);
+}
+
+[data-etat="degrade"] > .etatListe {
+  color: var(--etat-degrade);
+}
+
+[data-etat="pas-de-donnee"] > .etatListe,
+[data-etat="rodage"] > .etatListe,
+[data-etat="absente"] > .etatListe {
+  color: var(--texte-secondaire);
+}
+
+.gras {
+  font-weight: 600;
+}
+
+.discret {
+  color: var(--texte-secondaire);
+  font-weight: 400;
+}
+
+/* Frise */
+.frise {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px 12px;
+  background: var(--surface-creuse);
+  border-top: 1px solid var(--trait);
+}
+
+.commandes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.lecture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  cursor: pointer;
+}
+
+.heure {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.heure span:first-child {
+  font-family: var(--police-chiffres);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.heure span:last-child {
+  color: var(--texte-secondaire);
+  font-size: 12px;
+}
+
+.secondaire {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--texte);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ressort {
+  flex: 1 1 auto;
+}
+
+.direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte-secondaire);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.direct[data-actif] {
+  border-color: var(--etat-normal);
+  color: var(--etat-normal);
+}
+
+.pointDirect {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pistes {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.libelles {
+  flex: 0 0 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--texte-secondaire);
+  font-size: 12px;
+}
+
+.libelles span {
+  height: 14px;
+  overflow: hidden;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.libelles span:last-child {
+  height: 18px;
+  line-height: 18px;
+}
+
+.couloirs {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.couloir {
+  position: relative;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.couloir span {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 3px;
+  background: var(--etat-degrade);
+}
+
+.couloir span[data-teinte="vide"] {
+  background: var(--texte-discret);
+}
+
+.marques {
+  height: 18px;
+}
+
+.marques span {
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4px;
+  border: 1.5px solid var(--interaction);
+  border-radius: 50%;
+  background: var(--interaction);
+}
+
+.marques span[data-nature="navigateur"] {
+  background: transparent;
+  border-color: var(--texte-secondaire);
+}
+
+.curseur {
+  position: absolute;
+  top: -2px;
+  bottom: 14px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--texte);
+  pointer-events: none;
+}
+
+.curseurSaisie {
+  position: absolute;
+  inset: -4px 0 14px;
+  width: 100%;
+  margin: 0;
+  opacity: 0.01;
+  cursor: pointer;
+}
+
+.curseurSaisie:focus-visible + .axe {
+  outline: 2px solid var(--focus);
+}
+
+.axe {
+  display: flex;
+  justify-content: space-between;
+  color: var(--texte-secondaire);
+  font-family: var(--police-chiffres);
+  font-size: 11px;
+}
+
+.masque {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* Panneau */
+.panneau {
+  flex: 0 0 420px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 61px);
+  overflow-y: auto;
+  background: var(--surface-creuse);
+  border-left: 1px solid var(--trait);
+}
+
+.haut {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 20px 8px;
+}
+
+.etiquetteChamp {
+  margin-top: 8px;
+  color: var(--texte-secondaire);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.choix {
+  min-height: var(--zone-tactile);
+  padding: 0 10px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+}
+
+.selection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 20px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait-fort);
+  border-radius: 16px;
+}
+
+.selectionTitre {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.selectionTitre > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectionTitre button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texte-secondaire);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.selection ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.selection li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.surtitre {
+  color: var(--texte-secondaire);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+  .disposition {
+    flex-direction: column;
+  }
+
+  .plateau {
+    height: 62vh;
+    min-height: 440px;
+  }
+
+  .legende,
+  .libelles,
+  .repere {
+    display: none;
+  }
+
+  .panneau {
+    flex: none;
+    max-height: none;
+    border-left: 0;
+    border-top: 1px solid var(--trait);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ville[data-direct] .pulsation {
+    animation: none;
+  }
+}
