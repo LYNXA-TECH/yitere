@@ -4,13 +4,17 @@
  */
 :root {
   /* Fonds, du plus profond au plus proche */
+  --fond-profond: #070c16;
   --fond: #0b1220;
   --surface: #111a2b;
+  --surface-creuse: #0e1626; /* frise, panneaux de carte */
   --surface-haute: #18233a;
   --trait: #26324a; /* separateurs uniquement, jamais seul porteur de sens */
+  --trait-fort: #33415c; /* contour des boutons secondaires */
 
   /* Textes */
   --texte: #e8edf5;
+  --texte-corps: #c9d2de; /* paragraphes sous un titre */
   --texte-secondaire: #9aa8bc;
   --texte-discret: #6b7a90; /* grands textes (18 px et plus) ou decoratif seulement */
 
@@ -25,22 +29,40 @@
   --etat-service: #f2706b;
   --etat-indetermine: #9aa8bc;
 
+  --etat-degrade-clair: #f5c58a; /* demandes, « publiee pendant cet incident » */
+  --etat-degrade-fond: #2a2416;
+  --etat-degrade-trait: #5a4426; /* contour d'un bloc degrade */
+  --etat-normal-clair: #8be0b3; /* confirmations de la communaute */
+  --etat-normal-fond: #12301f;
+  --etat-normal-trait: #2e5b45;
+  --demande-trait: #4a5a78;
+
+  /* Logo et graphiques */
+  --logo: #f2a93b;
+  --bande-habituelle: #1b2840;
+  --etape-dns: #6b7a90;
+  --etape-connexion: #4c8dd6;
+  --etape-tls: #8c7be0;
+
   /* Carte : pays qui ont au moins une sonde, a peine plus clairs que les autres */
+  --carte-pays: #1a2842;
+  --carte-pays-trait: #2a3954;
   --carte-pays-sonde: #1e3350;
 
   /* Typographie : polices du systeme, rien a telecharger sur une connexion lente */
+  /* Geist et Geist Mono (SIL OFL 1.1), servies par le site lui-meme (app/[langue]/layout.tsx) */
   --police-texte:
-    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    var(--police-geist), system-ui, -apple-system, "Segoe UI", Roboto, Arial,
     sans-serif;
   --police-chiffres:
-    ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono",
+    var(--police-geist-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas,
     monospace;
-  --taille-texte: 1rem;
+  --taille-texte: 1.0625rem; /* 17 px */
   --taille-petite: 0.875rem;
   --taille-titre-1: 2.5rem;
   --taille-titre-2: 1.75rem;
   --taille-titre-3: 1.25rem;
-  --interligne: 1.55;
+  --interligne: 1.6;
 
   /* Espacements, sur une grille de 4 px */
   --espace-1: 0.25rem;
