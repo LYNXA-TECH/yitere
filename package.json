@@ -5,5 +5,5 @@
   "description": "Observatoire des conditions reseau du developpement africain",
   "license": "MIT",
   "engines": { "node": ">=20" },
-  "scripts": { "start": "node index.js" }
+  "scripts": { "start": "node index.js", "test": "node --test serveur/*.test.js" }
 }

@@ -1,9 +1,11 @@
-// YITERE, ingestion. Une seule route, authentifiee par jeton de sonde.
+// YITERE, API. Ecriture : l'ingestion des mesures, authentifiee par jeton de sonde.
+// Lecture publique, sans jeton : cibles, verdicts, sondes (docs/CONTRAT-API-INTERFACE.md).
 // Aucune adresse IP n'est lue ni stockee.
 'use strict';
 const http = require('node:http');
 const crypto = require('node:crypto');
 const { Client } = require('pg');
+const verdicts = require('./verdicts.js');
 
 const PORT = Number(process.env.PORT || 8787);
 const DB = process.env.YITERE_DB_URL;
@@ -46,15 +48,39 @@ async function inserer(sondeId, mesures) {
   return { poses, ignorees };
 }
 
+// Les lectures calculees sont gardees 30 secondes : un visiteur presse ne fait pas travailler la base.
+const GARDE_MS = 30e3;
+const garde = new Map();
+async function avecGarde(cle, produire) {
+  const g = garde.get(cle);
+  if (g && Date.now() - g.le < GARDE_MS) return g.valeur;
+  const valeur = await produire();
+  garde.set(cle, { le: Date.now(), valeur });
+  return valeur;
+}
+
 const serveur = http.createServer((req, res) => {
   const repondre = (code, obj) => {
     res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify(obj));
   };
-  if (req.method === 'GET' && req.url === '/sante') return repondre(200, { ok: true });
+  const chemin = (req.url || '').split('?')[0];
+  if (req.method === 'GET' && chemin === '/sante') return repondre(200, { ok: true });
+
+  // Lectures publiques, sans jeton. Les verdicts sont calcules ici, jamais stockes.
+  if (req.method === 'GET' && chemin === '/api/v1/verdicts') {
+    return avecGarde('verdicts', async () => verdicts.calculer(await verdicts.lire(db)))
+      .then(v => repondre(200, v))
+      .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+  if (req.method === 'GET' && chemin === '/api/v1/sondes') {
+    return avecGarde('sondes', async () => verdicts.listerSondes(await verdicts.lireSondes(db)))
+      .then(v => repondre(200, v))
+      .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
 
   // Lecture publique, sans jeton : la liste des cibles mesurees.
-  if (req.method === 'GET' && req.url === '/api/v1/cibles') {
+  if (req.method === 'GET' && chemin === '/api/v1/cibles') {
     return db.query(
       `SELECT cle, nom, famille, url, methode, cadence_minutes,
               taille_attendue, code_attendu
@@ -63,7 +89,7 @@ const serveur = http.createServer((req, res) => {
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
   }
 
-  if (req.method !== 'POST' || req.url !== '/api/v1/mesures')
+  if (req.method !== 'POST' || chemin !== '/api/v1/mesures')
     return repondre(404, { erreur: 'route inconnue' });
 
   const auth = req.headers.authorization || '';
