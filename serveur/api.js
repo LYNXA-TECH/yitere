@@ -1,5 +1,6 @@
 // YITERE, API. Ecriture : l'ingestion des mesures, authentifiee par jeton de sonde.
-// Lecture publique, sans jeton : cibles, verdicts, sondes (docs/CONTRAT-API-INTERFACE.md).
+// Lecture publique, sans jeton : cibles, verdicts, sondes, services, publications
+// (docs/CONTRAT-API-INTERFACE.md).
 // Aucune adresse IP n'est lue ni stockee.
 'use strict';
 const http = require('node:http');
@@ -7,6 +8,7 @@ const crypto = require('node:crypto');
 const { Client } = require('pg');
 const verdicts = require('./verdicts.js');
 const services = require('./services.js');
+const publications = require('./publications.js');
 
 const PORT = Number(process.env.PORT || 8787);
 const DB = process.env.YITERE_DB_URL;
@@ -82,6 +84,18 @@ const serveur = http.createServer((req, res) => {
   if (req.method === 'GET' && chemin === '/api/v1/sondes') {
     return avecGarde('sondes', async () => verdicts.listerSondes(await verdicts.lireSondes(db)))
       .then(v => repondre(200, v))
+      .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+
+  // Publications : lecture seule tant que la connexion GitHub n'existe pas.
+  if (req.method === 'GET' && chemin === '/api/v1/publications') {
+    let cle;
+    try { cle = new URL(req.url, 'http://local').searchParams.get('cible') ?? undefined; }
+    catch { return repondre(400, { erreur: 'adresse invalide' }); }
+    return publications.lire(db, cle)
+      .then(lignes => lignes === null
+        ? repondre(404, { erreur: 'cible inconnue' })
+        : repondre(200, publications.lister(lignes)))
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
   }
 
