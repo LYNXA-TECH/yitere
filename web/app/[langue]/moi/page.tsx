@@ -1,4 +1,3 @@
-import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
@@ -108,9 +107,7 @@ export default async function MonEspace({ params }: Props) {
           </div>
           <span className={styles.discret}>
             Sonde développeur · {sonde.ville} ·{" "}
-            {t.publication.operateur(
-              nomOperateur(sonde.operateur, t.verdict.operateurInconnu),
-            )}
+            {t.publication.operateur(sonde.operateur)}
           </span>
           <dl className={styles.chiffres}>
             <div>

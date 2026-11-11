@@ -37,10 +37,7 @@ export const en: Partielle<Dictionnaire> = {
   },
   source: {
     exemple: "Sample data",
-    exempleTitre:
-      "Some values shown on this site are samples, not real measurements.",
-    partieExemple:
-      "Sample data: the charts and time breakdown below are not served by the API yet.",
+    exempleTitre: "Every value shown is a sample, not a real measurement.",
   },
   pageEnFrancais: "This page is only available in French for now.",
   verdict: {
@@ -48,7 +45,6 @@ export const en: Partielle<Dictionnaire> = {
     hypothese: "Hypothesis",
     indetermine: "Undetermined",
     aucuneDegradation: "No degradation observed",
-    operateurInconnu: "Operator not detected",
     degradationDepuis: (iso: string) => `Degraded since ${heure(iso)}`,
     degradation: "Degraded",
     causeIndeterminee: "Undetermined cause: not enough data",
@@ -262,8 +258,8 @@ export const en: Partielle<Dictionnaire> = {
     j7: "7 days",
     maintenant: "now",
     jourMoins: (n: number) => `D−${n}`,
-    abregeSonde: (operateur: string | null, numero: number, ville: string) =>
-      `${(operateur ?? "?").replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
+    abregeSonde: (operateur: string, numero: number, ville: string) =>
+      `${operateur.replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
     enRodage: "(warming up)",
     lectureOperateur: (operateur: string) =>
       `Only the ${operateur} probes drop, at the same moment. The other operators stay within their usual range, and so does the Madrid reference: the service works, the problem is on the path.`,
@@ -364,8 +360,7 @@ export const en: Partielle<Dictionnaire> = {
     lire: "Play",
     pause: "Pause",
     enDirect: "Live",
-    sousDirect: (exemple: boolean) =>
-      exemple ? "Live · sample data" : "Live · probe measurements",
+    sousDirect: "Live · sample data",
     sousRelecture: (heure: string) => `Replay · hour ending at ${heure}`,
     vitesse: (n: number) => `Speed ${n}×`,
     heureAffichee: "Hour shown",

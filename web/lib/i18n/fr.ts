@@ -36,9 +36,7 @@ export const fr = {
   source: {
     exemple: "Données d'exemple",
     exempleTitre:
-      "Des valeurs affichées sur ce site sont des exemples, pas des mesures réelles.",
-    partieExemple:
-      "Données d'exemple : les courbes et la décomposition du temps ci-dessous attendent encore leur route dans l'API.",
+      "Toutes les valeurs affichées sont des exemples, pas des mesures réelles.",
   },
   pageEnFrancais: "Cette page n'existe qu'en français pour l'instant.",
   verdict: {
@@ -46,7 +44,6 @@ export const fr = {
     hypothese: "Hypothèse",
     indetermine: "Indéterminé",
     aucuneDegradation: "Aucune dégradation observée",
-    operateurInconnu: "Opérateur non détecté",
     degradationDepuis: (iso: string) => `Dégradation depuis ${heure(iso)}`,
     degradation: "Dégradation",
     causeIndeterminee: "Cause indéterminée : données insuffisantes",
@@ -260,8 +257,8 @@ export const fr = {
     j7: "7 jours",
     maintenant: "maintenant",
     jourMoins: (n: number) => `J−${n}`,
-    abregeSonde: (operateur: string | null, numero: number, ville: string) =>
-      `${(operateur ?? "?").replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
+    abregeSonde: (operateur: string, numero: number, ville: string) =>
+      `${operateur.replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
     enRodage: "(rodage)",
     lectureOperateur: (operateur: string) =>
       `Seules les sondes de ${operateur} décrochent, au même moment. Les autres opérateurs restent dans leurs valeurs habituelles, et le repère de Madrid aussi : le service fonctionne, le problème est sur le chemin.`,
@@ -364,10 +361,7 @@ export const fr = {
     lire: "Lire",
     pause: "Pause",
     enDirect: "En direct",
-    sousDirect: (exemple: boolean) =>
-      exemple
-        ? "En direct · données d'exemple"
-        : "En direct · mesures des sondes",
+    sousDirect: "En direct · données d'exemple",
     sousRelecture: (heure: string) =>
       `Relecture · heure se terminant à ${heure}`,
     vitesse: (n: number) => `Vitesse ${n}×`,

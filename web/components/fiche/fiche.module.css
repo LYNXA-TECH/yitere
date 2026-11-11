@@ -505,13 +505,3 @@
     font-size: 26px;
   }
 }
-
-/* Une partie de la fiche reste un exemple quand le reste vient de l'API : on le dit, au-dessus. */
-.mentionExemple {
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px dashed var(--texte-discret);
-  border-radius: 8px;
-  color: var(--texte-secondaire);
-  font-size: 13px;
-}
