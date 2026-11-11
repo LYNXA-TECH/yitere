@@ -248,4 +248,7 @@ async function lire(db, maintenant = new Date()) {
   return { cibles, sondes, mesures, habitudes };
 }
 
-module.exports = { SEUILS, calculer, listerSondes, lire, lireSondes, mediane };
+module.exports = {
+  SEUILS, calculer, listerSondes, lire, lireSondes, mediane,
+  outils: { reussie, valeurDe, estObjet, arrondi },
+};
