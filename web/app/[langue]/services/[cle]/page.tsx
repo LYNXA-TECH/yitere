@@ -1,3 +1,4 @@
+import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -175,13 +176,26 @@ export default async function FicheService({ params }: Props) {
         </Link>
       </section>
 
-      <Tuiles verdict={verdict} resume={resume} detail={detail.donnees} t={t} />
+      <Tuiles
+        verdict={verdict}
+        resume={resume}
+        bande={
+          detail.source === verdicts.source ? detail.donnees.habituel : null
+        }
+        t={t}
+      />
+
+      {detail.source !== verdicts.source && (
+        <p className={styles.mentionExemple} data-source="exemple">
+          {t.source.partieExemple}
+        </p>
+      )}
 
       <Graphique
         detail={detail.donnees}
         langue={langue}
         t={t.fiche}
-        lecture={lectureGraphique(verdict, t.fiche)}
+        lecture={lectureGraphique(verdict, t)}
         note={t.fiche.noteBande(
           detail.donnees.repere.valeur === null
             ? t.fiche.tuileRepereEtat("exclu")
@@ -193,6 +207,7 @@ export default async function FicheService({ params }: Props) {
         <Cascades
           cascades={detail.donnees.cascades}
           t={t.fiche}
+          inconnu={t.verdict.operateurInconnu}
           ms={t.services.ms}
           lecture={
             verdict.hypothese?.cause === "operateur"
@@ -208,12 +223,13 @@ export default async function FicheService({ params }: Props) {
 function Tuiles({
   verdict: v,
   resume: r,
-  detail,
+  bande,
   t,
 }: {
   verdict: Verdict;
   resume: ResumeService;
-  detail: DetailService;
+  /** La bande des valeurs habituelles du detail, s'il vient de la meme source que le verdict. */
+  bande: DetailService["habituel"] | null;
   t: Dictionnaire;
 }) {
   const f = t.fiche;
@@ -237,13 +253,11 @@ function Tuiles({
       : {
           titre: r.unite === "ms" ? f.tuilePremierOctet : f.tuileDebit,
           valeur: r.valeur === null ? "—" : fmt(r.valeur),
-          comparaison: detail.habituel.max
-            ? f.tuileHabituel(
-                fmt(
-                  Math.round((detail.habituel.min + detail.habituel.max) / 2),
-                ),
-              )
-            : "",
+          comparaison: bande?.max
+            ? f.tuileHabituel(fmt(Math.round((bande.min + bande.max) / 2)))
+            : epargnees.length
+              ? f.tuileHabituel(fmt(moyenne(epargnees, "habituel")))
+              : "",
           degrade: false,
           pied: f.tuilePiedMediane(v.preuves.mesures),
         };
@@ -259,8 +273,8 @@ function Tuiles({
     },
     {
       titre: f.tuileRepere(r.unite),
-      valeur: detail.repere.valeur === null ? "—" : fmt(detail.repere.valeur),
-      comparaison: f.tuileRepereEtat(detail.repere.etat),
+      valeur: r.repere === null ? "—" : fmt(r.repere),
+      comparaison: f.tuileRepereEtat(v.preuves.repere),
       degrade: false,
       pied: f.tuilePiedRepere,
     },
@@ -283,13 +297,19 @@ function Tuiles({
   );
 }
 
-function lectureGraphique(v: Verdict, f: Dictionnaire["fiche"]): string {
+function lectureGraphique(v: Verdict, t: Dictionnaire): string {
+  const f = t.fiche;
   if (v.observation.etat === "pas-de-donnee") return f.lectureVide;
   if (v.observation.etat === "normal") return f.lectureNormale;
   if (v.hypothese?.cause === "operateur")
     return f.lectureOperateur(v.hypothese.operateur ?? "");
   const touchees = v.preuves.sondes.filter((p) => p.statut === "touchee");
   return f.lectureIsolee(
-    touchees.map((p) => `${p.operateur} · ${p.numero}`).join(", "),
+    touchees
+      .map(
+        (p) =>
+          `${nomOperateur(p.operateur, t.verdict.operateurInconnu)} · ${p.numero}`,
+      )
+      .join(", "),
   );
 }

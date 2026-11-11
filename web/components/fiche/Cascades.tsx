@@ -1,3 +1,4 @@
+import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Cascade } from "@/lib/donnees/types";
 import type { Dictionnaire } from "@/lib/i18n";
 import styles from "./fiche.module.css";
@@ -6,11 +7,14 @@ import styles from "./fiche.module.css";
 export function Cascades({
   cascades,
   t,
+  inconnu,
   ms,
   lecture,
 }: {
   cascades: Cascade[];
   t: Dictionnaire["fiche"];
+  /** Le nom affiche quand l'operateur d'une sonde n'est pas detecte. */
+  inconnu: string;
   ms: (n: number) => string;
   lecture: string;
 }) {
@@ -37,7 +41,7 @@ export function Cascades({
           <div key={c.sonde.pseudonyme} className={styles.cascade}>
             <div className={styles.cascadeTitre}>
               <span className={styles.gras}>
-                {c.sonde.operateur} · {c.sonde.numero} ·{" "}
+                {nomOperateur(c.sonde.operateur, inconnu)} · {c.sonde.numero} ·{" "}
                 {c.statut === "touchee"
                   ? t.touchee.toLowerCase()
                   : t.epargnee.toLowerCase()}
