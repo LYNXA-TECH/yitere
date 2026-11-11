@@ -160,6 +160,12 @@ depuis le 11 novembre (main, `2e2a5bb`). L'interface les lit quand `YITERE_SOURC
 | `depuis` donne l'heure de la dernière mesure quand l'état est `pas-de-donnee` | L'affiche : « Pas de donnée depuis … » |
 | `GET /api/v1/sondes` ne donne ni `numero` ni l'historique sur 24 pas | Compte le numéro par opérateur et par ville, dans l'ordre de la réponse, comme `numeroter()` côté serveur ; lit l'état actuel de chaque sonde dans les preuves des verdicts ; les 23 heures précédentes restent vides sur la carte |
 
+`GET /api/v1/publications` (avec ou sans `?cible=`) est servie en lecture seule, à la
+forme de la section 3 : liste vide tant que personne ne publie, 404 pour une cible
+inconnue. Les champs de la section 4 (titre, confirmations, réponses...) n'existent pas
+encore en base : quand la source est l'API, le fil affiche un état vide plutôt que les
+exemples. Publier, confirmer et signaler viendront avec la connexion GitHub, après le 23.
+
 Restent des exemples pour le 15 novembre, avec le badge « Données d'exemple » en tête de
 chaque page : les échanges (`publications`), le détail d'une fiche (`services/{cle}` :
 courbes et décomposition du temps, avec une mention au-dessus) et la frise des incidents.
