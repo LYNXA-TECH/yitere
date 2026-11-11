@@ -1,6 +1,6 @@
 # 0002 · Structure, langues et performance de l'interface
 
-Statut : proposée, révisée après la revue de Cellou · Auteure : Aissatou · Relecture : Cellou
+Statut : acceptée le 11 novembre 2026, après la revue de Cellou · Auteure : Aissatou · Relecture : Cellou
 
 ## Contexte
 
