@@ -132,13 +132,39 @@ d'inscription.
 
 ## 7. Les verdicts
 
-YITERE affiche des verdicts simples, calculés à la lecture et jamais stockés :
-le problème vient du service, de l'opérateur, ou de la connexion locale.
+Un verdict dit deux choses séparées : ce que les mesures montrent, et, quand les
+données le permettent, d'où le problème vient probablement. Il est calculé à la
+lecture, à partir des mesures, et n'est jamais stocké.
 
-Un verdict n'est affiché que si le nombre de sondes le permet. Avec deux sondes,
-distinguer un problème d'opérateur d'un problème de service relève de la
-devinette, et une devinette présentée comme un verdict est pire qu'un silence.
-Le nombre de mesures ayant servi à chaque affichage est toujours indiqué.
+**Ce que les mesures montrent.** Pour chaque service et chaque sonde, nous comparons
+la dernière heure à la valeur habituelle de cette sonde, c'est-à-dire la médiane de
+ses mesures réussies des sept derniers jours. Une sonde est dite touchée quand la
+médiane de la dernière heure dépasse deux fois sa valeur habituelle, ou quand plus de
+la moitié de ses mesures échouent. Pour l'objet témoin, mesuré moins souvent, la
+période est de trois heures et le critère est un débit tombé sous la moitié du débit
+habituel. Un service est « dégradé » dès qu'une sonde est touchée, « normal » si
+aucune ne l'est, et « pas de donnée » si aucune sonde n'a pu être jugée. Une
+dégradation prend fin après trois bonnes mesures de suite.
+
+**Le rodage.** Une sonde ne compte pas pendant ses vingt-quatre premières heures, ni
+tant qu'elle n'a pas douze mesures antérieures du service : sans valeur habituelle,
+on ne peut pas dire qu'une mesure est anormale. Elle est comptée à part, « en rodage ».
+
+**Le repère de Madrid** n'entre dans aucun de ces calculs. Il est affiché à côté.
+
+**La cause probable.** Aucune cause n'est proposée en dessous de trois sondes jugées
+sur le service. Avec deux sondes, distinguer un problème d'opérateur d'un problème de
+service relève de la devinette, et une devinette présentée comme un verdict est pire
+qu'un silence : nous affichons alors « cause indéterminée ». À partir de trois sondes :
+
+- **le service**, si toutes les sondes sont touchées et le repère de Madrid aussi ;
+- **la connexion locale**, si les sondes touchées le sont sur plus de la moitié des
+  services qu'elles mesurent, alors que d'autres sondes sont épargnées ;
+- **l'opérateur**, si les sondes touchées partagent un même opérateur et qu'aucune
+  sonde de cet opérateur n'est épargnée.
+
+Dans tous les autres cas, la cause reste indéterminée. Le nombre de sondes et de
+mesures ayant servi à chaque verdict est toujours indiqué.
 
 ## 8. Les interruptions
 
