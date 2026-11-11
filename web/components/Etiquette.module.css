@@ -1,0 +1,27 @@
+.etiquette {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.etiquette[data-nature="observe"] {
+  border: 1px solid currentColor;
+  color: var(--etat-degrade);
+}
+.etiquette[data-nature="observe"][data-teinte="normal"] {
+  color: var(--etat-normal);
+}
+.etiquette[data-nature="observe"][data-teinte="vide"] {
+  color: var(--etat-indetermine);
+}
+.etiquette[data-nature="observe"][data-teinte="service"] {
+  color: var(--etat-service);
+}
+
+.etiquette[data-nature="hypothese"] {
+  border: 1px dashed var(--texte-secondaire);
+  color: var(--texte-corps);
+}

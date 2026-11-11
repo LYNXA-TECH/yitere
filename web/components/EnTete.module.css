@@ -1,0 +1,104 @@
+.entete {
+  background: var(--fond);
+  border-bottom: 1px solid var(--trait);
+}
+
+.interieur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 20px;
+}
+
+/* La carte occupe toute la largeur : son en-tete aussi. */
+body:has([data-page="carte"]) .interieur {
+  max-width: 1600px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--zone-tactile);
+  color: var(--texte);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.ressort {
+  display: none;
+  flex: 1 1 auto;
+}
+
+.exemple {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px dashed var(--texte-discret);
+  border-radius: 999px;
+  color: var(--texte-secondaire);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.connexion {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--zone-tactile);
+  color: var(--texte);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mesurer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--zone-tactile);
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mesurer:hover {
+  background: var(--focus);
+  color: var(--interaction-texte);
+}
+
+.evitement {
+  position: absolute;
+  left: var(--espace-2);
+  top: -100px;
+  padding: var(--espace-2) var(--espace-3);
+  background: var(--interaction);
+  color: var(--interaction-texte);
+  border-radius: var(--rayon);
+}
+
+.evitement:focus {
+  top: var(--espace-2);
+}
+
+@media (max-width: 860px) {
+  .interieur {
+    gap: 8px 12px;
+    padding: 8px 16px;
+  }
+
+  .ressort {
+    display: block;
+  }
+
+  .connexion,
+  .mesurer {
+    display: none;
+  }
+}

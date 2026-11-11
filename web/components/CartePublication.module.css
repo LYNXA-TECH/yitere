@@ -1,0 +1,210 @@
+.carte {
+  display: flex;
+  gap: 16px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.carte[data-confirmee] {
+  border-color: var(--etat-normal-trait);
+}
+
+.vote {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.boutonVote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 52px;
+  min-height: 56px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  cursor: pointer;
+}
+
+.chiffre {
+  font-family: var(--police-chiffres);
+  font-weight: 600;
+}
+
+.utile {
+  color: var(--texte-secondaire);
+  font-size: 11px;
+}
+
+.contenu {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contenu h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.contenu p {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.confirmee,
+.incident,
+.etiquette {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.confirmee {
+  background: var(--etat-normal-fond);
+  color: var(--etat-normal-clair);
+}
+
+.incident {
+  background: var(--etat-degrade-fond);
+  color: var(--etat-degrade-clair);
+}
+
+.etiquette {
+  background: var(--surface-haute);
+  color: var(--texte-corps);
+  font-family: var(--police-chiffres);
+  font-weight: 400;
+}
+
+.corps {
+  color: var(--texte-corps);
+}
+
+.petit {
+  color: var(--texte-secondaire);
+  font-size: 13px;
+}
+
+.commande {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.commande code {
+  flex: 1 1 auto;
+  overflow-x: auto;
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.copier {
+  flex: 0 0 auto;
+  min-width: 44px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-haute);
+  color: var(--texte);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding-top: 6px;
+  border-top: 1px solid var(--trait);
+}
+
+.confirmer {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmations {
+  color: var(--etat-normal-clair);
+  font-size: 13px;
+}
+
+.ressort {
+  flex: 1 1 auto;
+}
+
+.lienReponses {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.signaler {
+  min-height: 40px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--texte-secondaire);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.demande {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px dashed var(--demande-trait);
+  border-radius: 18px;
+}
+
+.surtitre {
+  color: var(--etat-degrade-clair);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.titreDemande {
+  font-size: 17px;
+  font-weight: 600;
+}

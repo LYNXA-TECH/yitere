@@ -34,7 +34,10 @@ const FONDS = ["fond", "surface", "surface-haute"];
 // Texte courant : 4,5:1 au moins sur chacun des trois fonds (WCAG 2.2, critere 1.4.3).
 const TEXTES = [
   "texte",
+  "texte-corps",
   "texte-secondaire",
+  "etat-degrade-clair",
+  "etat-normal-clair",
   "interaction",
   "etat-normal",
   "etat-degrade",
@@ -52,6 +55,15 @@ describe("contrastes de la direction artistique", () => {
       });
     }
   }
+
+  it("les pastilles de confirmation et d'incident atteignent 4,5:1 sur leur fond", () => {
+    expect(
+      contraste(couleur("etat-normal-clair"), couleur("etat-normal-fond")),
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contraste(couleur("etat-degrade-clair"), couleur("etat-degrade-fond")),
+    ).toBeGreaterThanOrEqual(4.5);
+  });
 
   it("le texte d'un bouton atteint 4,5:1 sur --interaction", () => {
     expect(

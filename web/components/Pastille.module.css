@@ -1,0 +1,37 @@
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--couleur);
+}
+
+.point {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--couleur);
+  border: 1.5px solid var(--couleur);
+}
+
+.pastille[data-creuse] .point {
+  background: transparent;
+}
+
+.pastille[data-teinte="normal"] {
+  --couleur: var(--etat-normal);
+}
+.pastille[data-teinte="degrade"] {
+  --couleur: var(--etat-degrade);
+}
+.pastille[data-teinte="service"] {
+  --couleur: var(--etat-service);
+}
+.pastille[data-teinte="vide"] {
+  --couleur: var(--etat-indetermine);
+}
+.pastille[data-teinte="vide"] .point {
+  background: transparent;
+  border-style: dashed;
+}

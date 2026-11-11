@@ -18,6 +18,8 @@
     "format:verifier": "prettier --check ."
   },
   "dependencies": {
+    "geist": "1.8.2",
+    "marked": "18.1.2",
     "next": "15.5.28",
     "react": "19.2.9",
     "react-dom": "19.2.9",
