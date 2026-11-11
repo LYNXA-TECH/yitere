@@ -9,6 +9,14 @@ import {
   SONDES_EXEMPLE,
   VERDICTS_EXEMPLE,
 } from "./exemple";
+import {
+  estReponseServices,
+  estReponseSondes,
+  estReponseVerdicts,
+  resumeDepuisApi,
+  sondesDepuisApi,
+  verdictDepuisApi,
+} from "./api";
 import type {
   Cible,
   DetailService,
@@ -63,6 +71,20 @@ type CibleApi = {
   code_attendu: number;
 };
 
+/** GET sur l'API, garde FRAICHEUR_SECONDES ; une reponse qui n'a pas la forme attendue est une erreur. */
+async function lireApi<T>(
+  chemin: string,
+  forme: (corps: unknown) => corps is T,
+): Promise<T> {
+  const reponse = await fetch(`${adresseApi()}${chemin}`, {
+    next: { revalidate: FRAICHEUR_SECONDES },
+  });
+  if (!reponse.ok) throw new Error(`GET ${chemin} a repondu ${reponse.status}`);
+  const corps: unknown = await reponse.json();
+  if (!forme(corps)) throw new Error(`GET ${chemin} : reponse inattendue`);
+  return corps;
+}
+
 export async function lireCibles(
   source: NomSource = choisirSource(),
 ): Promise<Lecture<Cible[]>> {
@@ -70,14 +92,7 @@ export async function lireCibles(
     case "exemple":
       return { donnees: CIBLES_EXEMPLE, source, lueLe: null };
     case "api": {
-      const reponse = await fetch(`${adresseApi()}/api/v1/cibles`, {
-        next: { revalidate: FRAICHEUR_SECONDES },
-      });
-      if (!reponse.ok)
-        throw new Error(`GET /api/v1/cibles a repondu ${reponse.status}`);
-      const corps: unknown = await reponse.json();
-      if (!estListeDeCibles(corps))
-        throw new Error("GET /api/v1/cibles : reponse inattendue");
+      const corps = await lireApi("/api/v1/cibles", estListeDeCibles);
       return {
         donnees: corps.cibles.map(depuisApi),
         source,
@@ -85,6 +100,48 @@ export async function lireCibles(
       };
     }
   }
+}
+
+/** Les verdicts : calcules par l'API a la lecture ; l'heure affichee est celle du calcul. */
+export async function lireVerdicts(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<Verdict[]>> {
+  if (source === "exemple") return exemple(VERDICTS_EXEMPLE);
+  const corps = await lireApi("/api/v1/verdicts", estReponseVerdicts);
+  return {
+    donnees: corps.verdicts.map(verdictDepuisApi),
+    source,
+    lueLe: corps.calcule_le,
+  };
+}
+
+/** Le tableau des services : ses chiffres de la derniere heure viennent des memes verdicts. */
+export async function lireResumes(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<ResumeService[]>> {
+  if (source === "exemple") return exemple(RESUMES_EXEMPLE);
+  const corps = await lireApi("/api/v1/services", estReponseServices);
+  return {
+    donnees: corps.services.map(resumeDepuisApi),
+    source,
+    lueLe: corps.calcule_le,
+  };
+}
+
+/** Les sondes, et leur etat pour chaque service, lu dans les preuves des verdicts. */
+export async function lireSondes(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<Sonde[]>> {
+  if (source === "exemple") return exemple(SONDES_EXEMPLE);
+  const [sondes, verdicts] = await Promise.all([
+    lireApi("/api/v1/sondes", estReponseSondes),
+    lireApi("/api/v1/verdicts", estReponseVerdicts),
+  ]);
+  return {
+    donnees: sondesDepuisApi(sondes.sondes, verdicts.verdicts),
+    source,
+    lueLe: verdicts.calcule_le,
+  };
 }
 
 /*
@@ -99,14 +156,6 @@ const exemple = <T>(donnees: T): Lecture<T> => ({
   lueLe: MAINTENANT_EXEMPLE,
 });
 
-export async function lireVerdicts(): Promise<Lecture<Verdict[]>> {
-  return exemple(VERDICTS_EXEMPLE);
-}
-
-export async function lireResumes(): Promise<Lecture<ResumeService[]>> {
-  return exemple(RESUMES_EXEMPLE);
-}
-
 /** Le detail d'un service, ou null s'il n'en a pas (cible de reference, cible inconnue). */
 export async function lireDetail(
   cle: string,
@@ -120,10 +169,6 @@ export async function lireDetail(
 
 export async function lireIncidents(): Promise<Lecture<Incident[]>> {
   return exemple(INCIDENTS_EXEMPLE);
-}
-
-export async function lireSondes(): Promise<Lecture<Sonde[]>> {
-  return exemple(SONDES_EXEMPLE);
 }
 
 export async function lireMesuresNavigateur(): Promise<

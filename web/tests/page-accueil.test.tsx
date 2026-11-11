@@ -30,6 +30,13 @@ describe("accueil : la carte", () => {
     expect(html).not.toContain('href="#service-pypi"');
   });
 
+  it("pose sur la frise les incidents, publications et mesures navigateur de l'exemple", async () => {
+    const html = await rendu("fr");
+    expect(html).toMatch(/data-teinte="degrade" style=/);
+    expect(html).toContain('data-nature="publication"');
+    expect(html).toContain('data-nature="navigateur"');
+  });
+
   it("refuse une langue que le site ne parle pas", async () => {
     await expect(Accueil(params({ langue: "de" }))).rejects.toThrow();
   });

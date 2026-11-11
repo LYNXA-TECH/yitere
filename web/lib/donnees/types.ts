@@ -13,7 +13,8 @@ export type Unite = "ms" | "mbps";
 /** Une sonde, designee comme a l'ecran : « Operateur A · Conakry · 1 ». */
 export type SondeDesignee = {
   pseudonyme: string;
-  operateur: string;
+  /** Nom affiche de l'operateur (« Operateur A », « AS37461 »), ou null quand il n'est pas detecte. */
+  operateur: string | null;
   ville: string;
   numero: number;
 };
