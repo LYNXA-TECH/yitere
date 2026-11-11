@@ -6,6 +6,7 @@ const http = require('node:http');
 const crypto = require('node:crypto');
 const { Client } = require('pg');
 const verdicts = require('./verdicts.js');
+const services = require('./services.js');
 
 const PORT = Number(process.env.PORT || 8787);
 const DB = process.env.YITERE_DB_URL;
@@ -70,6 +71,11 @@ const serveur = http.createServer((req, res) => {
   // Lectures publiques, sans jeton. Les verdicts sont calcules ici, jamais stockes.
   if (req.method === 'GET' && chemin === '/api/v1/verdicts') {
     return avecGarde('verdicts', async () => verdicts.calculer(await verdicts.lire(db)))
+      .then(v => repondre(200, v))
+      .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+  if (req.method === 'GET' && chemin === '/api/v1/services') {
+    return avecGarde('services', async () => services.resumer(await services.lire(db)))
       .then(v => repondre(200, v))
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
   }
