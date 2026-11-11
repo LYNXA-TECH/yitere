@@ -1,3 +1,4 @@
+import { nomOperateur } from "@/lib/affichage/sondes";
 import Link from "next/link";
 import { Etiquette } from "@/components/Etiquette";
 import { texteHypothese, teinte, valeur } from "@/lib/affichage/verdicts";
@@ -19,7 +20,7 @@ export function Diagnostic({ verdict: v, t, calculeLe, lienMethode }: Props) {
   const etat = v.observation.etat;
   const touchees = v.preuves.sondes.filter((p) => p.statut === "touchee");
   const designer = (p: PreuveSonde) =>
-    `${p.operateur} · ${p.ville} · ${p.numero}`;
+    `${nomOperateur(p.operateur, t.verdict.operateurInconnu)} · ${p.ville} · ${p.numero}`;
   const mesure = (n: number, p: PreuveSonde) => valeur(n, p.unite, t.services);
 
   return (

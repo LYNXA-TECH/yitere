@@ -1,6 +1,7 @@
 # Contrat entre l'API et l'interface web
 
 Rédigé par Aissatou pour Cellou, le 9 novembre 2026. Proposition à discuter.
+Mis à jour le 11 novembre 2026 : verdicts, services et sondes sont branchés (section 5).
 
 L'interface affiche aujourd'hui des données d'exemple, avec un badge qui le dit. Une seule
 lecture est réelle : `GET /api/v1/cibles`. Ce document liste les trois routes de lecture
@@ -144,6 +145,30 @@ L'interface suit la maquette v3. Pour l'afficher avec de vraies mesures, il lui 
 Les formes exactes sont les types de `web/lib/donnees/types.ts` (en `snake_case` côté API). Le fichier
 `web/lib/donnees/exemple/simulateur.ts` les produit déjà à partir du jeu de la maquette : c'est une
 implémentation de référence, règles de la méthodologie comprises, que tu peux comparer à la tienne.
+
+## 5. État au 11 novembre : ce qui est branché
+
+`GET /api/v1/verdicts`, `GET /api/v1/services` et `GET /api/v1/sondes` sont servies
+depuis le 11 novembre (main, `2e2a5bb`). L'interface les lit quand `YITERE_SOURCE=api`
+(`web/lib/donnees/api.ts`), et prend leurs formes réelles telles quelles :
+
+| Écart à ce document | Ce que fait l'interface |
+|---|---|
+| `operateur` vaut `null` ou `AS<numéro>`, pas « Opérateur A » | Affiche le numéro d'AS, et « Opérateur non détecté » pour `null` |
+| Le repère de Madrid a le type `datacenter` | L'appelle `repere` |
+| Chaque sonde des preuves porte en plus `mesures` et `echecs` | Les ignore pour l'instant |
+| `depuis` donne l'heure de la dernière mesure quand l'état est `pas-de-donnee` | L'affiche : « Pas de donnée depuis … » |
+| `GET /api/v1/sondes` ne donne ni `numero` ni l'historique sur 24 pas | Compte le numéro par opérateur et par ville, dans l'ordre de la réponse, comme `numeroter()` côté serveur ; lit l'état actuel de chaque sonde dans les preuves des verdicts ; les 23 heures précédentes restent vides sur la carte |
+
+Restent des exemples pour le 15 novembre, avec le badge « Données d'exemple » en tête de
+chaque page : les échanges (`publications`), le détail d'une fiche (`services/{cle}` :
+courbes et décomposition du temps, avec une mention au-dessus) et la frise des incidents.
+Sur l'accueil, la frise ne pose rien qui vienne de l'exemple quand les verdicts sont réels :
+un incident du 3 novembre ne se place pas à côté de mesures du jour.
+
+Si une route répond une erreur ou une forme inattendue, la page échoue au lieu d'afficher
+un exemple à la place : avec le cache de 60 secondes, Next.js continue de servir la
+dernière version réussie.
 
 ## Après : écrire
 

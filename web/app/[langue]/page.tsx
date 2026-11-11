@@ -3,6 +3,7 @@ import { CarteInteractive } from "@/components/carte/CarteInteractive";
 import type { EtatSonde, VilleCarte } from "@/components/carte/types";
 import { Etiquette } from "@/components/Etiquette";
 import { contexte, statut } from "@/lib/affichage/publications";
+import { nomOperateur } from "@/lib/affichage/sondes";
 import { teinte, texteHypothese } from "@/lib/affichage/verdicts";
 import {
   lireIncidents,
@@ -11,7 +12,12 @@ import {
   lireSondes,
   lireVerdicts,
 } from "@/lib/donnees";
-import type { Incident, Publication, Sonde } from "@/lib/donnees/types";
+import type {
+  Incident,
+  Lecture,
+  Publication,
+  Sonde,
+} from "@/lib/donnees/types";
 import { heureUTC, minutesEntre, nomPays } from "@/lib/format";
 import { PAYS_AFRIQUE } from "@/lib/geo/afrique";
 import { HAUTEUR, LARGEUR, projeter } from "@/lib/geo/projection";
@@ -56,7 +62,20 @@ export default async function Accueil({ params }: Props) {
     return v ? projeter(v.lat, v.lon) : null;
   };
 
-  const villes = regrouper(sondes.donnees, langue, c);
+  /**
+   * Ce qui est date ne se pose sur la frise que s'il suit la meme horloge que les verdicts :
+   * un incident d'exemple du 3 novembre ne se place pas a cote de mesures reelles.
+   * Les publications restent listees plus bas, sous le badge « Donnees d'exemple ».
+   */
+  const memeHorloge = <T,>(l: Lecture<T[]>): T[] =>
+    l.source === verdicts.source ? l.donnees : [];
+  const datees = {
+    incidents: memeHorloge(incidents),
+    navigateur: memeHorloge(navigateur),
+    publications: memeHorloge(publications),
+  };
+
+  const villes = regrouper(sondes.donnees, langue, t);
   const paysSondes = new Set(sondes.donnees.map((s) => s.pays));
   const developpeurs = sondes.donnees.filter((s) => s.type === "dev");
   const heures = Array.from({ length: 24 }, (_, i) =>
@@ -67,7 +86,7 @@ export default async function Accueil({ params }: Props) {
   );
   const publicationsTriees = trierPourAccueil(publications.donnees).slice(0, 4);
 
-  const arcs = publications.donnees.flatMap((p) => {
+  const arcs = datees.publications.flatMap((p) => {
     const vers = position(p.ville);
     return p.confirmations.flatMap((conf) => {
       const de = position(conf.ville);
@@ -93,12 +112,12 @@ export default async function Accueil({ params }: Props) {
           heureUTC(langue, isoA(fin, 5)),
           c.maintenant,
         ]}
-        navigateur={navigateur.donnees.flatMap((m) => {
+        navigateur={datees.navigateur.flatMap((m) => {
           const pos = position(m.ville);
           return pos ? [{ ...pos, pas: pasDe(m.le) }] : [];
         })}
         arcs={arcs}
-        couloirs={incidents.donnees.map((i) => ({
+        couloirs={datees.incidents.map((i) => ({
           libelle: libelleCouloir(i, t),
           bandes: [
             {
@@ -109,11 +128,11 @@ export default async function Accueil({ params }: Props) {
           ],
         }))}
         marques={[
-          ...publications.donnees.map((p) => ({
+          ...datees.publications.map((p) => ({
             pas: surFrise(p.creeLe),
             nature: "publication" as const,
           })),
-          ...navigateur.donnees.map((m) => ({
+          ...datees.navigateur.map((m) => ({
             pas: surFrise(m.le),
             nature: "navigateur" as const,
           })),
@@ -320,7 +339,7 @@ export default async function Accueil({ params }: Props) {
           lire: c.lire,
           pause: c.pause,
           enDirect: c.enDirect,
-          sousDirect: c.sousDirect,
+          sousDirect: c.sousDirect(verdicts.source === "exemple"),
           sousRelecture: heures.map((h) => c.sousRelecture(h)),
           vitesse: [1, 2, 4].map((n) => c.vitesse(n)),
           heureAffichee: c.heureAffichee,
@@ -346,8 +365,9 @@ const isoA = (fin: number, heuresAvant: number) =>
 function regrouper(
   sondes: Sonde[],
   langue: Langue,
-  c: Dictionnaire["carte"],
+  t: Dictionnaire,
 ): VilleCarte[] {
+  const c = t.carte;
   const villes = new Map<string, VilleCarte>();
   for (const s of sondes) {
     const coordonnees = VILLES[s.ville];
@@ -363,7 +383,10 @@ function regrouper(
     };
     ville.sondes.push({
       id: s.pseudonyme,
-      libelle: c.sonde(s.operateur, s.numero),
+      libelle: c.sonde(
+        nomOperateur(s.operateur, t.verdict.operateurInconnu),
+        s.numero,
+      ),
       repere: s.type === "repere",
       enRodage: s.enRodage,
       etats: s.etats as Record<string, EtatSonde[]>,
@@ -376,15 +399,18 @@ function regrouper(
 function libelleCouloir(i: Incident, t: Dictionnaire): string {
   const c = t.carte;
   const sonde = i.sondes[0];
+  const operateur = sonde
+    ? nomOperateur(sonde.operateur, t.verdict.operateurInconnu)
+    : "";
   if (i.cible === null)
     return c.laneLocale(
       sonde?.ville ?? "",
-      sonde ? `${sonde.operateur.replace(/^\D*\s/, "")}·${sonde.numero}` : "",
+      sonde ? `${operateur.replace(/^\D*\s/, "")}·${sonde.numero}` : "",
     );
   const nom = t.services.nomCourt(i.cible);
   if (i.nature === "absence") return c.laneAbsence(nom);
   if (i.cause === "operateur" && sonde)
-    return c.laneService(nom, t.publication.operateur(sonde.operateur));
+    return c.laneService(nom, t.publication.operateur(operateur));
   return c.laneIndeterminee(nom);
 }
 
