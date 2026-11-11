@@ -56,6 +56,18 @@ export default async function Confidentialite({ params }: Props) {
             </thead>
             <tbody>
               <tr>
+                <th scope="row">Vous visitez le site</th>
+                <td>
+                  Le journal d&apos;accès du serveur web ne garde aucune adresse
+                  IP. Son journal d&apos;erreurs technique peut en contenir une,
+                  quand une requête échoue.
+                </td>
+                <td>Diagnostiquer une panne du site</td>
+                <td>
+                  <A>[durée à confirmer]</A>
+                </td>
+              </tr>
+              <tr>
                 <th scope="row">Vous hébergez une sonde</th>
                 <td>
                   Durées mesurées, pseudonyme, pays, ville, numéro d&apos;AS de

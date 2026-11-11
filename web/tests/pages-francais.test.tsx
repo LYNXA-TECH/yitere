@@ -83,3 +83,15 @@ describe("contenu", () => {
     expect(html).not.toContain("npx yitere-sonde");
   });
 });
+
+describe("confidentialité", () => {
+  it("dit ce que garde le serveur web : rien dans le journal d'accès, parfois une adresse dans le journal d'erreurs", async () => {
+    const html = renderToStaticMarkup(
+      (await Confidentialite(params({ langue: "fr" })))!,
+    );
+    expect(html).toContain(
+      "Le journal d&#x27;accès du serveur web ne garde aucune adresse IP",
+    );
+    expect(html).toContain("journal d&#x27;erreurs technique");
+  });
+});
