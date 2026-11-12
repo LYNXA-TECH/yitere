@@ -1,5 +1,5 @@
 // YITERE, API. Ecriture : l'ingestion des mesures, authentifiee par jeton de sonde.
-// Lecture publique, sans jeton : cibles, verdicts, sondes, services, publications
+// Lecture publique, sans jeton : cibles, verdicts, sondes, services, fiche d'un service, publications
 // (docs/CONTRAT-API-INTERFACE.md).
 // Aucune adresse IP n'est lue ni stockee.
 'use strict';
@@ -9,6 +9,7 @@ const { Client } = require('pg');
 const verdicts = require('./verdicts.js');
 const services = require('./services.js');
 const publications = require('./publications.js');
+const detail = require('./detail.js');
 
 const PORT = Number(process.env.PORT || 8787);
 const DB = process.env.YITERE_DB_URL;
@@ -81,6 +82,19 @@ const serveur = http.createServer((req, res) => {
       .then(v => repondre(200, v))
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
   }
+  // La fiche d'un service. La cle est verifiee avant tout calcul : une adresse au hasard
+  // ne fait ni travailler la base ni grossir la garde.
+  const fiche = /^\/api\/v1\/services\/([^/]+)$/.exec(chemin);
+  if (req.method === 'GET' && fiche) {
+    const cle = fiche[1];
+    return detail.existe(db, cle)
+      .then(ok => ok
+        ? avecGarde(`detail:${cle}`, async () => detail.detailler(await detail.lire(db, cle), cle))
+        : null)
+      .then(v => v ? repondre(200, v) : repondre(404, { erreur: 'service inconnu' }))
+      .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+
   if (req.method === 'GET' && chemin === '/api/v1/sondes') {
     return avecGarde('sondes', async () => verdicts.listerSondes(await verdicts.lireSondes(db)))
       .then(v => repondre(200, v))
