@@ -160,6 +160,20 @@ depuis le 11 novembre (main, `2e2a5bb`). L'interface les lit quand `YITERE_SOURC
 | `depuis` donne l'heure de la dernière mesure quand l'état est `pas-de-donnee` | L'affiche : « Pas de donnée depuis … » |
 | `GET /api/v1/sondes` ne donne ni `numero` ni l'historique sur 24 pas | Compte le numéro par opérateur et par ville, dans l'ordre de la réponse, comme `numeroter()` côté serveur ; lit l'état actuel de chaque sonde dans les preuves des verdicts ; les 23 heures précédentes restent vides sur la carte |
 
+`GET /api/v1/services/{cle}` est servie (`serveur/detail.js`) : la fiche d'un service, à la
+forme de `DetailService` en `snake_case` (`heures_24`, `heures_7j`, `series_24`, `series_7j`,
+`habituel`, `debut_incident_24`, `repere`, `cascades`). Une clé inconnue ou une cible de
+référence répond 404. Quatre écarts avec le type de l'interface :
+
+- `habituel` vaut `null` tant qu'aucune sonde n'est jugée (rodage) : pas de bande à tracer,
+  et jamais un zéro à la place d'une valeur absente ;
+- chaque cascade donne quatre durées qui se suivent, `dns`, `connexion`, `tls` et `attente`,
+  dont la somme est `premier_octet`. La barre se trace avec les quatre premières ;
+  `premier_octet` est le total, pas un cinquième segment ;
+- chaque cascade porte `mesure_le`, l'heure du passage décomposé ;
+- les courbes ne couvrent que ce qui a été mesuré : une sonde récente a des `null` au début
+  de ses 7 jours, et le repère de Madrid n'a pas de courbe (il est dans `repere`).
+
 `GET /api/v1/publications` (avec ou sans `?cible=`) est servie en lecture seule, à la
 forme de la section 3 : liste vide tant que personne ne publie, 404 pour une cible
 inconnue. Les champs de la section 4 (titre, confirmations, réponses...) n'existent pas
