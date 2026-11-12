@@ -1,7 +1,7 @@
 # Contrat entre l'API et l'interface web
 
 Rédigé par Aissatou pour Cellou, le 9 novembre 2026. Proposition à discuter.
-Mis à jour le 11 novembre 2026 : verdicts, services et sondes sont branchés (section 5).
+Mis à jour le 12 novembre 2026 : verdicts, services, sondes et publications sont branchés (section 5).
 
 L'interface affiche aujourd'hui des données d'exemple, avec un badge qui le dit. Une seule
 lecture est réelle : `GET /api/v1/cibles`. Ce document liste les trois routes de lecture
@@ -166,8 +166,18 @@ inconnue. Les champs de la section 4 (titre, confirmations, réponses...) n'exis
 encore en base : quand la source est l'API, le fil affiche un état vide plutôt que les
 exemples. Publier, confirmer et signaler viendront avec la connexion GitHub, après le 23.
 
-Restent des exemples pour le 15 novembre, avec le badge « Données d'exemple » en tête de
-chaque page : les échanges (`publications`), le détail d'une fiche (`services/{cle}` :
+`GET /api/v1/publications` (PR #13, lecture seule) est branchée depuis le 12 novembre. Ses
+champs absents (ville, titre, confirmations, contexte) restent vides, jamais inventés. Tant
+qu'il n'y a pas de connexion GitHub, l'interface n'offre ni publier, ni confirmer, ni
+« Se connecter » (remplacé par « Bientôt »), et affiche « Aucune publication pour
+l'instant » quand la liste est vide. Les mesures navigateur ne sont pas envoyées au
+serveur : avec l'API, l'onglet Navigateur en compte donc zéro. Les compteurs
+« Solutions · N » viennent de `solutions` dans `/api/v1/services`. Un service sans donnée
+dont des sondes sont en rodage (`sondes_en_rodage > 0`) s'affiche « En rodage ». Avec ces
+quatre lectures réelles, le badge « Données d'exemple » disparaît de l'en-tête ; ce qui
+reste un exemple le dit sur place.
+
+Restent des exemples pour le 15 novembre : le détail d'une fiche (`services/{cle}` :
 courbes et décomposition du temps, avec une mention au-dessus) et la frise des incidents.
 Sur l'accueil, la frise ne pose rien qui vienne de l'exemple quand les verdicts sont réels :
 un incident du 3 novembre ne se place pas à côté de mesures du jour.
