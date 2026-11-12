@@ -1,6 +1,7 @@
 import type {
   Cause,
   Etat,
+  Publication,
   ResumeService,
   Sonde,
   Unite,
@@ -219,6 +220,63 @@ export function estReponseSondes(x: unknown): x is ReponseSondes {
         typeof s.pseudonyme === "string" &&
         typeof s.ville === "string" &&
         typeof s.en_rodage === "boolean",
+    )
+  );
+}
+
+/*
+ * GET /api/v1/publications (serveur/publications.js, PR #13) : lecture seule, liste vide
+ * au depart. La route ne sert que les champs du contrat, section 3 ; ce qu'elle ne donne
+ * pas encore (ville, titre, confirmations, contexte...) reste vide, jamais invente.
+ */
+
+export type PublicationApi = {
+  id: number;
+  cible: string;
+  auteur: string;
+  type: "contournement" | "demande";
+  contenu: string;
+  commande: string | null;
+  pays: string | null;
+  votes: number;
+  cree_le: string;
+};
+
+export type ReponsePublications = { publications: PublicationApi[] };
+
+export function publicationDepuisApi(p: PublicationApi): Publication {
+  return {
+    id: String(p.id),
+    cible: p.cible,
+    auteur: p.auteur,
+    ville: "",
+    pays: p.pays ?? "",
+    operateur: null,
+    type: p.type,
+    titre: p.contenu,
+    contenu: "",
+    commande: p.commande,
+    etiquettes: [],
+    votes: p.votes,
+    creeLe: p.cree_le,
+    contexte: null,
+    confirmations: [],
+    confirmee: false,
+    reponses: [],
+    demande: null,
+  };
+}
+
+export function estReponsePublications(x: unknown): x is ReponsePublications {
+  return (
+    objet(x) &&
+    Array.isArray(x.publications) &&
+    x.publications.every(
+      (p) =>
+        objet(p) &&
+        typeof p.cible === "string" &&
+        typeof p.contenu === "string" &&
+        (p.type === "contournement" || p.type === "demande"),
     )
   );
 }

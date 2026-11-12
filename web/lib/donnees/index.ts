@@ -11,8 +11,10 @@ import {
 } from "./exemple";
 import {
   estReponseServices,
+  estReponsePublications,
   estReponseSondes,
   estReponseVerdicts,
+  publicationDepuisApi,
   resumeDepuisApi,
   sondesDepuisApi,
   verdictDepuisApi,
@@ -171,14 +173,40 @@ export async function lireIncidents(): Promise<Lecture<Incident[]>> {
   return exemple(INCIDENTS_EXEMPLE);
 }
 
-export async function lireMesuresNavigateur(): Promise<
-  Lecture<MesureNavigateur[]>
-> {
-  return exemple(NAVIGATEUR_EXEMPLE);
+/**
+ * Les mesures faites depuis un navigateur. La page Mesurer garde ses resultats dans le
+ * navigateur de la personne : le serveur n'en recoit aucune. Avec l'API, il n'y en a donc
+ * aucune a montrer, et c'est la verite, pas un exemple.
+ */
+export async function lireMesuresNavigateur(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<MesureNavigateur[]>> {
+  if (source === "exemple") return exemple(NAVIGATEUR_EXEMPLE);
+  return { donnees: [], source, lueLe: new Date().toISOString() };
 }
 
-export async function lirePublications(): Promise<Lecture<Publication[]>> {
-  return exemple(PUBLICATIONS_EXEMPLE);
+/**
+ * Les publications : en lecture seule tant que la connexion GitHub n'existe pas.
+ * La route en renvoie 50 au plus, toutes cibles confondues ; les pages filtrent par cible.
+ */
+export async function lirePublications(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<Publication[]>> {
+  if (source === "exemple") return exemple(PUBLICATIONS_EXEMPLE);
+  const corps = await lireApi("/api/v1/publications", estReponsePublications);
+  return {
+    donnees: corps.publications.map(publicationDepuisApi),
+    source,
+    lueLe: new Date().toISOString(),
+  };
+}
+
+/**
+ * Publier, confirmer, repondre : ouvert seulement dans la demonstration d'exemple.
+ * Avec l'API, il faut la connexion GitHub, prevue apres le 23 novembre.
+ */
+export function ecritureOuverte(publications: Lecture<Publication[]>): boolean {
+  return publications.source === "exemple";
 }
 
 /**

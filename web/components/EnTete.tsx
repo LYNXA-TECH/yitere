@@ -10,9 +10,11 @@ type Props = {
   textes: Dictionnaire;
   /** Vrai tant qu'une page du site affiche des donnees d'exemple (directive de Cellou). */
   exemple: boolean;
+  /** Faux tant que la connexion GitHub n'existe pas : « Se connecter » devient « Bientôt ». */
+  connexion: boolean;
 };
 
-export function EnTete({ langue, textes: t, exemple }: Props) {
+export function EnTete({ langue, textes: t, exemple, connexion }: Props) {
   return (
     <header className={styles.entete}>
       <div className={styles.interieur}>
@@ -50,9 +52,19 @@ export function EnTete({ langue, textes: t, exemple }: Props) {
           </span>
         )}
         <ChoixLangue langue={langue} libelle={t.navigation.langue} />
-        <Link href={lien(langue, "/moi")} className={styles.connexion}>
-          {t.navigation.seConnecter}
-        </Link>
+        {connexion ? (
+          <Link href={lien(langue, "/moi")} className={styles.connexion}>
+            {t.navigation.seConnecter}
+          </Link>
+        ) : (
+          <span
+            className={styles.connexion}
+            title={t.navigation.bientotTitre}
+            aria-disabled="true"
+          >
+            {t.navigation.bientot}
+          </span>
+        )}
         <Link href={lien(langue, "/mesurer")} className={styles.mesurer}>
           <svg
             width="18"

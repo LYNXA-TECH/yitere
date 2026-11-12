@@ -7,7 +7,7 @@ import {
 import styles from "@/components/echanges/echanges.module.css";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import { contexte, statut } from "@/lib/affichage/publications";
-import { lirePublications, lireVerdicts } from "@/lib/donnees";
+import { ecritureOuverte, lirePublications, lireVerdicts } from "@/lib/donnees";
 import { heureUTC, minutesEntre, nomPays } from "@/lib/format";
 import { dictionnaire } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
@@ -95,18 +95,22 @@ export default async function Echanges({ params }: Props) {
             les sondes observaient au moment où elle a été écrite.
           </p>
         </div>
-        <div className={styles.boutons}>
-          <Link href={lien(langue, "/publier")} className={styles.principal}>
-            Partager une solution
-          </Link>
-          <Link href={lien(langue, "/publier")} className={styles.secondaire}>
-            Demander une mesure
-          </Link>
-        </div>
+        {ecritureOuverte(publications) && (
+          <div className={styles.boutons}>
+            <Link href={lien(langue, "/publier")} className={styles.principal}>
+              Partager une solution
+            </Link>
+            <Link href={lien(langue, "/publier")} className={styles.secondaire}>
+              Demander une mesure
+            </Link>
+          </div>
+        )}
       </div>
+
       <div lang="fr">
         <ListeEchanges
           cartes={cartes}
+          aucune={`${t.publication.aucune} ${ecritureOuverte(publications) ? "" : t.publication.prochaineEtape}`.trim()}
           services={verdicts.donnees.map((v) => ({
             valeur: v.cible.cle,
             libelle: v.cible.nom,

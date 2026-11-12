@@ -39,6 +39,8 @@ type Props = {
   lienPublier: string;
   /** Colonne de droite (incidents, demandes en attente, regle), rendue sur le serveur. */
   encadres: ReactNode;
+  /** Le texte quand il n'y a encore aucune publication du tout (pas un filtre trop strict). */
+  aucune: string;
 };
 
 type Tri = "pertinence" | "recent" | "confirme";
@@ -62,6 +64,7 @@ export function ListeEchanges({
   etiquettes,
   lienPublier,
   encadres,
+  aucune,
 }: Props) {
   const [type, setType] = useState<"tout" | CarteEchange["type"]>("tout");
   const [service, setService] = useState("tous");
@@ -253,7 +256,12 @@ export function ListeEchanges({
               </div>
             </article>
           ))}
-          {visibles.length === 0 && (
+          {cartes.length === 0 && (
+            <div className={styles.vide}>
+              <span className={styles.discret}>{aucune}</span>
+            </div>
+          )}
+          {cartes.length > 0 && visibles.length === 0 && (
             <div className={styles.vide}>
               <span className={styles.gras}>
                 Rien ne correspond à ces filtres

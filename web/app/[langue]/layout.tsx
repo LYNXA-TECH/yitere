@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { EnTete } from "@/components/EnTete";
 import { OngletsMobiles } from "@/components/NavigationPrincipale";
-import { siteEnExemple } from "@/lib/donnees";
+import {
+  ecritureOuverte,
+  lirePublications,
+  siteEnExemple,
+} from "@/lib/donnees";
 import { dictionnaire, LANGUES } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
 import { lien, ONGLETS_MOBILES } from "@/lib/navigation";
@@ -34,7 +38,12 @@ export default async function Disposition({ children, params }: Props) {
   return (
     <html lang={langue} className={`${geist.variable} ${geistMono.variable}`}>
       <body>
-        <EnTete langue={langue} textes={t} exemple={await siteEnExemple()} />
+        <EnTete
+          langue={langue}
+          textes={t}
+          exemple={await siteEnExemple()}
+          connexion={ecritureOuverte(await lirePublications())}
+        />
         <div id="contenu">{children}</div>
         <OngletsMobiles
           langue={langue}

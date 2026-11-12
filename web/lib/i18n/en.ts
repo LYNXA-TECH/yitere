@@ -31,6 +31,8 @@ export const en: Partielle<Dictionnaire> = {
     mesurer: "Measure",
     moi: "Me",
     seConnecter: "Sign in",
+    bientot: "Soon",
+    bientotTitre: "Sign-in with GitHub is coming after 23 November.",
     mesurerChezMoi: "Measure from my place",
     langue: "Language",
     allerAuContenu: "Skip to content",
@@ -76,6 +78,7 @@ export const en: Partielle<Dictionnaire> = {
     depuis: (iso: string) => `since ${heureUTC(L, iso)}`,
     plusLentes: (n: number, valeur: string) =>
       `${compter(n, "probe clearly slower", "probes clearly slower")} than usual (${valeur})`,
+    enRodage: "Warming up",
     sansDonnee: (iso: string | null) =>
       iso ? `No data since ${heureUTC(L, iso)}` : "No data",
     sansHypothese: "No hypothesis without measurements",
@@ -162,7 +165,9 @@ export const en: Partielle<Dictionnaire> = {
     mobileDisponibilite: (valeur: string) => `${valeur} over 24 h`,
     navigateurTitre: "Browser measurements are not aggregated by service",
     navigateurTexte: (n: number, villes: string) =>
-      `${compter(n, "browser measurement", "browser measurements")} over 24 h, from ${villes}. Each is a one-off measurement with no DNS or connection detail: they appear on the map, never in a per-service table or in a diagnosis.`,
+      n === 0
+        ? "No browser measurement received yet: the Measure page keeps its results in your browser. They are one-off measurements, never counted in a diagnosis."
+        : `${compter(n, "browser measurement", "browser measurements")} over 24 h, from ${villes}. Each is a one-off measurement with no DNS or connection detail: they appear on the map, never in a per-service table or in a diagnosis.`,
     faireMaMesure: "Run my measurement",
     noteReferences:
       'References (to isolate the connection itself): a public DNS resolver and highly available content, normal on every probe. No ranking of operators or countries while there are fewer than 3 probes per country. "No data" values are never zeros.',
@@ -190,6 +195,8 @@ export const en: Partielle<Dictionnaire> = {
     observationIndeterminee:
       "The affected probes match none of the cases the rules cover.",
     observationNormale: "Every probe is within its usual range.",
+    observationRodage: (n: number) =>
+      `${compter(n, "probe measures", "probes measure")} this service, but ${pluriel(n) ? "they are" : "it is"} still warming up: less than 24 h of history, not yet counted in a verdict.`,
     observationVide:
       "No probe received a usable answer over the last hour. This is not zero: it is a lack of measurement.",
     limiteOperateur:
@@ -387,6 +394,9 @@ export const en: Partielle<Dictionnaire> = {
     sondes: "Probes",
   },
   publication: {
+    aucune: "No posts yet.",
+    prochaineEtape:
+      "Posting, confirming and replying will open with GitHub sign-in, after 23 November.",
     ilYA: (minutes: number) => {
       if (minutes < 1) return "just now";
       if (minutes < 60) return `${nombre(L, Math.round(minutes))} min ago`;

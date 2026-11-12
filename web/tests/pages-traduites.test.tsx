@@ -20,7 +20,7 @@ const marque = MARQUE_FRANCAIS.trim();
 describe("pages traduites : aucune marque [FR] en anglais", () => {
   it("l'en-tete", () => {
     const html = renderToStaticMarkup(
-      <EnTete langue="en" textes={dictionnaire("en")} exemple />,
+      <EnTete langue="en" textes={dictionnaire("en")} exemple connexion />,
     );
     expect(html).not.toContain(marque);
   });
