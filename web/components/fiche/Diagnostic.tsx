@@ -1,7 +1,12 @@
 import { nomOperateur } from "@/lib/affichage/sondes";
 import Link from "next/link";
 import { Etiquette } from "@/components/Etiquette";
-import { texteHypothese, teinte, valeur } from "@/lib/affichage/verdicts";
+import {
+  texteHypothese,
+  teinte,
+  valeur,
+  libelleSansDonnee,
+} from "@/lib/affichage/verdicts";
 import type { PreuveSonde, Verdict } from "@/lib/donnees/types";
 import type { Dictionnaire } from "@/lib/i18n";
 import styles from "./fiche.module.css";
@@ -104,7 +109,7 @@ export function Diagnostic({ verdict: v, t, calculeLe, lienMethode }: Props) {
 function titreObservation(v: Verdict, t: Dictionnaire): string {
   if (v.observation.etat === "normal") return t.verdict.aucuneDegradation;
   if (v.observation.etat === "pas-de-donnee")
-    return t.services.sansDonnee(v.observation.depuis);
+    return libelleSansDonnee(v, t.services);
   return v.observation.depuis
     ? t.verdict.degradationDepuis(v.observation.depuis)
     : t.verdict.degradation;
@@ -116,7 +121,10 @@ function detailObservation(
   touchees: PreuveSonde[],
 ): string {
   if (v.observation.etat === "normal") return f.observationNormale;
-  if (v.observation.etat === "pas-de-donnee") return f.observationVide;
+  if (v.observation.etat === "pas-de-donnee")
+    return v.preuves.sondesEnRodage > 0
+      ? f.observationRodage(v.preuves.sondesEnRodage)
+      : f.observationVide;
   switch (v.hypothese?.cause) {
     case "service":
       return f.observationService;

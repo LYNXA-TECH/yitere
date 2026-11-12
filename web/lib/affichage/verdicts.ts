@@ -10,11 +10,23 @@ export function teinte(v: Verdict): Teinte {
   return v.hypothese?.cause === "service" ? "service" : "degrade";
 }
 
+/**
+ * Un service sans donnee : « En rodage » si des sondes le mesurent sans etre encore
+ * comptees (moins de 24 h d'historique), sinon « Pas de donnee depuis 17:00 ».
+ */
+export function libelleSansDonnee(
+  v: Verdict,
+  t: Dictionnaire["services"],
+): string {
+  return v.preuves.sondesEnRodage > 0
+    ? t.enRodage
+    : t.sansDonnee(v.observation.depuis);
+}
+
 /** L'etat d'un service en une ligne, comme dans le tableau des services. */
 export function libelleEtat(v: Verdict, t: Dictionnaire["services"]): string {
   if (v.observation.etat === "normal") return t.etatNormal;
-  if (v.observation.etat === "pas-de-donnee")
-    return t.sansDonnee(v.observation.depuis);
+  if (v.observation.etat === "pas-de-donnee") return libelleSansDonnee(v, t);
   switch (v.hypothese?.cause) {
     case "operateur":
       return t.etatOperateur(v.hypothese.operateur ?? "");

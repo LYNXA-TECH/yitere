@@ -13,7 +13,12 @@ describe("services", () => {
     expect(html).toContain(
       "2 dégradations observées · 4 mesures normales · 1 sans donnée récente",
     );
-    expect(html).toContain("Pas de donnée depuis 15:20");
+    // une sonde en rodage mesure ce service : on dit « En rodage », pas « Pas de donnée depuis 15:20 »
+    expect(html).toContain("En rodage");
+    expect(html).toContain(
+      "1 sonde mesure ce service, mais elle est encore en rodage",
+    );
+    expect(html).not.toContain("Pas de donnée depuis 15:20");
   });
 
   it("donne les mêmes chiffres que la maquette, en français et en anglais", async () => {

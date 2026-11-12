@@ -4,11 +4,16 @@ import type { EtatSonde, VilleCarte } from "@/components/carte/types";
 import { Etiquette } from "@/components/Etiquette";
 import { contexte, statut } from "@/lib/affichage/publications";
 import { nomOperateur } from "@/lib/affichage/sondes";
-import { teinte, texteHypothese } from "@/lib/affichage/verdicts";
+import {
+  libelleSansDonnee,
+  teinte,
+  texteHypothese,
+} from "@/lib/affichage/verdicts";
 import {
   lireIncidents,
   lireMesuresNavigateur,
   lirePublications,
+  lireResumes,
   lireSondes,
   lireVerdicts,
 } from "@/lib/donnees";
@@ -40,9 +45,10 @@ export default async function Accueil({ params }: Props) {
   const langue = await langueDe(params);
   const t = dictionnaire(langue);
   const c = t.carte;
-  const [verdicts, sondes, publications, navigateur, incidents] =
+  const [verdicts, resumes, sondes, publications, navigateur, incidents] =
     await Promise.all([
       lireVerdicts(),
+      lireResumes(),
       lireSondes(),
       lirePublications(),
       lireMesuresNavigateur(),
@@ -182,9 +188,9 @@ export default async function Accueil({ params }: Props) {
               )}
               {degrades.map((v) => {
                 const vide = v.observation.etat === "pas-de-donnee";
-                const solutions = publications.donnees.filter(
-                  (p) => p.cible === v.cible.cle && p.type === "contournement",
-                ).length;
+                const solutions =
+                  resumes.donnees.find((r) => r.cle === v.cible.cle)
+                    ?.solutions ?? 0;
                 const fiche = lien(langue, `/services/${v.cible.cle}`);
                 return (
                   <article key={v.cible.cle} className={styles.incident}>
@@ -202,7 +208,7 @@ export default async function Accueil({ params }: Props) {
                       </Etiquette>
                       <span>
                         {vide
-                          ? t.services.sansDonnee(v.observation.depuis)
+                          ? libelleSansDonnee(v, t.services)
                           : libelleObservation(v.observation.depuis, t)}
                       </span>
                     </div>
@@ -220,7 +226,9 @@ export default async function Accueil({ params }: Props) {
                     </div>
                     <span className={styles.petit}>
                       {vide
-                        ? c.aucuneMesure
+                        ? v.preuves.sondesEnRodage > 0
+                          ? t.fiche.observationRodage(v.preuves.sondesEnRodage)
+                          : c.aucuneMesure
                         : c.compteurs(
                             v.preuves.sondesTouchees,
                             v.preuves.sondesEpargnees,
@@ -254,6 +262,11 @@ export default async function Accueil({ params }: Props) {
                 <h2 id="communaute">{c.communaute}</h2>
                 <Link href={lien(langue, "/echanges")}>{c.tousEchanges}</Link>
               </div>
+              {publicationsTriees.length === 0 && (
+                <p className={styles.vide}>
+                  {t.publication.aucune} {t.publication.prochaineEtape}
+                </p>
+              )}
               {publicationsTriees.map((p) => (
                 <Link
                   key={p.id}

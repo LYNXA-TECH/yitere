@@ -13,6 +13,7 @@ import {
   estService,
   lireCibles,
   lireDetail,
+  ecritureOuverte,
   lirePublications,
   lireResumes,
   lireVerdicts,
@@ -84,6 +85,7 @@ export default async function FicheService({ params }: Props) {
   const demandes = publications.donnees.filter(
     (p) => p.cible === cle && p.type === "demande",
   );
+  const ecriture = ecritureOuverte(publications);
 
   return (
     <main className={styles.page}>
@@ -138,14 +140,22 @@ export default async function FicheService({ params }: Props) {
             <h2 id="titre-solutions">{t.fiche.solutionsTitre}</h2>
             <span className={styles.discret}>{t.fiche.solutionsDetail}</span>
           </div>
-          <Link href={lien(langue, "/publier")} className={styles.bouton}>
-            {t.fiche.partager}
-          </Link>
+          {ecriture && (
+            <Link href={lien(langue, "/publier")} className={styles.bouton}>
+              {t.fiche.partager}
+            </Link>
+          )}
         </div>
-        {solutions.length === 0 ? (
+        {!ecriture && solutions.length + demandes.length === 0 ? (
+          <p className={styles.vide}>
+            {t.publication.aucune} {t.publication.prochaineEtape}
+          </p>
+        ) : solutions.length === 0 ? (
           <p className={styles.vide}>
             {t.fiche.aucuneSolution}{" "}
-            <Link href={lien(langue, "/publier")}>{t.fiche.premiere}</Link>
+            {ecriture && (
+              <Link href={lien(langue, "/publier")}>{t.fiche.premiere}</Link>
+            )}
           </p>
         ) : (
           <ul className={styles.liste}>
@@ -171,9 +181,11 @@ export default async function FicheService({ params }: Props) {
             maintenant={maintenant}
           />
         ))}
-        <Link href={lien(langue, "/publier")} className={styles.lienSeul}>
-          {t.fiche.demanderAutreVille}
-        </Link>
+        {ecriture && (
+          <Link href={lien(langue, "/publier")} className={styles.lienSeul}>
+            {t.fiche.demanderAutreVille}
+          </Link>
+        )}
       </section>
 
       <Tuiles

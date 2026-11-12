@@ -29,6 +29,8 @@ export const fr = {
     mesurer: "Mesurer",
     moi: "Moi",
     seConnecter: "Se connecter",
+    bientot: "Bientôt",
+    bientotTitre: "La connexion avec GitHub arrive après le 23 novembre.",
     mesurerChezMoi: "Mesurer depuis chez moi",
     langue: "Langue",
     allerAuContenu: "Aller au contenu",
@@ -74,6 +76,7 @@ export const fr = {
     depuis: (iso: string) => `depuis ${heureUTC(L, iso)}`,
     plusLentes: (n: number, valeur: string) =>
       `${compter(n, "sonde nettement plus lente", "sondes nettement plus lentes")} que d'habitude (${valeur})`,
+    enRodage: "En rodage",
     sansDonnee: (iso: string | null) =>
       iso ? `Pas de donnée depuis ${heureUTC(L, iso)}` : "Pas de donnée",
     sansHypothese: "Aucune hypothèse sans mesure",
@@ -160,7 +163,9 @@ export const fr = {
     mobileDisponibilite: (valeur: string) => `${valeur} sur 24 h`,
     navigateurTitre: "Les mesures navigateur ne sont pas agrégées par service",
     navigateurTexte: (n: number, villes: string) =>
-      `${compter(n, "mesure navigateur", "mesures navigateur")} sur 24 h, depuis ${villes}. Chacune est une mesure ponctuelle, sans détail DNS ni connexion : elles apparaissent sur la carte, jamais dans un tableau par service ni dans un diagnostic.`,
+      n === 0
+        ? "Aucune mesure navigateur reçue pour l'instant : la page Mesurer garde ses résultats dans votre navigateur. Ce sont des mesures ponctuelles, jamais comptées dans un diagnostic."
+        : `${compter(n, "mesure navigateur", "mesures navigateur")} sur 24 h, depuis ${villes}. Chacune est une mesure ponctuelle, sans détail DNS ni connexion : elles apparaissent sur la carte, jamais dans un tableau par service ni dans un diagnostic.`,
     faireMaMesure: "Faire ma mesure",
     noteReferences:
       "Références (pour isoler la connexion elle-même) : résolveur DNS public et contenu très disponible, normales sur toutes les sondes. Aucun classement entre opérateurs ou pays tant qu'il y a moins de 3 sondes par pays. Les valeurs « pas de donnée » ne sont jamais des zéros.",
@@ -188,6 +193,8 @@ export const fr = {
     observationIndeterminee:
       "Les sondes touchées ne forment aucun des cas prévus par les règles.",
     observationNormale: "Chaque sonde est dans ses valeurs habituelles.",
+    observationRodage: (n: number) =>
+      `${compter(n, "sonde mesure", "sondes mesurent")} ce service, mais ${pluriel(n) ? "elles sont" : "elle est"} encore en rodage : moins de 24 h d'historique, pas encore ${pluriel(n) ? "comptées" : "comptée"} dans un verdict.`,
     observationVide:
       "Aucune sonde n'a reçu de réponse exploitable sur la dernière heure. Ce n'est pas zéro : c'est une absence de mesure.",
     limiteOperateur:
@@ -390,6 +397,9 @@ export const fr = {
     sondes: "Sondes",
   },
   publication: {
+    aucune: "Aucune publication pour l'instant.",
+    prochaineEtape:
+      "Publier, confirmer et répondre ouvriront avec la connexion GitHub, après le 23 novembre.",
     ilYA: (minutes: number) => {
       if (minutes < 1) return "à l'instant";
       if (minutes < 60) return `il y a ${nombre(L, Math.round(minutes))} min`;

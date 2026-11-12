@@ -14,6 +14,7 @@ import type { Cible, ResumeService, Verdict } from "@/lib/donnees/types";
 import {
   detailValeur,
   libelleEtat,
+  libelleSansDonnee,
   texteHypothese,
   teinte,
   valeur,
@@ -110,7 +111,7 @@ export default async function Services({ params }: Props) {
                   </Etiquette>
                   <span>
                     {vide
-                      ? s.sansDonnee(v.observation.depuis)
+                      ? libelleSansDonnee(v, s)
                       : s.plusLentes(
                           v.preuves.sondesTouchees,
                           valeur(r.valeur ?? 0, r.unite, s),
@@ -127,7 +128,9 @@ export default async function Services({ params }: Props) {
                 </div>
                 <span className={styles.petit}>
                   {vide
-                    ? s.detailSansDonnee(v.observation.depuis)
+                    ? v.preuves.sondesEnRodage > 0
+                      ? t.fiche.observationRodage(v.preuves.sondesEnRodage)
+                      : s.detailSansDonnee(v.observation.depuis)
                     : s.detailAlerte(
                         v.preuves.sondesTouchees,
                         v.preuves.sondesEpargnees,

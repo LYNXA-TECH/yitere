@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Bientot } from "@/components/Bientot";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import { Formulaire } from "@/components/publier/Formulaire";
 import styles from "@/components/publier/publier.module.css";
 import { texteCause } from "@/lib/affichage/verdicts";
-import { lirePublications, lireVerdicts } from "@/lib/donnees";
+import { ecritureOuverte, lirePublications, lireVerdicts } from "@/lib/donnees";
 import { heureUTC } from "@/lib/format";
 import { dictionnaire } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
@@ -25,6 +26,18 @@ export default async function Publier({ params }: Props) {
     lireVerdicts(),
     lirePublications(),
   ]);
+  if (!ecritureOuverte(publications))
+    return (
+      <>
+        <MentionFrancais langue={langue} />
+        <Bientot
+          langue={langue}
+          surtitre="Publier"
+          titre="Bientôt"
+          texte={`${t.publication.aucune} ${t.publication.prochaineEtape}`}
+        />
+      </>
+    );
   const heure = heureUTC("fr", verdicts.lueLe ?? new Date().toISOString());
   // Les services en incident d'abord : c'est la que l'on publie le plus.
   const services = [...verdicts.donnees]

@@ -1,3 +1,4 @@
+import { Bientot } from "@/components/Bientot";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { MentionFrancais } from "@/components/MentionFrancais";
 import { valeur } from "@/lib/affichage/verdicts";
 import {
   lireDetail,
+  ecritureOuverte,
   lirePublications,
   lireSondes,
   lireVerdicts,
@@ -34,6 +36,19 @@ export default async function MonEspace({ params }: Props) {
     lireVerdicts(),
     lirePublications(),
   ]);
+  // Sans connexion, pas d'espace personnel : jamais le profil d'une vraie sonde en demonstration.
+  if (!ecritureOuverte(publications))
+    return (
+      <>
+        <MentionFrancais langue={langue} />
+        <Bientot
+          langue={langue}
+          surtitre="Mon espace"
+          titre="Bientôt"
+          texte={`Votre espace (vos sondes, vos publications, vos suivis) ouvrira avec la connexion GitHub, après le 23 novembre. ${t.publication.aucune}`}
+        />
+      </>
+    );
   const sonde = sondes.donnees.find((s) => s.type === "dev" && !s.enRodage);
   if (!sonde) return null;
   const valeurs = await Promise.all(

@@ -2,6 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Accueil from "@/app/[langue]/page";
 import FicheService from "@/app/[langue]/services/[cle]/page";
+import Echanges from "@/app/[langue]/echanges/page";
+import MonEspace from "@/app/[langue]/moi/page";
+import Publier from "@/app/[langue]/publier/page";
 import Services from "@/app/[langue]/services/page";
 import type {
   ReponseServices,
@@ -164,7 +167,8 @@ const SERVICES: ReponseServices = {
     sondes_mesurees: v.preuves.sondes.length,
     disponibilite: v.cle === "pypi" ? null : 0.9861,
     passages: v.cle === "pypi" ? 0 : 144,
-    solutions: 0,
+    // 2 pour npm : le compteur de l'accueil doit venir d'ici, pas des publications (vides)
+    solutions: v.cle === "npm" ? 2 : 0,
     demandes: 0,
     repere: 62,
   })),
@@ -186,6 +190,8 @@ const REPONSES: Record<string, unknown> = {
   "/api/v1/verdicts": VERDICTS,
   "/api/v1/services": SERVICES,
   "/api/v1/sondes": SONDES,
+  // serveur/publications.js : liste vide au depart, en lecture seule
+  "/api/v1/publications": { publications: [] },
 };
 
 const appel = vi.fn(async (url: string) => {
@@ -247,7 +253,7 @@ describe("source « api » : verdicts, services, sondes", () => {
       sondesMesurees: 2,
       disponibilite: 0.9861,
       passages: 144,
-      solutions: 0,
+      solutions: 2,
       demandes: 0,
       repere: 62,
     });
@@ -301,9 +307,83 @@ describe("source « api » : verdicts, services, sondes", () => {
 describe("pages traduites branchees sur l'API", () => {
   beforeEach(() => vi.stubEnv("YITERE_SOURCE", "api"));
 
-  it("garde le badge tant que les echanges restent un exemple", async () => {
+  it("retire le badge : verdicts, services, sondes et publications sont reels", async () => {
     expect((await lireCibles()).source).toBe("api");
-    expect(await siteEnExemple()).toBe(true);
+    expect(await siteEnExemple()).toBe(false);
+  });
+
+  it("accueil : aucune publication d'exemple, et les solutions comptees par /services", async () => {
+    const html = renderToStaticMarkup(
+      await Accueil({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain("Aucune publication pour l&#x27;instant.");
+    expect(html).toContain("après le 23 novembre");
+    expect(html).toContain("Solutions · 2");
+    expect(html).not.toContain("Confirmée");
+  });
+
+  it("fiche npm : un etat vide honnete, sans « Publiee pendant cet incident »", async () => {
+    const html = renderToStaticMarkup(
+      await FicheService({
+        params: Promise.resolve({ langue: "fr", cle: "npm" }),
+      }),
+    );
+    expect(html).toContain("Aucune publication pour l&#x27;instant.");
+    expect(html).not.toContain("Publiée pendant cet incident");
+    expect(html).not.toContain("Confirmée par la communauté");
+    expect(html).not.toContain('href="/fr/publier"');
+    const en = renderToStaticMarkup(
+      await FicheService({
+        params: Promise.resolve({ langue: "en", cle: "npm" }),
+      }),
+    );
+    expect(en).toContain("No posts yet.");
+  });
+
+  it("echanges : la liste vide, et rien a publier avant la connexion GitHub", async () => {
+    const html = renderToStaticMarkup(
+      await Echanges({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain("Aucune publication pour l&#x27;instant.");
+    expect(html).not.toContain("Rien ne correspond à ces filtres");
+    expect(html).not.toContain("Partager une solution");
+  });
+
+  it("publier et mon espace : « Bientot », jamais le profil d'une vraie sonde", async () => {
+    for (const Page of [Publier, MonEspace]) {
+      const html = renderToStaticMarkup(
+        (await Page({ params: Promise.resolve({ langue: "fr" }) }))!,
+      );
+      expect(html).toContain("<h1>Bientôt</h1>");
+      expect(html).not.toContain("@lynx-conakry-1");
+    }
+  });
+
+  it("services : l'onglet navigateur ne compte plus de mesures d'exemple", async () => {
+    const html = renderToStaticMarkup(
+      await Services({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain("Navigateur · 0");
+    expect(html).toContain(
+      "Aucune mesure navigateur reçue pour l&#x27;instant",
+    );
+    expect(html).not.toContain("Abidjan");
+  });
+
+  it("pas-de-donnee avec des sondes en rodage : « En rodage », pas « Pas de donnee depuis »", async () => {
+    const html = renderToStaticMarkup(
+      await Services({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    // pypi : aucune sonde comptee, une en rodage
+    expect(html).toContain("En rodage");
+    expect(html).not.toContain("Pas de donnée depuis");
+    const fiche = renderToStaticMarkup(
+      await FicheService({
+        params: Promise.resolve({ langue: "en", cle: "pypi" }),
+      }),
+    );
+    expect(fiche).toContain("Warming up");
+    expect(fiche).not.toContain("No data since");
   });
 
   it("services : les chiffres de l'API, et l'operateur non detecte nomme comme tel", async () => {

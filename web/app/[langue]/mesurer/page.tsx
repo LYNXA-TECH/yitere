@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import { Mesure, type LigneMesure } from "@/components/mesurer/Mesure";
 import styles from "@/components/mesurer/mesurer.module.css";
-import { valeur } from "@/lib/affichage/verdicts";
+import { valeur, libelleSansDonnee } from "@/lib/affichage/verdicts";
 import {
   estService,
   lireCibles,
@@ -38,7 +38,7 @@ export default async function Mesurer({ params }: Props) {
       const degrade = v?.observation.etat === "degrade";
       const sondes =
         !r || r.valeur === null || v?.observation.etat === "pas-de-donnee"
-          ? `Sondes : ${t.services.sansDonnee(v?.observation.depuis ?? null).toLowerCase()}`
+          ? `Sondes : ${(v ? libelleSansDonnee(v, t.services) : t.services.sansDonnee(null)).toLowerCase()}`
           : `Sondes : ${valeur(r.valeur, r.unite, t.services)}, ${degrade ? "dégradé" : "normal"}`;
       return {
         cle: c.cle,
