@@ -149,8 +149,8 @@ const NOMS: Record<string, string> = {
   "github-api": "api.github.com",
   "github-raw": "raw.githubusercontent.com",
   pypi: "pypi.org",
-  "jsdelivr-min": "cdn.jsdelivr.net, petite requete",
-  "jsdelivr-obj": "cdn.jsdelivr.net, objet temoin",
+  "jsdelivr-min": "cdn.jsdelivr.net, petite requête",
+  "jsdelivr-obj": "cdn.jsdelivr.net, objet témoin",
 };
 
 /** Verdict d'une cible au pas donne : observe, hypothese, preuves. */

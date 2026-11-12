@@ -61,7 +61,7 @@ export const CIBLES_EXEMPLE: Cible[] = [
   ),
   cible(
     "jsdelivr-obj",
-    "cdn.jsdelivr.net, objet temoin",
+    "cdn.jsdelivr.net, objet témoin",
     "Diffusion",
     "https://cdn.jsdelivr.net/gh/LYNXA-TECH/yitere@10cb9d1/temoin.bin",
     "objet",
@@ -71,7 +71,7 @@ export const CIBLES_EXEMPLE: Cible[] = [
   ),
   cible(
     "jsdelivr-min",
-    "cdn.jsdelivr.net, petite requete",
+    "cdn.jsdelivr.net, petite requête",
     "Diffusion",
     "https://cdn.jsdelivr.net/npm/jquery@3.7.1/package.json",
     "entete",
@@ -81,7 +81,7 @@ export const CIBLES_EXEMPLE: Cible[] = [
   ),
   cible(
     "ref-dns",
-    "Resolveur DNS public",
+    "Résolveur DNS public",
     "Reference",
     "dns://1.1.1.1/example.com",
     "dns",
@@ -91,7 +91,7 @@ export const CIBLES_EXEMPLE: Cible[] = [
   ),
   cible(
     "ref-contenu",
-    "Point de contenu tres disponible",
+    "Point de contenu très disponible",
     "Reference",
     "https://connectivity-check.gstatic.com/generate_204",
     "entete",
