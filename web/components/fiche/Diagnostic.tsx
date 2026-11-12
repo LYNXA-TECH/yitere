@@ -59,7 +59,9 @@ export function Diagnostic({ verdict: v, t, calculeLe, lienMethode }: Props) {
             </span>
             <span className={styles.discret}>
               {limite(v, f)}{" "}
-              <Link href={lienMethode}>{t.verdict.lienMethode}</Link>
+              <Link href={lienMethode} className="lien-tactile">
+                {t.verdict.lienMethode}
+              </Link>
             </span>
           </div>
         )}

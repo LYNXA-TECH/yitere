@@ -31,6 +31,9 @@
 }
 
 .titreSection a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   font-size: 13px;
   font-weight: 600;
 }

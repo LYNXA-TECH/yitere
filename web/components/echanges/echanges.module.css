@@ -285,6 +285,9 @@
 }
 
 .titre {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   color: var(--texte);
   font-size: 18px;
   font-weight: 600;

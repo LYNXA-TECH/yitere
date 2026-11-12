@@ -13,10 +13,7 @@
   padding: 8px 20px;
 }
 
-/* La carte occupe toute la largeur : son en-tete aussi. */
-body:has([data-page="carte"]) .interieur {
-  max-width: 1600px;
-}
+/* Meme largeur sur toutes les pages, carte comprise : le logo et les rubriques ne bougent jamais. */
 
 .logo {
   display: flex;
@@ -88,9 +85,21 @@ body:has([data-page="carte"]) .interieur {
 }
 
 @media (max-width: 860px) {
+  /* Une seule ligne sur telephone, quelle que soit la langue : la hauteur de l'en-tete
+     ne change pas d'une page a l'autre. Le badge se raccourcit si la place manque. */
   .interieur {
-    gap: 8px 12px;
+    flex-wrap: nowrap;
+    gap: 12px;
     padding: 8px 16px;
+  }
+
+  .exemple {
+    min-width: 0;
+    overflow: hidden;
+    padding: 3px 8px;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .ressort {

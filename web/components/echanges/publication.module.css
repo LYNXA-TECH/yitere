@@ -21,6 +21,13 @@
   color: var(--texte-secondaire);
 }
 
+/* Chaque lien du fil d'Ariane fait au moins 24 px de haut au toucher. */
+.ariane a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
 .ariane [aria-current] {
   color: var(--texte);
 }

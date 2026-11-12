@@ -51,9 +51,12 @@
     display: none;
   }
 
+  /* Fixee au bas de l'ecran sur toutes les pages, meme une page courte comme Mon espace. */
   .onglets {
-    position: sticky;
+    position: fixed;
+    right: 0;
     bottom: 0;
+    left: 0;
     z-index: 10;
     display: flex;
     justify-content: space-around;
