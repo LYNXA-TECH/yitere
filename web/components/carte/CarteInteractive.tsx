@@ -124,6 +124,7 @@ export function CarteInteractive(p: Props) {
           className={styles.plateau}
           ref={carte.cadre}
           data-vue={vue}
+          data-zoom={v0.k > 1 || undefined}
           {...(vue === "carte" ? carte.gestes : {})}
         >
           {vue === "carte" ? (
@@ -305,10 +306,13 @@ export function CarteInteractive(p: Props) {
 
           {vue === "carte" && (
             <>
-              <span className={styles.repere}>
-                <span aria-hidden="true" className={styles.carreRepere} />
-                {t.repere}
-              </span>
+              {/* Etiquette fixe, qui ne suit pas le zoom : on ne la montre qu'a la vue entiere. */}
+              {v0.k === 1 && (
+                <span className={styles.repere}>
+                  <span aria-hidden="true" className={styles.carreRepere} />
+                  {t.repere}
+                </span>
+              )}
               <div className={styles.legende}>
                 <span className={styles.gras}>{t.legende}</span>
                 <span data-symbole="normal">{t.legendeNormal}</span>

@@ -200,6 +200,8 @@ export function useVueCarte() {
       onPointerUp: surUp,
       onPointerCancel: surUp,
       onClickCapture: surClickCapture,
+      // Pas de glisser-deposer natif du texte ou du dessin : il laisserait une copie sous le curseur.
+      onDragStart: (e: React.DragEvent) => e.preventDefault(),
     },
   };
 }
