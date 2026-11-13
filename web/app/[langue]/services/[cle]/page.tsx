@@ -1,3 +1,4 @@
+import { lectureCascades } from "@/lib/affichage/cascades";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -222,9 +223,18 @@ export default async function FicheService({ params }: Props) {
           inconnu={t.verdict.operateurInconnu}
           ms={t.services.ms}
           lecture={
-            verdict.hypothese?.cause === "operateur"
-              ? t.fiche.tempsLectureOperateur(verdict.hypothese.operateur ?? "")
-              : t.fiche.tempsLecture
+            detail.source !== "exemple"
+              ? lectureCascades(detail.donnees.cascades, t.fiche, t.services.ms)
+              : verdict.hypothese?.cause === "operateur"
+                ? t.fiche.tempsLectureOperateur(
+                    verdict.hypothese.operateur ?? "",
+                  )
+                : t.fiche.tempsLecture
+          }
+          detail={
+            detail.source === "exemple"
+              ? t.fiche.tempsDetail
+              : t.fiche.tempsDetailApi
           }
         />
       )}

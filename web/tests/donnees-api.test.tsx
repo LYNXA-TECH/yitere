@@ -195,7 +195,105 @@ const REPONSES: Record<string, unknown> = {
   "/api/v1/publications": { publications: [] },
 };
 
+/* GET /api/v1/services/{cle} (serveur/detail.js) : npm avec deux sondes jugees et deux
+   passages decomposes ; pypi sans sonde jugee (habituel null, courbes trouees). */
+const heures = (n: number, pasH: number) =>
+  Array.from({ length: n }, (_, i) =>
+    new Date(
+      Date.parse(CALCULE_LE) - (n - 1 - i) * pasH * 3600e3,
+    ).toISOString(),
+  );
+const designee = (
+  pseudonyme: string,
+  operateur: string | null,
+  ville: string,
+) => ({
+  pseudonyme,
+  operateur,
+  ville,
+  numero: 1,
+});
+const DETAILS: Record<string, unknown> = {
+  npm: {
+    calcule_le: CALCULE_LE,
+    cle: "npm",
+    unite: "ms",
+    heures_24: heures(24, 1),
+    heures_7j: heures(28, 6),
+    series_24: [
+      {
+        sonde: designee("lynx-conakry-1", "AS37461", "Conakry"),
+        statut: "touchee",
+        points: [...Array(22).fill(310), 1180, 1210],
+      },
+      {
+        sonde: designee("lynx-dakar-1", null, "Dakar"),
+        statut: "epargnee",
+        points: [null, null, ...Array(22).fill(290)],
+      },
+    ],
+    series_7j: [
+      {
+        sonde: designee("lynx-conakry-1", "AS37461", "Conakry"),
+        statut: "touchee",
+        points: Array(28).fill(320),
+      },
+    ],
+    habituel: { min: 290, max: 310 },
+    debut_incident_24: 22,
+    repere: { valeur: 62, etat: "degrade" },
+    cascades: [
+      {
+        sonde: designee("lynx-conakry-1", "AS37461", "Conakry"),
+        statut: "touchee",
+        mesure_le: CALCULE_LE,
+        dns: 30,
+        connexion: 180,
+        tls: 360,
+        attente: 640,
+        premier_octet: 1210,
+      },
+      {
+        sonde: designee("lynx-dakar-1", null, "Dakar"),
+        statut: "epargnee",
+        mesure_le: CALCULE_LE,
+        dns: 20,
+        connexion: 70,
+        tls: 140,
+        attente: 60,
+        premier_octet: 290,
+      },
+    ],
+  },
+  pypi: {
+    calcule_le: CALCULE_LE,
+    cle: "pypi",
+    unite: "ms",
+    heures_24: heures(24, 1),
+    heures_7j: heures(28, 6),
+    series_24: [
+      {
+        sonde: designee("lynx-conakry-2", "AS37461", "Conakry"),
+        statut: "rodage",
+        points: [...Array(20).fill(null), 400, null, 410, 420],
+      },
+    ],
+    series_7j: [],
+    habituel: null,
+    debut_incident_24: null,
+    repere: { valeur: null, etat: "exclu" },
+    cascades: [],
+  },
+};
+
 const appel = vi.fn(async (url: string) => {
+  const fiche = new URL(url).pathname.match(/^\/api\/v1\/services\/(.+)$/);
+  if (fiche) {
+    const d = DETAILS[decodeURIComponent(fiche[1]!)];
+    return d
+      ? Response.json(d)
+      : Response.json({ erreur: "service inconnu" }, { status: 404 });
+  }
   const chemin = new URL(url).pathname;
   return chemin in REPONSES
     ? Response.json(REPONSES[chemin])
@@ -417,8 +515,8 @@ describe("pages traduites branchees sur l'API", () => {
     );
     expect(html).toContain("Opérateur non détecté · Dakar · 1");
     expect(html).toContain("AS37461 · Conakry · 1");
-    // les courbes restent un exemple, et la fiche le dit ; les tuiles, elles, sont reelles
-    expect(html).toContain('data-source="exemple"');
+    // la fiche est entierement reelle : plus de mention « Donnees d'exemple »
+    expect(html).not.toContain('data-source="exemple"');
     expect(html).toContain("62 ms");
     expect(html).not.toContain("null");
   });
@@ -439,5 +537,43 @@ describe("pages traduites branchees sur l'API", () => {
     // la frise ne parle plus d'exemple quand les verdicts sont reels
     expect(html).toContain("En direct · mesures des sondes");
     expect(html).not.toContain("En direct · données d&#x27;exemple");
+  });
+
+  it("fiche npm : courbes et ou part le temps lus dans l'API, temps compte une seule fois", async () => {
+    const html = renderToStaticMarkup(
+      await FicheService({
+        params: Promise.resolve({ langue: "fr", cle: "npm" }),
+      }),
+    );
+    expect(html).not.toContain("Données d&#x27;exemple");
+    // la barre : dns + connexion + tls + attente = 1 210, le premier octet n'est pas ajoute
+    expect(html).toContain("Premier octet 1\u202f210 ms");
+    expect(html).not.toContain("Premier octet 2\u202f420 ms");
+    expect(html).toContain("Attente du serveur");
+    // une lecture tiree des chiffres, pas une phrase fixe
+    expect(html).toContain(
+      "c&#x27;est l&#x27;étape « Attente du serveur » qui s&#x27;allonge le plus : 640 ms, contre 60 ms",
+    );
+    expect(html).not.toContain("prennent plus du double");
+    expect(html).not.toContain("deux sondes de Conakry");
+    // la sonde sans operateur detecte est nommee par sa ville sur le graphique
+    expect(html).toContain(">Dakar·1</text>");
+    expect(html).not.toContain("?·1");
+  });
+
+  it("fiche pypi : sans sonde jugee, pas de bande grise, et les trous des courbes restent des trous", async () => {
+    const html = renderToStaticMarkup(
+      await FicheService({
+        params: Promise.resolve({ langue: "fr", cle: "pypi" }),
+      }),
+    );
+    expect(html).not.toContain('fill="var(--bande-habituelle)"');
+    expect(html).not.toContain("NaN");
+    expect(html).not.toContain("Où part le temps");
+  });
+
+  it("une cle que l'API ne connait pas donne la page introuvable", async () => {
+    const { lireDetail } = await import("@/lib/donnees");
+    expect((await lireDetail("inconnu", "api")).donnees).toBeNull();
   });
 });

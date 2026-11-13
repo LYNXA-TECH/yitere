@@ -79,13 +79,20 @@ export type Serie = {
   points: (number | null)[];
 };
 
-/** La decomposition d'un passage : ou part le temps. */
+/**
+ * La decomposition d'un passage : ou part le temps. Les quatre durees se suivent
+ * (DNS, connexion, chiffrement, attente) ; leur somme est le temps au premier octet.
+ */
 export type Cascade = {
   sonde: SondeDesignee;
   statut: "touchee" | "epargnee";
+  /** Heure du passage decompose, en ISO. */
+  mesureLe: string | null;
   dns: number;
   connexion: number;
   tls: number;
+  attente: number;
+  /** Temps au premier octet : la somme des quatre, pas une cinquieme etape. */
   premierOctet: number;
 };
 
@@ -98,8 +105,8 @@ export type DetailService = {
   heures7j: string[];
   series24: Serie[];
   series7j: Serie[];
-  /** Valeurs habituelles des sondes eligibles : la bande grise. */
-  habituel: { min: number; max: number };
+  /** Valeurs habituelles des sondes jugees : la bande grise. Null sans sonde jugee. */
+  habituel: { min: number; max: number } | null;
   /** Index du premier pas degrade de l'incident en cours, s'il y en a un. */
   debutIncident24: number | null;
   repere: { valeur: number | null; etat: "normal" | "degrade" | "exclu" };

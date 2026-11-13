@@ -267,8 +267,11 @@ export const fr = {
     j7: "7 jours",
     maintenant: "maintenant",
     jourMoins: (n: number) => `J−${n}`,
+    // Sans operateur detecte, la sonde se nomme par sa ville : « Dakar·1 », jamais « ?·1 ».
     abregeSonde: (operateur: string | null, numero: number, ville: string) =>
-      `${(operateur ?? "?").replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
+      operateur === null
+        ? `${ville}·${numero}`
+        : `${operateur.replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
     enRodage: "(rodage)",
     lectureOperateur: (operateur: string) =>
       `Seules les sondes de ${operateur} décrochent, au même moment. Les autres opérateurs restent dans leurs valeurs habituelles, et le repère de Madrid aussi : le service fonctionne, le problème est sur le chemin.`,
@@ -288,7 +291,16 @@ export const fr = {
     connexion: "Connexion",
     tls: "Chiffrement TLS",
     premierOctet: "Premier octet",
-    total: (valeur: string) => `Total ${valeur}`,
+    attente: "Attente du serveur",
+    total: (valeur: string) => `Premier octet ${valeur}`,
+    tempsDetailApi:
+      "Dernier passage d'une sonde touchée et d'une sonde épargnée. Même échelle pour les deux barres.",
+    tempsLectureEcart: (etape: string, touchee: string, epargnee: string) =>
+      `Pour la sonde touchée, c'est l'étape « ${etape} » qui s'allonge le plus : ${touchee}, contre ${epargnee} pour la sonde épargnée. Les mesures ne disent pas où, sur le chemin.`,
+    tempsLecturePareil:
+      "Sur ce passage, la sonde touchée n'est plus lente à aucune étape que la sonde épargnée.",
+    tempsLectureSeul:
+      "Un seul passage décomposé pour l'instant : il faut une sonde touchée et une sonde épargnée pour comparer.",
     tempsLectureOperateur: (operateur: string) =>
       `Chez ${operateur}, la connexion et le chiffrement prennent plus du double, et l'attente du premier octet s'allonge fortement. La résolution DNS, elle, change peu : le nom du service est bien trouvé, c'est l'échange avec le serveur qui est lent. Les mesures ne disent pas où, sur le chemin.`,
     tempsLecture:
