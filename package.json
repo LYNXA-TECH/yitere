@@ -4,6 +4,15 @@
   "private": false,
   "description": "Observatoire des conditions reseau du developpement africain",
   "license": "MIT",
-  "engines": { "node": ">=20" },
-  "scripts": { "start": "node index.js", "test": "node --test serveur/*.test.js" }
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test serveur/*.test.js",
+    "licences": "node scripts/verifier-licences.mjs"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  }
 }
