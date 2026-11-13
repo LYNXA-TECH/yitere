@@ -8,7 +8,10 @@ dependent les developpeurs, depuis des sondes situees dans plusieurs pays.
 Projet de LYNXA SARL pour le Systalink Challenge 2026.
 Donnees publiques sous licence CC BY 4.0.
 
-Statut : en construction.
+Statut : en production sur https://yitere.lynxatech.com, sur données réelles.
+
+Code sous licence MIT (fichier LICENSE). Composants et licences :
+docs/COMPOSANTS-ET-LICENCES.md. Usage de l'IA : AI_USAGE.md.
 
 ## Protocole de travail
 

@@ -30,6 +30,9 @@ nouvelle partie.
 |---|---|---|
 | Sonde (`sonde/sonde.js`) | Code écrit par l'IA, y compris le refus de l'auto-mesure | Choix des cibles et des grandeurs mesurées, arbitrages, validation sur le serveur |
 | Serveur d'ingestion et de lecture (`serveur/api.js`) | Code écrit par l'IA | Choix de conception (jeton par sonde, aucune adresse IP), validation |
+| Verdicts et fiche de service (`serveur/verdicts.js`, `serveur/detail.js`) | Code et tests écrits par l'IA | Règles de jugement fixées (deux fois l'habituel, plus de la moitié en échec, Madrid hors calcul), validation sur données réelles |
+| Dépôt de publications sans compte (`serveur/publications.js`) | Code et tests écrits par l'IA | Choix : aucun compte, aucune adresse IP, chaque dépôt masqué jusqu'à relecture ; relecture faite par Cellou en base |
+| Composants et licences (`docs/COMPOSANTS-ET-LICENCES.md`, `scripts/verifier-licences.mjs`) | Inventaire et script écrits par l'IA | Vérification, choix de la licence MIT et du titulaire |
 | Schéma et amorçage de la base (`db/`) | Rédaction | Décisions : aucune colonne d'adresse, un seul objet témoin servi par jsDelivr |
 | Méthodologie (`docs/methodologie.md`) | Rédaction à partir des décisions prises | Décisions (Madrid assumé comme repère, objet témoin unique), relecture |
 | Protocole de travail (`docs/PROTOCOLE-TRAVAIL-LYNXA.md`) | Rédaction | Règles fixées par Cellou, dont les interdits de la section 8 |
@@ -49,10 +52,11 @@ nouvelle partie.
 
 Aucun code n'entre dans le dépôt sans passer par les mêmes contrôles que le code écrit à la main :
 
-- tests Vitest, exécutés en local et dans la CI ;
+- tests Vitest pour l'interface, exécutés en local et dans la CI ;
+- tests `node --test` pour le serveur (`npm test`) ;
 - vérification des types (`tsc`, TypeScript strict) ;
 - formatage Prettier vérifié ;
-- licences des dépendances vérifiées par `web/scripts/verifier-licences.mjs` ;
+- licences des dépendances vérifiées par `web/scripts/verifier-licences.mjs` et `scripts/verifier-licences.mjs` (inventaire : `docs/COMPOSANTS-ET-LICENCES.md`) ;
 - `npm audit` sans vulnérabilité ;
 - compilation Next.js, avec le budget de poids de la décision 0002 ;
 - relecture de la pull request par l'autre membre de l'équipe.
