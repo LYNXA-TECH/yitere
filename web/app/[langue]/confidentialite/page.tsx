@@ -96,6 +96,18 @@ export default async function Confidentialite({ params }: Props) {
                 <td>L&apos;entraide : savoir où une solution a marché</td>
                 <td>Tant que la publication existe</td>
               </tr>
+              <tr>
+                <th scope="row">Vous publiez sans compte</th>
+                <td>
+                  Le pseudonyme que vous choisissez, le texte, la commande si
+                  vous en donnez une, le pays s&apos;il est donné, l&apos;heure.
+                  Toujours aucune adresse IP.
+                </td>
+                <td>
+                  Relire la publication, puis l&apos;afficher dans les échanges
+                </td>
+                <td>Tant que la publication existe</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -152,6 +164,10 @@ export default async function Confidentialite({ params }: Props) {
           <li>
             Supprimer une publication ou une confirmation, depuis Mes
             contributions.
+          </li>
+          <li>
+            Supprimer une publication déposée sans compte : écrivez à
+            contact@lynxatech.com en citant son texte.
           </li>
           <li>
             Demander une copie ou la suppression de votre compte :{" "}
