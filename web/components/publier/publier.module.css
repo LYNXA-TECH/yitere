@@ -339,3 +339,52 @@
     font-size: 30px;
   }
 }
+
+/* Depot sans connexion : erreurs par champ, resultat de l'envoi, piege a robots. */
+.erreur {
+  color: var(--etat-degrade);
+  font-size: 13px;
+}
+
+.champ [aria-invalid="true"] {
+  border-color: var(--etat-degrade);
+}
+
+.resultat {
+  margin: 0;
+  font-size: 14px;
+}
+
+.resultat:empty {
+  display: none;
+}
+
+.resultat[data-genre="recu"] {
+  padding: 12px 14px;
+  border: 1px solid var(--etat-normal-trait);
+  border-radius: 12px;
+  background: var(--etat-normal-fond);
+  color: var(--etat-normal-clair);
+}
+
+.resultat[data-genre="erreur"] {
+  padding: 12px 14px;
+  border: 1px solid var(--etat-degrade-trait);
+  border-radius: 12px;
+  background: var(--etat-degrade-fond);
+  color: var(--etat-degrade-clair);
+}
+
+.bouton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Hors de l'ecran, pas display:none : certains robots ignorent les champs masques. */
+.piege {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

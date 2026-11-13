@@ -454,6 +454,7 @@ export function publications(): Publication[] {
       id: p.id,
       cible: p.cible,
       auteur: p.auteur,
+      verifie: true,
       ville: ville(p.ville).nom,
       pays: ville(p.ville).pays,
       operateur: p.operateur,

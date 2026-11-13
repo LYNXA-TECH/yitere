@@ -141,11 +141,12 @@ export default async function FicheService({ params }: Props) {
             <h2 id="titre-solutions">{t.fiche.solutionsTitre}</h2>
             <span className={styles.discret}>{t.fiche.solutionsDetail}</span>
           </div>
-          {ecriture && (
-            <Link href={lien(langue, "/publier")} className={styles.bouton}>
-              {t.fiche.partager}
-            </Link>
-          )}
+          <Link
+            href={lien(langue, `/publier?service=${cle}&type=contournement`)}
+            className={styles.bouton}
+          >
+            {t.fiche.partager}
+          </Link>
         </div>
         {!ecriture && solutions.length + demandes.length === 0 ? (
           <p className={styles.vide}>
@@ -154,9 +155,11 @@ export default async function FicheService({ params }: Props) {
         ) : solutions.length === 0 ? (
           <p className={styles.vide}>
             {t.fiche.aucuneSolution}{" "}
-            {ecriture && (
-              <Link href={lien(langue, "/publier")}>{t.fiche.premiere}</Link>
-            )}
+            <Link
+              href={lien(langue, `/publier?service=${cle}&type=contournement`)}
+            >
+              {t.fiche.premiere}
+            </Link>
           </p>
         ) : (
           <ul className={styles.liste}>
@@ -182,11 +185,12 @@ export default async function FicheService({ params }: Props) {
             maintenant={maintenant}
           />
         ))}
-        {ecriture && (
-          <Link href={lien(langue, "/publier")} className={styles.lienSeul}>
-            {t.fiche.demanderAutreVille}
-          </Link>
-        )}
+        <Link
+          href={lien(langue, `/publier?service=${cle}&type=demande`)}
+          className={styles.lienSeul}
+        >
+          {t.fiche.demanderAutreVille}
+        </Link>
       </section>
 
       <Tuiles

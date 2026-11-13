@@ -86,6 +86,9 @@ export function dateCourte(locale: string, iso: string): string {
 
 /** Nom d'un pays d'apres son code ISO : « GN » donne « Guinée », « Guinea ». */
 export function nomPays(locale: string, iso: string): string {
+  // Intl leve une erreur sur un code qui n'est pas ISO (vide, « -99 » du Somaliland) :
+  // une publication sans pays ne doit pas faire tomber la page.
+  if (!/^[A-Z]{2}$/.test(iso)) return iso;
   const noms = memoriser(
     nomsRegions,
     locale,

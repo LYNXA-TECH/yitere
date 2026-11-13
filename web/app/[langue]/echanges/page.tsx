@@ -6,7 +6,12 @@ import {
 } from "@/components/echanges/ListeEchanges";
 import styles from "@/components/echanges/echanges.module.css";
 import { MentionFrancais } from "@/components/MentionFrancais";
-import { contexte, statut } from "@/lib/affichage/publications";
+import {
+  contexte,
+  lieu,
+  signature,
+  statut,
+} from "@/lib/affichage/publications";
 import { ecritureOuverte, lirePublications, lireVerdicts } from "@/lib/donnees";
 import { heureUTC, minutesEntre, nomPays } from "@/lib/format";
 import { dictionnaire } from "@/lib/i18n";
@@ -62,13 +67,13 @@ export default async function Echanges({ params }: Props) {
       statut: s.texte,
       statutCle: s.cle,
       signature: [
-        `@${p.auteur}`,
-        p.ville,
+        signature(p),
+        lieu(p, "fr"),
         t.publication.ilYA(minutesEntre(p.creeLe, maintenant)),
         p.reponses.length
           ? `${p.reponses.length} réponse${p.reponses.length > 1 ? "s" : ""}`
           : "aucune réponse",
-        p.demande ? `${p.demande.suivis} suivent` : "",
+        p.demande?.suivis ? `${p.demande.suivis} suivent` : "",
       ]
         .filter(Boolean)
         .join(" · "),
@@ -95,16 +100,20 @@ export default async function Echanges({ params }: Props) {
             les sondes observaient au moment où elle a été écrite.
           </p>
         </div>
-        {ecritureOuverte(publications) && (
-          <div className={styles.boutons}>
-            <Link href={lien(langue, "/publier")} className={styles.principal}>
-              Partager une solution
-            </Link>
-            <Link href={lien(langue, "/publier")} className={styles.secondaire}>
-              Demander une mesure
-            </Link>
-          </div>
-        )}
+        <div className={styles.boutons}>
+          <Link
+            href={lien(langue, "/publier?type=contournement")}
+            className={styles.principal}
+          >
+            Partager une solution
+          </Link>
+          <Link
+            href={lien(langue, "/publier?type=demande")}
+            className={styles.secondaire}
+          >
+            Demander une mesure
+          </Link>
+        </div>
       </div>
 
       <div lang="fr">
@@ -178,7 +187,9 @@ export default async function Echanges({ params }: Props) {
                     <span key={p.id}>
                       « {p.titre} »{" "}
                       <span className={styles.discret}>
-                        · {p.demande?.suivis} personnes attendent
+                        {p.demande?.suivis
+                          ? `· ${p.demande.suivis} personnes attendent`
+                          : ""}
                       </span>
                     </span>
                   ))}

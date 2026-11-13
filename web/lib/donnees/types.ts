@@ -156,6 +156,12 @@ export type Publication = {
   /** Cle de la cible concernee. */
   cible: string;
   auteur: string;
+  /**
+   * Vrai quand l'auteur est un compte GitHub verifie. Faux pour une publication deposee
+   * sans connexion : le pseudonyme est choisi librement, on l'affiche sans « @ » ni lien.
+   */
+  verifie: boolean;
+  /** Vide quand la publication ne la donne pas (depot sans connexion : le pays seulement). */
   ville: string;
   pays: string;
   operateur: string | null;

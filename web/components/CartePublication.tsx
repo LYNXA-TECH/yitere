@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
 import { BoutonCopier } from "@/components/BoutonCopier";
+import { lieu, signature } from "@/lib/affichage/publications";
 import type { Publication } from "@/lib/donnees/types";
 import { minutesEntre } from "@/lib/format";
 import type { Dictionnaire } from "@/lib/i18n";
@@ -91,8 +92,8 @@ export function CarteSolution({
         )}
         <span className={styles.petit}>
           {[
-            `@${p.auteur}`,
-            p.ville,
+            signature(p),
+            lieu(p, t.locale),
             p.operateur ? pub.operateur(p.operateur) : "",
             pub.ilYA(minutesEntre(p.creeLe, maintenant)),
             p.contexte
@@ -174,11 +175,13 @@ export function CarteDemande({
       </span>
       <span className={styles.petit}>
         {[
-          `@${p.auteur}`,
-          p.ville,
+          signature(p),
+          lieu(p, t.locale),
           pub.ilYA(minutesEntre(p.creeLe, maintenant)),
-          pub.suivent(demande.suivis),
-        ].join(" · ")}
+          demande.suivis ? pub.suivent(demande.suivis) : "",
+        ]
+          .filter(Boolean)
+          .join(" · ")}
       </span>
     </article>
   );

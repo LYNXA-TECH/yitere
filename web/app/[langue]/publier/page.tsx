@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bientot } from "@/components/Bientot";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import { Formulaire } from "@/components/publier/Formulaire";
+import { FormulaireDepot } from "@/components/publier/FormulaireDepot";
 import styles from "@/components/publier/publier.module.css";
 import { texteCause } from "@/lib/affichage/verdicts";
 import { ecritureOuverte, lirePublications, lireVerdicts } from "@/lib/donnees";
-import { heureUTC } from "@/lib/format";
+import { heureUTC, nomPays } from "@/lib/format";
+import { PAYS_AFRIQUE } from "@/lib/geo/afrique";
 import { dictionnaire } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
 import { lien } from "@/lib/navigation";
@@ -26,17 +27,59 @@ export default async function Publier({ params }: Props) {
     lireVerdicts(),
     lirePublications(),
   ]);
+  // Avec l'API : le depot sans connexion GitHub, relu par l'equipe avant publication.
   if (!ecritureOuverte(publications))
     return (
-      <>
+      <main className={styles.page}>
         <MentionFrancais langue={langue} />
-        <Bientot
-          langue={langue}
-          surtitre="Publier"
-          titre="Bientôt"
-          texte={`${t.publication.aucune} ${t.publication.prochaineEtape}`}
-        />
-      </>
+        <nav aria-label="Fil d'Ariane" className={styles.ariane} lang="fr">
+          <Link href={lien(langue, "/echanges")}>Échanges</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Publier</span>
+        </nav>
+        <div lang="fr">
+          <h1>Partager avec les autres développeurs</h1>
+          <p className={styles.chapeau}>
+            Ce qui a marché chez vous peut débloquer quelqu&apos;un d&apos;autre
+            aujourd&apos;hui. Pas besoin de compte : chaque publication est
+            relue par l&apos;équipe avant d&apos;apparaître dans les échanges.
+          </p>
+        </div>
+        <div className={styles.colonnes} lang="fr">
+          <FormulaireDepot
+            services={verdicts.donnees.map((v) => ({
+              cle: v.cible.cle,
+              nom: v.cible.nom,
+            }))}
+            pays={PAYS_AFRIQUE.filter(({ iso }) => /^[A-Z]{2}$/.test(iso))
+              .map(({ iso }): [string, string] => [iso, nomPays("fr", iso)])
+              .sort((a, b) => a[1].localeCompare(b[1], "fr"))}
+          />
+          <aside className={styles.cote}>
+            <div className={styles.avant}>
+              <span className={styles.gras}>Avant de publier</span>
+              <span>
+                Une solution que d&apos;autres peuvent essayer, pas une plainte.
+              </span>
+              <span>
+                Pas de publicité, pas d&apos;accusation sans mesure à
+                l&apos;appui.
+              </span>
+              <span>
+                Votre texte, votre pseudonyme et votre pays s&apos;il est donné
+                sont enregistrés ; jamais votre adresse IP.{" "}
+                <Link href={lien(langue, "/confidentialite")}>
+                  Confidentialité
+                </Link>
+              </span>
+              <span>
+                Confirmer et répondre ouvriront avec la connexion GitHub, après
+                le 23 novembre.
+              </span>
+            </div>
+          </aside>
+        </div>
+      </main>
     );
   const heure = heureUTC("fr", verdicts.lueLe ?? new Date().toISOString());
   // Les services en incident d'abord : c'est la que l'on publie le plus.

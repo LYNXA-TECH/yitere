@@ -51,4 +51,10 @@ describe("nomPays", () => {
     expect(nomPays("fr", "GN")).toBe("Guinée");
     expect(nomPays("en", "GN")).toBe("Guinea");
   });
+
+  it("nomPays ne leve jamais d'erreur : un code vide ou non ISO revient tel quel", () => {
+    expect(nomPays("fr", "SN")).toBe("Sénégal");
+    expect(nomPays("fr", "")).toBe("");
+    expect(nomPays("fr", "-99")).toBe("-99");
+  });
 });

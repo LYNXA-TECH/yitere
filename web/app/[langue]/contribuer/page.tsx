@@ -45,7 +45,8 @@ export default async function Contribuer({ params }: Props) {
     manques.set(m.ville, v);
   }
   for (const p of publications.donnees) {
-    if (!p.demande || p.demande.sondeSurPlace) continue;
+    // Sans ville (depot sans connexion), une demande ne designe aucune ville a equiper.
+    if (!p.demande || p.demande.sondeSurPlace || !p.demande.ville) continue;
     const v = manques.get(p.demande.ville) ?? {
       pays: p.pays,
       demandes: 0,

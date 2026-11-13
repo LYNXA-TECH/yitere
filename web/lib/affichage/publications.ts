@@ -1,5 +1,5 @@
 import type { Publication } from "@/lib/donnees/types";
-import { minutesEntre } from "@/lib/format";
+import { minutesEntre, nomPays } from "@/lib/format";
 import type { Dictionnaire } from "@/lib/i18n";
 
 /** « Publiee pendant la degradation npm · Operateur A · Conakry », ou « Publiee il y a 20 h, hors incident · Dakar ». */
@@ -19,7 +19,7 @@ export function contexte(
   return t.carte.contexteLibre(
     demande,
     t.publication.ilYA(minutesEntre(p.creeLe, maintenant)),
-    p.ville,
+    lieu(p, t.locale),
   );
 }
 
@@ -41,4 +41,17 @@ export function statut(p: Publication, t: Dictionnaire): Statut {
     cle: "confirmee",
     texte: t.carte.aMarchePour(p.confirmations.length, villes, p.confirmee),
   };
+}
+
+/**
+ * Le nom de l'auteur : « @pseudo » pour un compte GitHub verifie, le pseudonyme seul pour
+ * une publication deposee sans connexion (il est choisi librement, il ne prouve rien).
+ */
+export function signature(p: Publication): string {
+  return p.verifie ? `@${p.auteur}` : p.auteur;
+}
+
+/** La ville si la publication la donne, sinon le pays, sinon rien. */
+export function lieu(p: Publication, locale: string): string {
+  return p.ville || (p.pays ? nomPays(locale, p.pays) : "");
 }
