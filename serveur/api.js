@@ -1,4 +1,5 @@
-// YITERE, API. Ecriture : l'ingestion des mesures, authentifiee par jeton de sonde.
+// YITERE, API. Ecritures : l'ingestion des mesures, authentifiee par jeton de sonde, et le
+// depot d'une publication, sans compte, masquee jusqu'a relecture par l'equipe.
 // Lecture publique, sans jeton : cibles, verdicts, sondes, services, fiche d'un service, publications
 // (docs/CONTRAT-API-INTERFACE.md).
 // Aucune adresse IP n'est lue ni stockee.
@@ -63,6 +64,9 @@ async function avecGarde(cle, produire) {
   return valeur;
 }
 
+// Le guichet des depots : un plafond par heure, sans lire aucune adresse IP.
+const depots = publications.guichet();
+
 const serveur = http.createServer((req, res) => {
   const repondre = (code, obj) => {
     res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' });
@@ -121,6 +125,39 @@ const serveur = http.createServer((req, res) => {
          FROM targets WHERE active ORDER BY famille, cle`)
       .then(r => repondre(200, { cibles: r.rows }))
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+
+  // Depot d'une publication, sans compte : elle nait masquee et attend une relecture.
+  if (req.method === 'POST' && chemin === '/api/v1/publications') {
+    if (!/^application\/json\b/i.test(req.headers['content-type'] || ''))
+      return repondre(415, { erreur: 'envoyer du JSON (content-type: application/json)' });
+    let recu = '';
+    let lourd = false;
+    req.on('data', (c) => {
+      recu += c;
+      if (Buffer.byteLength(recu) > publications.CORPS_MAX && !lourd) {
+        lourd = true;
+        repondre(413, { erreur: 'depot trop long' });
+        req.destroy();
+      }
+    });
+    req.on('end', async () => {
+      if (lourd) return;
+      let corps;
+      try { corps = JSON.parse(recu || 'null'); } catch { return repondre(400, { erreur: 'corps invalide' }); }
+      const v = publications.valider(corps);
+      if (!v.ok) return repondre(400, { erreur: v.erreur, champ: v.champ });
+      if (!depots.ouvert()) return repondre(429, { erreur: 'trop de depots cette heure-ci, reessayez plus tard' });
+      try {
+        const r = await publications.deposer(db, v.valeurs);
+        if (!r.ok) return repondre(r.code, { erreur: r.erreur });
+        depots.noter();
+        repondre(201, { statut: 'en-attente', message: 'Merci. Votre publication sera visible apres relecture par l\'equipe.' });
+      } catch {
+        repondre(500, { erreur: 'base injoignable' });
+      }
+    });
+    return;
   }
 
   if (req.method !== 'POST' || chemin !== '/api/v1/mesures')
