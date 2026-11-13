@@ -1,7 +1,7 @@
 # Contrat entre l'API et l'interface web
 
 Rédigé par Aissatou pour Cellou, le 9 novembre 2026. Proposition à discuter.
-Mis à jour le 12 novembre 2026 : verdicts, services, sondes et publications sont branchés (section 5).
+Mis à jour le 13 novembre 2026 : toutes les routes servies sont branchées, la fiche d'un service comprise (section 5).
 
 L'interface affiche aujourd'hui des données d'exemple, avec un badge qui le dit. Une seule
 lecture est réelle : `GET /api/v1/cibles`. Ce document liste les trois routes de lecture
@@ -191,10 +191,16 @@ dont des sondes sont en rodage (`sondes_en_rodage > 0`) s'affiche « En rodage �
 quatre lectures réelles, le badge « Données d'exemple » disparaît de l'en-tête ; ce qui
 reste un exemple le dit sur place.
 
-Restent des exemples pour le 15 novembre : le détail d'une fiche (`services/{cle}` :
-courbes et décomposition du temps, avec une mention au-dessus) et la frise des incidents.
-Sur l'accueil, la frise ne pose rien qui vienne de l'exemple quand les verdicts sont réels :
-un incident du 3 novembre ne se place pas à côté de mesures du jour.
+`GET /api/v1/services/{cle}` (PR #17) est branchée depuis le 13 novembre : les courbes,
+la bande habituelle (absente quand `habituel` vaut `null`), le repère et « Où part le
+temps ». La barre se trace avec `dns`, `connexion`, `tls` et `attente` ; `premier_octet`,
+leur somme, est le total affiché, jamais une cinquième étape. Sous la barre, la phrase est
+tirée des chiffres : l'étape qui s'allonge le plus pour la sonde touchée, face à la sonde
+épargnée. Une clé inconnue (404) donne la page introuvable. La mention « Données
+d'exemple » disparaît des fiches.
+
+La frise des incidents n'a pas de route avant la soumission : avec l'API, elle reste vide.
+Plus rien d'exemple ne s'affiche en production.
 
 Si une route répond une erreur ou une forme inattendue, la page échoue au lieu d'afficher
 un exemple à la place : avec le cache de 60 secondes, Next.js continue de servir la
