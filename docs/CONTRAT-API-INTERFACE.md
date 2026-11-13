@@ -174,6 +174,28 @@ référence répond 404. Quatre écarts avec le type de l'interface :
 - les courbes ne couvrent que ce qui a été mesuré : une sonde récente a des `null` au début
   de ses 7 jours, et le repère de Madrid n'a pas de courbe (il est dans `repere`).
 
+`POST /api/v1/publications` est servie depuis le 13 novembre : le dépôt d'une publication
+sans compte. Corps JSON (`content-type: application/json` obligatoire, 8 Ko au plus) :
+
+```
+{ "cible": "npm", "type": "contournement" | "demande", "pseudonyme": "Kadi",
+  "contenu": "20 à 1000 caractères", "commande": "facultatif, 300 au plus",
+  "pays": "facultatif, GN", "site": "" }
+```
+
+Le pseudonyme s'envoie sous `pseudonyme` ou sous `auteur`, le nom qu'il porte à la lecture.
+`site` est un leurre : le formulaire le garde vide et invisible, un robot le remplit.
+Réponses : `201 { "statut": "en-attente", "message": … }` ; `400 { "erreur", "champ" }`
+avec le champ en cause, pour l'afficher sous le bon champ ; `404` service inconnu ;
+`413` trop long ; `415` pas du JSON ; `429` trop de dépôts cette heure-ci ; `503` file de
+relecture pleine. **Le dépôt n'apparaît nulle part avant relecture par l'équipe**
+(`docs/RELIRE-LES-PUBLICATIONS.md`) : après un `201`, l'interface remercie et dit que la
+publication sera visible après relecture, elle ne l'ajoute pas à la liste.
+
+À la lecture, chaque publication porte en plus `verifie` : `false` pour un pseudonyme
+déposé sans compte (ne pas l'afficher comme un compte GitHub, pas de « @ », pas de lien),
+`true` pour un compte GitHub quand la connexion existera.
+
 `GET /api/v1/publications` (avec ou sans `?cible=`) est servie en lecture seule, à la
 forme de la section 3 : liste vide tant que personne ne publie, 404 pour une cible
 inconnue. Les champs de la section 4 (titre, confirmations, réponses...) n'existent pas
