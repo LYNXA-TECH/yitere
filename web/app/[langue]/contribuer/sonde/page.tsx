@@ -4,7 +4,12 @@ import { BoutonConnexion } from "@/components/BoutonConnexion";
 import { BoutonCopier } from "@/components/BoutonCopier";
 import styles from "@/components/contribuer/contribuer.module.css";
 import { MentionFrancais } from "@/components/MentionFrancais";
-import { estService, lireCibles } from "@/lib/donnees";
+import {
+  ecritureOuverte,
+  estService,
+  lireCibles,
+  lirePublications,
+} from "@/lib/donnees";
 import { dictionnaire } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
 import { lien } from "@/lib/navigation";
@@ -12,6 +17,9 @@ import { lien } from "@/lib/navigation";
 type Props = { params: Promise<{ langue: string }> };
 
 export const metadata: Metadata = { title: "Héberger une sonde" };
+
+/** L'adresse que donne docs/INSTALLER-UNE-SONDE.md pour demander ou desactiver une cle. */
+const CONTACT = "contact@lynxatech.com";
 
 const SONDE =
   "https://raw.githubusercontent.com/LYNXA-TECH/yitere/main/sonde/sonde.js";
@@ -30,6 +38,8 @@ export default async function HebergerSonde({ params }: Props) {
   const langue = await langueDe(params);
   const t = dictionnaire("fr");
   const cibles = (await lireCibles()).donnees;
+  // Sans connexion GitHub (avant le 23 novembre), la cle se demande a l'equipe.
+  const connexion = ecritureOuverte(await lirePublications());
   const services = cibles.filter(estService);
   const references = cibles.length - services.length;
   const noms = new Intl.DisplayNames("fr", { type: "region" });
@@ -84,63 +94,100 @@ export default async function HebergerSonde({ params }: Props) {
       <section aria-labelledby="etapes" className={styles.section} lang="fr">
         <h2 id="etapes">Quatre étapes, environ cinq minutes</h2>
         <div className={styles.grille}>
-          <div className={styles.etape} data-active>
-            <span className={styles.numero}>1 · à faire maintenant</span>
-            <h3>Se connecter</h3>
-            <p className={styles.corps}>
-              Avec GitHub. La connexion sert seulement à vous attribuer une clé,
-              et à retrouver vos sondes dans « Mes sondes ».
-            </p>
-            <BoutonConnexion
-              className={styles.github}
-              message={t.publication.connexionRequise}
-            >
-              Se connecter avec GitHub
-            </BoutonConnexion>
-          </div>
-          <form className={styles.etape} action={lien(langue, "/moi")}>
-            <span className={styles.numero}>2 · ensuite</span>
-            <h3>Décrire votre sonde</h3>
-            <div className={styles.champ}>
-              <label htmlFor="s-pseudo">Pseudonyme affiché</label>
-              <input
-                id="s-pseudo"
-                name="pseudonyme"
-                placeholder="lynx-conakry-2"
-              />
-              <span className={styles.petit}>
-                Jamais votre nom ni votre compte GitHub.
-              </span>
-            </div>
-            <div className={styles.champ}>
-              <label htmlFor="s-pays">Pays</label>
-              <select id="s-pays" name="pays" defaultValue="GN">
-                {pays.map((p) => (
-                  <option key={p.iso} value={p.iso}>
-                    {p.nom}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.champ}>
-              <label htmlFor="s-ville">Ville</label>
-              <input id="s-ville" name="ville" placeholder="Conakry" />
-              <span className={styles.petit}>
-                Jamais plus précise que la ville.
-              </span>
-            </div>
-            <label className={styles.case}>
-              <input type="checkbox" required />
-              J&apos;ai lu ce que la sonde mesure, ce qui est publié et comment
-              l&apos;arrêter (ci-dessous).
-            </label>
-            <BoutonConnexion
-              className={styles.bouton}
-              message={t.publication.connexionRequise}
-            >
-              Obtenir ma clé de sonde
-            </BoutonConnexion>
-          </form>
+          {connexion ? (
+            <>
+              <div className={styles.etape} data-active>
+                <span className={styles.numero}>1 · à faire maintenant</span>
+                <h3>Se connecter</h3>
+                <p className={styles.corps}>
+                  Avec GitHub. La connexion sert seulement à vous attribuer une
+                  clé, et à retrouver vos sondes dans « Mes sondes ».
+                </p>
+                <BoutonConnexion
+                  className={styles.github}
+                  message={t.publication.connexionRequise}
+                >
+                  Se connecter avec GitHub
+                </BoutonConnexion>
+              </div>
+              <form className={styles.etape} action={lien(langue, "/moi")}>
+                <span className={styles.numero}>2 · ensuite</span>
+                <h3>Décrire votre sonde</h3>
+                <div className={styles.champ}>
+                  <label htmlFor="s-pseudo">Pseudonyme affiché</label>
+                  <input
+                    id="s-pseudo"
+                    name="pseudonyme"
+                    placeholder="lynx-conakry-2"
+                  />
+                  <span className={styles.petit}>
+                    Jamais votre nom ni votre compte GitHub.
+                  </span>
+                </div>
+                <div className={styles.champ}>
+                  <label htmlFor="s-pays">Pays</label>
+                  <select id="s-pays" name="pays" defaultValue="GN">
+                    {pays.map((p) => (
+                      <option key={p.iso} value={p.iso}>
+                        {p.nom}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.champ}>
+                  <label htmlFor="s-ville">Ville</label>
+                  <input id="s-ville" name="ville" placeholder="Conakry" />
+                  <span className={styles.petit}>
+                    Jamais plus précise que la ville.
+                  </span>
+                </div>
+                <label className={styles.case}>
+                  <input type="checkbox" required />
+                  J&apos;ai lu ce que la sonde mesure, ce qui est publié et
+                  comment l&apos;arrêter (ci-dessous).
+                </label>
+                <BoutonConnexion
+                  className={styles.bouton}
+                  message={t.publication.connexionRequise}
+                >
+                  Obtenir ma clé de sonde
+                </BoutonConnexion>
+              </form>
+            </>
+          ) : (
+            <>
+              <div className={styles.etape} data-active>
+                <span className={styles.numero}>1 · à faire maintenant</span>
+                <h3>Demander votre clé</h3>
+                <p className={styles.corps}>
+                  Écrivez-nous avec votre ville, votre pays et votre opérateur.
+                  L&apos;équipe vous répond avec une clé personnelle.
+                </p>
+                <a
+                  className={styles.github}
+                  href={`mailto:${CONTACT}?subject=${encodeURIComponent("Héberger une sonde YITERE")}`}
+                >
+                  Nous écrire
+                </a>
+                <p className={styles.petit}>
+                  {CONTACT}. La connexion avec GitHub, qui donnera la clé
+                  directement, ouvre après le 23 novembre.
+                </p>
+              </div>
+              <div className={styles.etape}>
+                <span className={styles.numero}>2 · ensuite</span>
+                <h3>Recevoir votre clé</h3>
+                <p className={styles.corps}>
+                  L&apos;équipe enregistre votre sonde sous un pseudonyme, avec
+                  votre pays et votre ville, jamais plus précis. Jamais votre
+                  nom.
+                </p>
+                <p className={styles.petit}>
+                  La clé est personnelle : ne la publiez pas.
+                </p>
+              </div>
+            </>
+          )}
           <div className={`${styles.etape} ${styles.lancer}`}>
             <span className={styles.numero}>3 · ensuite</span>
             <h3>Lancer la commande</h3>

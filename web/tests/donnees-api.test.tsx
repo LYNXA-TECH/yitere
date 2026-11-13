@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Accueil from "@/app/[langue]/page";
 import FicheService from "@/app/[langue]/services/[cle]/page";
+import HebergerSonde from "@/app/[langue]/contribuer/sonde/page";
 import Echanges from "@/app/[langue]/echanges/page";
 import MonEspace from "@/app/[langue]/moi/page";
 import Publier from "@/app/[langue]/publier/page";
@@ -357,6 +358,16 @@ describe("pages traduites branchees sur l'API", () => {
       expect(html).toContain("<h1>Bientôt</h1>");
       expect(html).not.toContain("@lynx-conakry-1");
     }
+  });
+
+  it("heberger une sonde : la cle se demande par courriel, pas « Se connecter avec GitHub »", async () => {
+    const html = renderToStaticMarkup(
+      await HebergerSonde({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain("Demander votre clé");
+    expect(html).toContain('href="mailto:contact@lynxatech.com');
+    expect(html).toContain("ouvre après le 23 novembre");
+    expect(html).not.toContain("Se connecter avec GitHub");
   });
 
   it("services : l'onglet navigateur ne compte plus de mesures d'exemple", async () => {
