@@ -11,6 +11,8 @@ import {
 } from "./exemple";
 import {
   estReponseServices,
+  detailDepuisApi,
+  estDetail,
   estReponsePublications,
   estReponseSondes,
   estReponseVerdicts,
@@ -159,18 +161,40 @@ const exemple = <T>(donnees: T): Lecture<T> => ({
 });
 
 /** Le detail d'un service, ou null s'il n'en a pas (cible de reference, cible inconnue). */
+/** La fiche d'un service : courbes, bande habituelle, repere, ou part le temps. Null si la cle est inconnue. */
 export async function lireDetail(
   cle: string,
+  source: NomSource = choisirSource(),
 ): Promise<Lecture<DetailService | null>> {
-  return exemple(
-    VERDICTS_EXEMPLE.some((v) => v.cible.cle === cle)
-      ? detailExemple(cle)
-      : null,
+  if (source === "exemple")
+    return exemple(
+      VERDICTS_EXEMPLE.some((v) => v.cible.cle === cle)
+        ? detailExemple(cle)
+        : null,
+    );
+  const reponse = await fetch(
+    `${adresseApi()}/api/v1/services/${encodeURIComponent(cle)}`,
+    { next: { revalidate: FRAICHEUR_SECONDES } },
   );
+  if (reponse.status === 404)
+    return { donnees: null, source, lueLe: new Date().toISOString() };
+  if (!reponse.ok)
+    throw new Error(`GET /api/v1/services/${cle} a repondu ${reponse.status}`);
+  const corps: unknown = await reponse.json();
+  if (!estDetail(corps))
+    throw new Error(`GET /api/v1/services/${cle} : reponse inattendue`);
+  return { donnees: detailDepuisApi(corps), source, lueLe: corps.calcule_le };
 }
 
-export async function lireIncidents(): Promise<Lecture<Incident[]>> {
-  return exemple(INCIDENTS_EXEMPLE);
+/**
+ * La frise des incidents. L'API n'a pas encore de route : avec elle, la frise reste vide
+ * plutot que de montrer des incidents d'exemple a cote des vraies mesures.
+ */
+export async function lireIncidents(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<Incident[]>> {
+  if (source === "exemple") return exemple(INCIDENTS_EXEMPLE);
+  return { donnees: [], source, lueLe: new Date().toISOString() };
 }
 
 /**

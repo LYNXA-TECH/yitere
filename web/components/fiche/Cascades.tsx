@@ -10,6 +10,7 @@ export function Cascades({
   inconnu,
   ms,
   lecture,
+  detail,
 }: {
   cascades: Cascade[];
   t: Dictionnaire["fiche"];
@@ -17,14 +18,17 @@ export function Cascades({
   inconnu: string;
   ms: (n: number) => string;
   lecture: string;
+  /** La phrase sous le titre (d'ou viennent les deux barres). */
+  detail: string;
 }) {
-  const total = (c: Cascade) => c.dns + c.connexion + c.tls + c.premierOctet;
+  // Le temps au premier octet est la somme des quatre etapes, pas une cinquieme etape.
+  const total = (c: Cascade) => c.premierOctet;
   const plusLong = Math.max(...cascades.map(total));
   return (
     <section aria-labelledby="temps" className={styles.cadre}>
       <div>
         <h2 id="temps">{t.tempsTitre}</h2>
-        <span className={styles.petit}>{t.tempsDetail}</span>
+        <span className={styles.petit}>{detail}</span>
       </div>
       {cascades.map((c) => {
         const etapes = [
@@ -32,8 +36,8 @@ export function Cascades({
           { nom: t.connexion, ms: c.connexion, cle: "connexion" },
           { nom: t.tls, ms: c.tls, cle: "tls" },
           {
-            nom: t.premierOctet,
-            ms: c.premierOctet,
+            nom: t.attente,
+            ms: c.attente,
             cle: c.statut === "touchee" ? "octet-touchee" : "octet",
           },
         ];

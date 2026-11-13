@@ -269,8 +269,11 @@ export const en: Partielle<Dictionnaire> = {
     j7: "7 days",
     maintenant: "now",
     jourMoins: (n: number) => `D−${n}`,
+    // Sans operateur detecte, la sonde se nomme par sa ville : « Dakar·1 », jamais « ?·1 ».
     abregeSonde: (operateur: string | null, numero: number, ville: string) =>
-      `${(operateur ?? "?").replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
+      operateur === null
+        ? `${ville}·${numero}`
+        : `${operateur.replace(/^Opérateur /, "Op. ")}·${numero} ${ville.slice(0, 3)}`,
     enRodage: "(warming up)",
     lectureOperateur: (operateur: string) =>
       `Only the ${operateur} probes drop, at the same moment. The other operators stay within their usual range, and so does the Madrid reference: the service works, the problem is on the path.`,
@@ -289,7 +292,16 @@ export const en: Partielle<Dictionnaire> = {
     connexion: "Connection",
     tls: "TLS handshake",
     premierOctet: "First byte",
-    total: (valeur: string) => `Total ${valeur}`,
+    attente: "Server wait",
+    total: (valeur: string) => `First byte ${valeur}`,
+    tempsDetailApi:
+      "Last run of one affected and one unaffected probe. Same scale for both bars.",
+    tempsLectureEcart: (etape: string, touchee: string, epargnee: string) =>
+      `For the affected probe, the "${etape}" step grows the most: ${touchee}, against ${epargnee} for the unaffected probe. The measurements do not say where on the path.`,
+    tempsLecturePareil:
+      "On this run, the affected probe is not slower than the unaffected one at any step.",
+    tempsLectureSeul:
+      "Only one run broken down so far: an affected and an unaffected probe are needed to compare.",
     tempsLectureOperateur: (operateur: string) =>
       `On ${operateur}, connection and encryption take more than twice as long, and the wait for the first byte grows sharply. DNS resolution barely changes: the service's name is found, it is the exchange with the server that is slow. The measurements do not say where on the path.`,
     tempsLecture:

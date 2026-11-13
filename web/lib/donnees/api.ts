@@ -1,5 +1,7 @@
 import type {
+  Cascade,
   Cause,
+  DetailService,
   Etat,
   Publication,
   ResumeService,
@@ -278,5 +280,92 @@ export function estReponsePublications(x: unknown): x is ReponsePublications {
         typeof p.contenu === "string" &&
         (p.type === "contournement" || p.type === "demande"),
     )
+  );
+}
+
+/*
+ * GET /api/v1/services/{cle} (serveur/detail.js, PR #17) : la fiche d'un service.
+ * Ecarts au contrat, repris tels quels : habituel vaut null sans sonde jugee ; chaque
+ * cascade donne dns, connexion, tls, attente, et premier_octet qui est leur somme ;
+ * chaque cascade porte mesure_le ; les courbes ont des null la ou rien n'a ete mesure.
+ */
+
+type SondeDesigneeApi = {
+  pseudonyme: string;
+  operateur: string | null;
+  ville: string;
+  numero: number;
+};
+
+export type DetailApi = {
+  calcule_le: string;
+  cle: string;
+  unite: Unite;
+  heures_24: string[];
+  heures_7j: string[];
+  series_24: SerieApi[];
+  series_7j: SerieApi[];
+  habituel: { min: number; max: number } | null;
+  debut_incident_24: number | null;
+  repere: { valeur: number | null; etat: "normal" | "degrade" | "exclu" };
+  cascades: {
+    sonde: SondeDesigneeApi;
+    statut: "touchee" | "epargnee";
+    mesure_le: string;
+    dns: number;
+    connexion: number;
+    tls: number;
+    attente: number;
+    premier_octet: number;
+  }[];
+};
+
+type SerieApi = {
+  sonde: SondeDesigneeApi;
+  statut: "touchee" | "epargnee" | "rodage";
+  points: (number | null)[];
+};
+
+export function detailDepuisApi(d: DetailApi): DetailService {
+  const serie = (s: SerieApi) => ({
+    sonde: { ...s.sonde },
+    statut: s.statut,
+    points: s.points,
+  });
+  return {
+    cle: d.cle,
+    unite: d.unite,
+    heures24: d.heures_24,
+    heures7j: d.heures_7j,
+    series24: d.series_24.map(serie),
+    series7j: d.series_7j.map(serie),
+    habituel: d.habituel,
+    debutIncident24: d.debut_incident_24,
+    repere: d.repere,
+    cascades: d.cascades.map((c): Cascade => ({
+      sonde: { ...c.sonde },
+      statut: c.statut,
+      mesureLe: c.mesure_le,
+      dns: c.dns,
+      connexion: c.connexion,
+      tls: c.tls,
+      attente: c.attente,
+      premierOctet: c.premier_octet,
+    })),
+  };
+}
+
+export function estDetail(x: unknown): x is DetailApi {
+  return (
+    objet(x) &&
+    typeof x.cle === "string" &&
+    typeof x.calcule_le === "string" &&
+    Array.isArray(x.heures_24) &&
+    Array.isArray(x.heures_7j) &&
+    Array.isArray(x.series_24) &&
+    Array.isArray(x.series_7j) &&
+    Array.isArray(x.cascades) &&
+    objet(x.repere) &&
+    (x.habituel === null || objet(x.habituel))
   );
 }

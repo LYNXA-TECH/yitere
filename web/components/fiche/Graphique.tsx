@@ -101,7 +101,8 @@ function Courbes({
   series: Serie[];
   heures: string[];
   debutIncident: number | null;
-  habituel: { min: number; max: number };
+  /** Null tant qu'aucune sonde n'est jugee : pas de bande a tracer. */
+  habituel: { min: number; max: number } | null;
   langue: Langue;
   t: Dictionnaire["fiche"];
   septJours: boolean;
@@ -165,13 +166,15 @@ function Courbes({
       aria-label={description}
       className={styles.svg}
     >
-      <rect
-        x={G}
-        y={Y(habituel.max * 1.06)}
-        width={D - G}
-        height={Y(habituel.min * 0.94) - Y(habituel.max * 1.06)}
-        fill="var(--bande-habituelle)"
-      />
+      {habituel && (
+        <rect
+          x={G}
+          y={Y(habituel.max * 1.06)}
+          width={D - G}
+          height={Y(habituel.min * 0.94) - Y(habituel.max * 1.06)}
+          fill="var(--bande-habituelle)"
+        />
+      )}
       {graduations.map((g) => (
         <g key={g.y}>
           <line x1={G} x2={D} y1={g.y} y2={g.y} stroke="var(--trait)" />

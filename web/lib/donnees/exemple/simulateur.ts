@@ -386,6 +386,9 @@ function cascades(cle: string, v: Verdict): Cascade[] {
   return [touchee, epargnee].flatMap((p) => {
     if (!p) return [];
     const lente = p.statut === "touchee" && operateur;
+    const dns = lente ? 38 : 23;
+    const connexion = lente ? 186 : 76;
+    const tls = lente ? 352 : 144;
     return [
       {
         sonde: {
@@ -395,9 +398,12 @@ function cascades(cle: string, v: Verdict): Cascade[] {
           numero: p.numero,
         },
         statut: p.statut,
-        dns: lente ? 38 : 23,
-        connexion: lente ? 186 : 76,
-        tls: lente ? 352 : 144,
+        mesureLe: null,
+        dns,
+        connexion,
+        tls,
+        // Le temps au premier octet est la somme des quatre etapes : l'attente est ce qui reste.
+        attente: Math.max(0, p.valeur - dns - connexion - tls),
         premierOctet: p.valeur,
       },
     ];
