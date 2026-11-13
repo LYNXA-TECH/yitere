@@ -576,4 +576,11 @@ describe("pages traduites branchees sur l'API", () => {
     const { lireDetail } = await import("@/lib/donnees");
     expect((await lireDetail("inconnu", "api")).donnees).toBeNull();
   });
+
+  it("la frise des incidents reste vide : pas de route, pas d'incident d'exemple", async () => {
+    const { lireIncidents } = await import("@/lib/donnees");
+    const lecture = await lireIncidents("api");
+    expect(lecture.donnees).toEqual([]);
+    expect(lecture.source).toBe("api");
+  });
 });

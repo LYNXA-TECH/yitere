@@ -186,8 +186,15 @@ export async function lireDetail(
   return { donnees: detailDepuisApi(corps), source, lueLe: corps.calcule_le };
 }
 
-export async function lireIncidents(): Promise<Lecture<Incident[]>> {
-  return exemple(INCIDENTS_EXEMPLE);
+/**
+ * La frise des incidents. L'API n'a pas encore de route : avec elle, la frise reste vide
+ * plutot que de montrer des incidents d'exemple a cote des vraies mesures.
+ */
+export async function lireIncidents(
+  source: NomSource = choisirSource(),
+): Promise<Lecture<Incident[]>> {
+  if (source === "exemple") return exemple(INCIDENTS_EXEMPLE);
+  return { donnees: [], source, lueLe: new Date().toISOString() };
 }
 
 /**
