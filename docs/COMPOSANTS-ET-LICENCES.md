@@ -63,9 +63,13 @@ embarque libvips, sous LGPL, et YITERE n'optimise aucune image côté serveur.
 
 ## Logiciels d'exploitation
 
-Utilisés pour faire tourner YITERE, ni modifiés ni redistribués avec le dépôt.
+Utilisés pour faire tourner YITERE sur le serveur de mesure. Ils ne font pas partie du
+dépôt : ils ne sont ni modifiés, ni distribués avec YITERE, et aucun code de YITERE n'en
+dérive.
 
-| Logiciel | Licence |
-|---|---|
-| Node.js | MIT |
-| PostgreSQL 16 | PostgreSQL License (permissive) |
+| Logiciel | Version | Licence | Rôle |
+|---|---|---|---|
+| Node.js | 20 ou plus | MIT | Exécute le serveur, la sonde et l'interface |
+| PostgreSQL | 16 | PostgreSQL License (permissive) | Base de mesures |
+| nginx | 1.24.0 | BSD-2-Clause | Frontal HTTPS, renvoie vers l'interface et l'API |
+| Ubuntu | 24.04.4 LTS | Système hôte, licences de la distribution | Système du serveur |
