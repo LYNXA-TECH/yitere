@@ -65,6 +65,9 @@ export function ChoixLangue({
           key={autre}
           href={`/${autre}${suite}`}
           hrefLang={autre}
+          // Pas de prechargement : changer de langue est rare, et sur une page introuvable
+          // l'adresse dans l'autre langue n'existe pas non plus.
+          prefetch={false}
           lang={autre}
           aria-current={autre === langue ? "true" : undefined}
           title={NOMS_LANGUES[autre]}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useVueCarte, ZOOM_MAX } from "./useVueCarte";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type {
   Bande,
   EtatSonde,
@@ -31,7 +32,6 @@ type Props = {
 };
 
 const DERNIERE = 23;
-const ZOOMS = [1, 1.6, 2.5, 4];
 const VITESSES = [1, 2, 4];
 
 /** Pire etat d'une sonde a une heure, pour un service ou pour tous. */
@@ -57,7 +57,8 @@ export function CarteInteractive(p: Props) {
   const [cle, setCle] = useState("tous");
   const [lecture, setLecture] = useState(false);
   const [vitesse, setVitesse] = useState(0);
-  const [zoom, setZoom] = useState(0);
+  const carte = useVueCarte();
+  const { vue: v0 } = carte;
   const [vue, setVue] = useState<"carte" | "liste">("carte");
   const [avecNavigateur, setAvecNavigateur] = useState(false);
   const [avecEntraide, setAvecEntraide] = useState(true);
@@ -97,26 +98,47 @@ export function CarteInteractive(p: Props) {
 
   const direct = pas === DERNIERE;
   const placees = p.villes.filter((v) => v.x !== null && v.y !== null);
-  // Le zoom se fait autour des sondes, la ou il y a quelque chose a voir.
+  // Le premier zoom se fait autour des sondes, la ou il y a quelque chose a voir.
   const centre = placees.length
     ? {
         x: placees.reduce((s, v) => s + (v.x ?? 0), 0) / placees.length,
         y: placees.reduce((s, v) => s + (v.y ?? 0), 0) / placees.length,
       }
     : { x: p.largeur / 2, y: p.hauteur / 2 };
+  /** Un point de la carte (unites du dessin) en pixels du cadre, le dessin etant centre et contenu. */
+  const versPixels = (l: number, h: number) => {
+    const s = Math.min(l / p.largeur, h / p.hauteur);
+    return {
+      x: (l - p.largeur * s) / 2 + centre.x * s,
+      y: (h - p.hauteur * s) / 2 + centre.y * s,
+    };
+  };
+  // Les pastilles et les noms gardent leur taille a l'ecran, quel que soit le zoom.
+  const inverse = 1 / v0.k;
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
   return (
     <div className={styles.disposition} data-page="carte">
       <section aria-label={t.description} className={styles.scene}>
-        <div className={styles.plateau}>
+        <div
+          className={styles.plateau}
+          ref={carte.cadre}
+          data-vue={vue}
+          data-zoom={v0.k > 1 || undefined}
+          {...(vue === "carte" ? carte.gestes : {})}
+        >
           {vue === "carte" ? (
             <div
+              ref={carte.contenu}
               className={styles.zoom}
-              style={{
-                transform: `scale(${ZOOMS[zoom]})`,
-                transformOrigin: `${(centre.x / p.largeur) * 100}% ${(centre.y / p.hauteur) * 100}%`,
-              }}
+              data-geste={carte.geste || undefined}
+              data-zoom={v0.k > 1 || undefined}
+              style={
+                {
+                  transform: `translate(${v0.x}px, ${v0.y}px) scale(${v0.k})`,
+                  "--k": v0.k,
+                } as CSSProperties
+              }
             >
               {p.fond}
               <svg
@@ -142,9 +164,9 @@ export function CarteInteractive(p: Props) {
                       <circle
                         key={i}
                         className={styles.navigateur}
-                        cx={m.x + ((i % 3) - 1) * 9}
-                        cy={m.y + 22 + (i % 2) * 8}
-                        r={4}
+                        cx={m.x + ((i % 3) - 1) * 9 * inverse}
+                        cy={m.y + (22 + (i % 2) * 8) * inverse}
+                        r={4 * inverse}
                       />
                     ))}
                 {placees.map((v) => {
@@ -175,43 +197,25 @@ export function CarteInteractive(p: Props) {
                           setSelection(v.nom);
                       }}
                     >
-                      <circle
-                        className={styles.pulsation}
-                        cx={v.x ?? 0}
-                        cy={v.y ?? 0}
-                        r={20}
-                      />
-                      {etat === "degrade" && (
-                        <circle
-                          className={styles.anneau}
-                          cx={v.x ?? 0}
-                          cy={v.y ?? 0}
-                          r={24}
-                        />
-                      )}
-                      <circle
-                        className={styles.point}
-                        cx={v.x ?? 0}
-                        cy={v.y ?? 0}
-                        r={15}
-                      />
-                      <text
-                        x={v.x ?? 0}
-                        y={v.y ?? 0}
-                        dy="0.35em"
-                        textAnchor="middle"
-                        className={styles.nombre}
+                      <g
+                        transform={`translate(${v.x ?? 0} ${v.y ?? 0}) scale(${inverse})`}
                       >
-                        {presentes.length}
-                      </text>
-                      <text
-                        x={(v.x ?? 0) + 24}
-                        y={v.y ?? 0}
-                        dy="0.35em"
-                        className={styles.nomVille}
-                      >
-                        {v.nom}
-                      </text>
+                        <circle className={styles.pulsation} r={20} />
+                        {etat === "degrade" && (
+                          <circle className={styles.anneau} r={24} />
+                        )}
+                        <circle className={styles.point} r={15} />
+                        <text
+                          dy="0.35em"
+                          textAnchor="middle"
+                          className={styles.nombre}
+                        >
+                          {presentes.length}
+                        </text>
+                        <text x={24} dy="0.35em" className={styles.nomVille}>
+                          {v.nom}
+                        </text>
+                      </g>
                     </g>
                   );
                 })}
@@ -250,8 +254,8 @@ export function CarteInteractive(p: Props) {
             <nav aria-label={t.niveau} className={styles.groupe}>
               <button
                 type="button"
-                aria-current="true"
-                onClick={() => setZoom(0)}
+                aria-current={v0.k === 1 || undefined}
+                onClick={carte.recentrer}
               >
                 {t.afrique}
               </button>
@@ -302,10 +306,13 @@ export function CarteInteractive(p: Props) {
 
           {vue === "carte" && (
             <>
-              <span className={styles.repere}>
-                <span aria-hidden="true" className={styles.carreRepere} />
-                {t.repere}
-              </span>
+              {/* Etiquette fixe, qui ne suit pas le zoom : on ne la montre qu'a la vue entiere. */}
+              {v0.k === 1 && (
+                <span className={styles.repere}>
+                  <span aria-hidden="true" className={styles.carreRepere} />
+                  {t.repere}
+                </span>
+              )}
               <div className={styles.legende}>
                 <span className={styles.gras}>{t.legende}</span>
                 <span data-symbole="normal">{t.legendeNormal}</span>
@@ -319,9 +326,9 @@ export function CarteInteractive(p: Props) {
                 <button
                   type="button"
                   aria-label={t.zoomer}
-                  disabled={zoom === ZOOMS.length - 1}
+                  disabled={v0.k >= ZOOM_MAX}
                   onClick={() =>
-                    setZoom((z) => Math.min(z + 1, ZOOMS.length - 1))
+                    carte.zoomer(1, v0.k === 1 ? versPixels : undefined)
                   }
                 >
                   +
@@ -329,8 +336,8 @@ export function CarteInteractive(p: Props) {
                 <button
                   type="button"
                   aria-label={t.dezoomer}
-                  disabled={zoom === 0}
-                  onClick={() => setZoom((z) => Math.max(z - 1, 0))}
+                  disabled={v0.k <= 1}
+                  onClick={() => carte.zoomer(-1)}
                 >
                   −
                 </button>

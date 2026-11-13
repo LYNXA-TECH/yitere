@@ -203,12 +203,13 @@ function Courbes({
           </text>
         </g>
       ))}
+      {/* Premiere et derniere etiquettes alignees sur leur bord : aucune n'est coupee. */}
       {reperes.map((i) => (
         <text
           key={i}
           x={X(i)}
           y={284}
-          textAnchor="middle"
+          textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
           className={styles.axe}
         >
           {etiquetteX(i)}

@@ -22,9 +22,11 @@ export function Bientot({ langue, surtitre, titre, texte }: Props) {
         <h1>{titre}</h1>
         <p className={styles.chapeau}>{texte}</p>
         <p>
-          <Link href={lien(langue, "/echanges")}>Voir les échanges</Link>
+          <Link href={lien(langue, "/echanges")} className="lien-tactile">
+            Voir les échanges
+          </Link>
           {" · "}
-          <Link href={lien(langue, "/mesurer")}>
+          <Link href={lien(langue, "/mesurer")} className="lien-tactile">
             Mesurer depuis chez moi, sans compte
           </Link>
         </p>

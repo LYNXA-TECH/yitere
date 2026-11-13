@@ -325,7 +325,7 @@ export default async function Services({ params }: Props) {
 
         <p className={styles.petit}>
           {s.noteReferences}{" "}
-          <Link href={lien(langue, "/methodologie")}>
+          <Link href={lien(langue, "/methodologie")} className="lien-tactile">
             {s.commentCestCalcule}
           </Link>
         </p>

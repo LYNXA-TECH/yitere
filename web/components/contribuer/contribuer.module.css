@@ -44,6 +44,13 @@
   font-size: 14px;
 }
 
+/* Chaque lien du fil d'Ariane fait au moins 24 px de haut au toucher. */
+.ariane a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
 .ariane [aria-current] {
   color: var(--texte);
 }
@@ -397,4 +404,11 @@
   .page h1 {
     font-size: 32px;
   }
+}
+
+/* Le bouton de l'etape 1 est un lien (courriel) tant que la connexion GitHub n'existe pas. */
+a.github {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }

@@ -309,7 +309,10 @@ export default async function Accueil({ params }: Props) {
             </section>
             <p className={styles.note}>
               {c.note}{" "}
-              <Link href={lien(langue, "/methodologie")}>
+              <Link
+                href={lien(langue, "/methodologie")}
+                className="lien-tactile"
+              >
                 {t.verdict.lienMethode}
               </Link>
             </p>

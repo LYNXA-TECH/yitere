@@ -8,6 +8,9 @@
 
 html {
   color-scheme: dark; /* barres de defilement et champs natifs en theme sombre */
+  /* La place de la barre de defilement est toujours reservee : une page courte et une page
+     longue ont la meme largeur, l'en-tete ne se decale pas d'une page a l'autre. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -17,6 +20,13 @@ body {
   font-family: var(--police-texte);
   font-size: var(--taille-texte);
   line-height: var(--interligne);
+}
+
+/* Un titre ne fait jamais deborder la page : un nom long (raw.githubusercontent.com) se coupe. */
+h1,
+h2,
+h3 {
+  overflow-wrap: anywhere;
 }
 
 a {
@@ -54,4 +64,20 @@ a:hover {
   border-radius: 10px;
   color: var(--texte-corps);
   font-size: 14px;
+}
+
+/* Telephone : la barre d'onglets est fixee en bas (NavigationPrincipale.module.css) ;
+   cette marge garantit qu'elle ne cache jamais la fin d'une page. */
+@media (max-width: 860px) {
+  body {
+    padding-bottom: calc(61px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Zone tactile d'au moins 24 px (WCAG 2.2, 2.5.8) pour un lien seul en fin de phrase,
+   comme « Comment c'est calcule ». Les liens de navigation ont leur regle dans leur module. */
+.lien-tactile {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
 }

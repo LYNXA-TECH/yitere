@@ -24,8 +24,38 @@
 .zoom {
   position: absolute;
   inset: 70px 20px 20px;
+  transform-origin: 0 0;
   transition: transform var(--duree-moyenne) ease;
 }
+
+/* Pendant un geste (molette, glisser, pincer), la carte suit le doigt sans retard. */
+.zoom[data-geste] {
+  transition: none;
+}
+
+/* Les gestes zooment la carte, jamais la page ; glisser deplace la carte.
+   A la vue entiere, un doigt qui glisse verticalement fait defiler la page (la carte
+   occupe la moitie du premier ecran sur telephone) ; le pincement zoome toujours la
+   carte. Une fois zoomee, la carte prend tous les gestes. */
+.plateau[data-vue="carte"] {
+  touch-action: pan-y;
+  cursor: grab;
+  /* Glisser ne selectionne ni n'entraine le nom d'une ville (copie qui suivait le curseur). */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.plateau[data-vue="carte"][data-zoom] {
+  touch-action: none;
+}
+
+.plateau[data-vue="carte"]:active {
+  cursor: grabbing;
+}
+
+/* Les traits gardent leur epaisseur a l'ecran, quel que soit le zoom : le zoom est une
+   transformation CSS, que vector-effect ne compense pas, donc on divise par --k. */
 
 .zoom > svg {
   position: absolute;
@@ -37,7 +67,7 @@
 .fond path {
   fill: var(--carte-pays);
   stroke: var(--carte-pays-trait);
-  stroke-width: 1;
+  stroke-width: calc(1px / var(--k, 1));
 }
 
 .fond path[data-sondes] {
@@ -51,14 +81,14 @@
 .arc {
   fill: none;
   stroke: var(--interaction);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
+  stroke-width: calc(1.5px / var(--k, 1));
+  stroke-dasharray: calc(4px / var(--k, 1)) calc(4px / var(--k, 1));
 }
 
 .navigateur {
   fill: var(--fond);
   stroke: var(--interaction);
-  stroke-width: 1.5;
+  stroke-width: calc(1.5px / var(--k, 1));
 }
 
 .ville {
