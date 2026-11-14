@@ -211,25 +211,53 @@ export default async function Echanges({ params }: Props) {
                 data-genre="regle"
               >
                 <h2 id="regle">La règle des échanges</h2>
-                <span>
-                  On partage des contournements techniques que d&apos;autres
-                  peuvent essayer.
-                </span>
-                <span>
-                  « A marché pour moi aussi » : une confirmation par personne,
-                  avec sa ville et son opérateur. À partir de 3 confirmations
-                  dans 2 villes, la solution est marquée « confirmée par la
-                  communauté ».
-                </span>
-                <span>
-                  Pas de publicité. Pas d&apos;accusation contre un opérateur
-                  sans mesure à l&apos;appui : le contexte des sondes est joint
-                  automatiquement.
-                </span>
-                <span>
-                  Après 3 signalements, une publication est masquée en attendant
-                  la relecture de l&apos;équipe.
-                </span>
+                {ecritureOuverte(publications) ? (
+                  <>
+                    <span>
+                      On partage des contournements techniques que d&apos;autres
+                      peuvent essayer.
+                    </span>
+                    <span>
+                      « A marché pour moi aussi » : une confirmation par
+                      personne, avec sa ville et son opérateur. À partir de 3
+                      confirmations dans 2 villes, la solution est marquée «
+                      confirmée par la communauté ».
+                    </span>
+                    <span>
+                      Pas de publicité. Pas d&apos;accusation contre un
+                      opérateur sans mesure à l&apos;appui : le contexte des
+                      sondes est joint automatiquement.
+                    </span>
+                    <span>
+                      Après 3 signalements, une publication est masquée en
+                      attendant la relecture de l&apos;équipe.
+                    </span>
+                  </>
+                ) : (
+                  // Sans connexion : ce qui marche aujourd'hui, puis ce qui viendra, au futur.
+                  <>
+                    <span>
+                      On partage des contournements techniques que d&apos;autres
+                      peuvent essayer.
+                    </span>
+                    <span>
+                      Chaque publication est relue par l&apos;équipe avant
+                      d&apos;apparaître.
+                    </span>
+                    <span>
+                      Pas de publicité. Pas d&apos;accusation contre un
+                      opérateur sans mesure à l&apos;appui.
+                    </span>
+                    <span>
+                      Après le 23 novembre, avec la connexion GitHub : « A
+                      marché pour moi aussi », une confirmation par personne (3
+                      confirmations dans 2 villes marqueront une solution «
+                      confirmée par la communauté »), et le signalement (3
+                      signalements masqueront une publication en attendant la
+                      relecture).
+                    </span>
+                  </>
+                )}
               </section>
             </aside>
           }

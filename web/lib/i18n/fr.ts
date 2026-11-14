@@ -452,7 +452,7 @@ export const fr = {
       n ? compter(n, "réponse", "réponses") : "Répondre",
     signaler: "Signaler",
     connexionRequise:
-      "Pour confirmer, voter ou signaler, il faut se connecter avec GitHub. La connexion ouvrira avec l'API des échanges.",
+      "Pour confirmer, voter ou signaler, il faut se connecter avec GitHub. La connexion ouvrira après le 23 novembre.",
     statutAttente: (ville: string) =>
       ville ? `en attente d'une sonde à ${ville}` : "en attente d'une sonde",
     statutRepondue: "répondue par la donnée",

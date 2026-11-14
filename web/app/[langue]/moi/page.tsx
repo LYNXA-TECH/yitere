@@ -225,8 +225,8 @@ export default async function MonEspace({ params }: Props) {
       </div>
 
       <p className={styles.petit} lang="fr">
-        Démonstration : espace d&apos;exemple, la connexion GitHub ouvrira avec
-        l&apos;API des échanges.{" "}
+        Démonstration : espace d&apos;exemple, la connexion GitHub ouvrira après
+        le 23 novembre.{" "}
         <Link href={lien(langue, "/confidentialite")}>
           Vos données et vos droits
         </Link>

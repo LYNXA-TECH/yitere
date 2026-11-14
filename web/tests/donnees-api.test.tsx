@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Accueil from "@/app/[langue]/page";
 import FicheService from "@/app/[langue]/services/[cle]/page";
 import HebergerSonde from "@/app/[langue]/contribuer/sonde/page";
+import * as PageEchange from "@/app/[langue]/echanges/[id]/page";
 import Echanges from "@/app/[langue]/echanges/page";
 import MonEspace from "@/app/[langue]/moi/page";
 import Publier from "@/app/[langue]/publier/page";
@@ -21,7 +22,10 @@ import {
   siteEnExemple,
 } from "@/lib/donnees";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/fr" }));
+vi.mock("next/navigation", async (original) => ({
+  ...(await original<typeof import("next/navigation")>()),
+  usePathname: () => "/fr",
+}));
 
 /*
  * Des reponses ecrites a la forme exacte de serveur/api.js (main, 2e2a5bb) :
@@ -473,6 +477,36 @@ describe("pages traduites branchees sur l'API", () => {
     expect(html).not.toContain("<h1>Bientôt</h1>");
   });
 
+  it("la page d'une publication est rendue a la visite : pas de 404 apres une relecture", () => {
+    // Avec generateStaticParams, le dynamicParams = false du gabarit [langue] l'emporte :
+    // toute publication validee apres le build repondait 404 (retour de Cellou, 14 novembre).
+    expect("generateStaticParams" in PageEchange).toBe(false);
+    expect(PageEchange.dynamic).toBe("force-dynamic");
+  });
+
+  it("echanges : la regle dit ce qui marche aujourd'hui, et le reste au futur", async () => {
+    const html = renderToStaticMarkup(
+      await Echanges({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain(
+      "Chaque publication est relue par l&#x27;équipe avant",
+    );
+    expect(html).toContain("Après le 23 novembre, avec la connexion GitHub");
+    expect(html).not.toContain("À partir de 3 confirmations");
+    expect(html).not.toContain(
+      "Après 3 signalements, une publication est masquée",
+    );
+  });
+
+  it("le message de connexion donne la date, pas « l'API des echanges »", async () => {
+    const { dictionnaire } = await import("@/lib/i18n");
+    for (const l of ["fr", "en"] as const) {
+      const m = dictionnaire(l).publication.connexionRequise;
+      expect(m).not.toMatch(/API/);
+      expect(m).toMatch(/23/);
+    }
+  });
+
   it("mon espace : « Bientot », jamais le profil d'une vraie sonde", async () => {
     const html = renderToStaticMarkup(
       (await MonEspace({ params: Promise.resolve({ langue: "fr" }) }))!,
@@ -531,6 +565,23 @@ describe("pages traduites branchees sur l'API", () => {
       expect(liste).toContain("awa-dkr");
       expect(liste).not.toContain("@awa-dkr");
       expect(liste).not.toContain("0 personnes attendent");
+      // la page de la publication existe, lue dans GET /api/v1/publications
+      const detail = renderToStaticMarkup(
+        await PageEchange.default({
+          params: Promise.resolve({ langue: "fr", id: "7" }),
+        }),
+      );
+      expect(detail).toContain(
+        "Passer par le miroir npmmirror pendant la coupure",
+      );
+      expect(detail).toContain("awa-dkr");
+      expect(detail).not.toContain("@awa-dkr");
+      // un identifiant inconnu : la page introuvable
+      await expect(
+        PageEchange.default({
+          params: Promise.resolve({ langue: "fr", id: "999" }),
+        }),
+      ).rejects.toThrow(/NEXT_HTTP_ERROR_FALLBACK;404|NEXT_NOT_FOUND/);
     } finally {
       REPONSES["/api/v1/publications"] = avant;
     }

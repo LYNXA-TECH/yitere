@@ -446,7 +446,7 @@ export const en: Partielle<Dictionnaire> = {
     reponses: (n: number) => (n ? compter(n, "reply", "replies") : "Reply"),
     signaler: "Report",
     connexionRequise:
-      "To confirm, vote or report, sign in with GitHub. Sign-in opens with the exchanges API.",
+      "To confirm, vote or report, sign in with GitHub. Sign-in opens after 23 November.",
     statutAttente: (ville: string) =>
       ville ? `waiting for a probe in ${ville}` : "waiting for a probe",
     statutRepondue: "answered by the data",
