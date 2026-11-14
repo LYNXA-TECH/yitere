@@ -18,14 +18,11 @@ import { lien } from "@/lib/navigation";
 
 type Props = { params: Promise<{ langue: string; id: string }> };
 
-export const revalidate = 60;
-// Une publication validee apres le build a sa page, rendue a la premiere visite.
-// Un identifiant inconnu donne la page introuvable (trouver, plus bas).
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  return (await lirePublications()).donnees.map(({ id }) => ({ id }));
-}
+// Rendue a chaque visite, a partir de GET /api/v1/publications (garde 60 s) : une
+// publication validee apres le build a sa page. Pas de generateStaticParams : avec lui,
+// le dynamicParams = false du gabarit [langue] l'emporte et toute publication publiee
+// apres le build repondait 404. Un identifiant inconnu donne la page introuvable.
+export const dynamic = "force-dynamic";
 
 async function trouver(id: string): Promise<Publication> {
   const p = (await lirePublications()).donnees.find((x) => x.id === id);
