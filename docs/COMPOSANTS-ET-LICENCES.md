@@ -60,6 +60,7 @@ embarque libvips, sous LGPL, et YITERE n'optimise aucune image côté serveur.
 |---|---|---|
 | Natural Earth 1:110 m | Domaine public | Contours des pays de la carte (`web/lib/geo/afrique.ts`) |
 | Objet témoin (`temoin.bin`) servi par jsDelivr | Fichier du dépôt (MIT) | Mesure de débit |
+| Voix « siwis » pour Piper (corpus SIWIS) | CC BY 4.0 | Voix off de la vidéo de démonstration (hors dépôt) |
 
 ## Logiciels d'exploitation
 

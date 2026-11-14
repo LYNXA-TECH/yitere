@@ -39,6 +39,18 @@ nouvelle partie.
 | Revue des pull requests | L'IA rejoue la chaîne de contrôle sur le résultat de fusion (tests, types, licences, audit, compilation) et rédige l'avis | Décision de fusion, donnée par écrit en nommant le SHA exact ; fusion faite par Cellou |
 | Exploitation du serveur de mesure | Commandes d'installation et de configuration exécutées par l'IA, opération par opération | Accord donné avant chaque opération, contrôle du résultat |
 
+### Vidéo de démonstration · Cellou
+
+| Partie | Rôle de l'IA | Rôle de l'équipe |
+|---|---|---|
+| Script et sous-titres | Rédaction à partir du site réel | Relecture des faits et des chiffres par Cellou |
+| Plan 1 (terminal) et carton final | Animation et mise en page | Validation |
+| Plans filmés sur le site en production (plans 2 à 4, 6 et 7) | Captures automatiques du site, montage | Choix des plans et validation |
+| Plan 5, « Mesurer depuis chez moi » | Recadrage et sous-titres | Filmé par Cellou depuis Conakry, sur sa connexion |
+| Voix off | Voix de synthèse : Piper, voix « siwis » (licence CC BY 4.0, corpus SIWIS) | Choix de la voix |
+| Musique de fond | Composée par synthèse, sans aucun extrait externe | Choix de la version avec musique |
+
+
 ## Ce qui reste humain
 
 - Toutes les décisions de produit et d'architecture, et les arbitrages entre options.
