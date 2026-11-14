@@ -15,6 +15,7 @@ const compter = (n: number, un: string, plusieurs: string) =>
 const heure = (iso: string) => heureUTC(L, iso);
 
 export const en: Partielle<Dictionnaire> = {
+  locale: "en",
   site: {
     devise: "My connection, my operator, or the service?",
     description:
@@ -234,7 +235,9 @@ export const en: Partielle<Dictionnaire> = {
     premiere: "Be the first to share it.",
     demanderAutreVille: "Ask for a measurement from another city",
     demandeEnAttente: (ville: string) =>
-      `No probe in ${ville} yet: the question stays open. The Madrid reference sees this service as normal, so the service works. Are you in ${ville}? Install a probe to answer.`,
+      !ville
+        ? "No probe on site yet: the question stays open. You can answer it by installing a probe."
+        : `No probe in ${ville} yet: the question stays open. The Madrid reference sees this service as normal, so the service works. Are you in ${ville}? Install a probe to answer.`,
     demandeRepondue: "Answer from the probes: see the diagnosis above.",
     tuilePremierOctetTouchees: (n: number) =>
       `First byte · ${compter(n, "affected probe", "affected probes")}`,
@@ -331,7 +334,8 @@ export const en: Partielle<Dictionnaire> = {
     aMarchePour: (n: number, villes: string, confirmee: boolean) =>
       `✓ Worked for ${compter(n, "person", "people")} · ${villes}${confirmee ? " · confirmed by the community" : ""}`,
     pasConfirmee: "Not confirmed yet",
-    attente: (ville: string) => `Waiting for a probe in ${ville}`,
+    attente: (ville: string) =>
+      ville ? `Waiting for a probe in ${ville}` : "Waiting for a probe",
     repondue: "Answered by the data",
     contexteIncident: (
       demande: boolean,
@@ -341,7 +345,7 @@ export const en: Partielle<Dictionnaire> = {
     ) =>
       `${demande ? "Asked" : "Posted"} during the ${service} degradation · ${operateur} · ${ville}`,
     contexteLibre: (demande: boolean, quand: string, ville: string) =>
-      `${demande ? "Asked" : "Posted"} ${quand}${demande ? "" : ", outside any incident"} · ${ville}`,
+      `${demande ? "Asked" : "Posted"} ${quand}${demande ? "" : ", outside any incident"}${ville ? ` · ${ville}` : ""}`,
     lentTitre: "Slow at your place right now?",
     lentTexte:
       "Your browser measures the monitored services in about ten seconds and tells you whether the probes in your city see the same thing.",
@@ -408,7 +412,9 @@ export const en: Partielle<Dictionnaire> = {
   publication: {
     aucune: "No posts yet.",
     prochaineEtape:
-      "Posting, confirming and replying will open with GitHub sign-in, after 23 November.",
+      "Every post is reviewed by the team before it appears. Confirming and replying will open with GitHub sign-in, after 23 November.",
+    publier: "Post",
+    proposer: "Share a fix or ask for a measurement",
     ilYA: (minutes: number) => {
       if (minutes < 1) return "just now";
       if (minutes < 60) return `${nombre(L, Math.round(minutes))} min ago`;
@@ -440,8 +446,9 @@ export const en: Partielle<Dictionnaire> = {
     reponses: (n: number) => (n ? compter(n, "reply", "replies") : "Reply"),
     signaler: "Report",
     connexionRequise:
-      "To confirm, vote or report, sign in with GitHub. Sign-in opens with the exchanges API.",
-    statutAttente: (ville: string) => `waiting for a probe in ${ville}`,
+      "To confirm, vote or report, sign in with GitHub. Sign-in opens after 23 November.",
+    statutAttente: (ville: string) =>
+      ville ? `waiting for a probe in ${ville}` : "waiting for a probe",
     statutRepondue: "answered by the data",
     suivent: (n: number) =>
       `${compter(n, "person follows", "people follow")} this request`,

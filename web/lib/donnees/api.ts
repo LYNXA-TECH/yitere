@@ -242,6 +242,8 @@ export type PublicationApi = {
   pays: string | null;
   votes: number;
   cree_le: string;
+  /** Faux pour un depot sans connexion GitHub (POST /api/v1/publications). */
+  verifie?: boolean;
 };
 
 export type ReponsePublications = { publications: PublicationApi[] };
@@ -251,6 +253,8 @@ export function publicationDepuisApi(p: PublicationApi): Publication {
     id: String(p.id),
     cible: p.cible,
     auteur: p.auteur,
+    // Absent des reponses d'avant le depot sans connexion : rien n'etait verifie non plus.
+    verifie: p.verifie ?? false,
     ville: "",
     pays: p.pays ?? "",
     operateur: null,
@@ -265,7 +269,12 @@ export function publicationDepuisApi(p: PublicationApi): Publication {
     confirmations: [],
     confirmee: false,
     reponses: [],
-    demande: null,
+    // Une demande de mesure deposee sans connexion ne donne pas de ville : elle attend
+    // une sonde, sans dire ou. Sans cet objet, elle ne s'afficherait pas.
+    demande:
+      p.type === "demande"
+        ? { ville: "", suivis: 0, sondeSurPlace: false }
+        : null,
   };
 }
 

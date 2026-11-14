@@ -94,4 +94,14 @@ describe("confidentialité", () => {
     );
     expect(html).toContain("journal d&#x27;erreurs technique");
   });
+
+  it("dit ce qu'enregistre une publication sans compte : pseudonyme, texte, pays, jamais d'adresse IP", async () => {
+    const html = renderToStaticMarkup(
+      (await Confidentialite(params({ langue: "fr" })))!,
+    );
+    expect(html).toContain("Vous publiez sans compte");
+    expect(html).toContain("Le pseudonyme que vous choisissez, le texte");
+    expect(html).toContain("le pays s&#x27;il est donné");
+    expect(html).toContain("Toujours aucune adresse IP.");
+  });
 });

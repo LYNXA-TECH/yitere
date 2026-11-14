@@ -13,6 +13,8 @@ const compter = (n: number, un: string, plusieurs: string) =>
 const heure = (iso: string) => heureUTC(L, iso);
 
 export const fr = {
+  /** Pour Intl : noms de pays, nombres, dates. */
+  locale: "fr" as string,
   site: {
     devise: "Ma connexion, mon opérateur, ou le service ?",
     description:
@@ -232,7 +234,9 @@ export const fr = {
     premiere: "Soyez la première personne à le partager.",
     demanderAutreVille: "Demander une mesure depuis une autre ville",
     demandeEnAttente: (ville: string) =>
-      `Aucune sonde à ${ville} pour l'instant : la question reste ouverte. Le point de repère de Madrid voit ce service normal, donc le service fonctionne. Vous êtes à ${ville} ? Installez une sonde pour répondre.`,
+      !ville
+        ? "Aucune sonde sur place pour l'instant : la question reste ouverte. Vous pouvez y répondre en installant une sonde."
+        : `Aucune sonde à ${ville} pour l'instant : la question reste ouverte. Le point de repère de Madrid voit ce service normal, donc le service fonctionne. Vous êtes à ${ville} ? Installez une sonde pour répondre.`,
     demandeRepondue: "Réponse des sondes : voir le diagnostic ci-dessus.",
     tuilePremierOctetTouchees: (n: number) =>
       `Premier octet · ${compter(n, "sonde touchée", "sondes touchées")}`,
@@ -330,7 +334,8 @@ export const fr = {
     aMarchePour: (n: number, villes: string, confirmee: boolean) =>
       `✓ A marché pour ${compter(n, "personne", "personnes")} · ${villes}${confirmee ? " · confirmée par la communauté" : ""}`,
     pasConfirmee: "Pas encore confirmée",
-    attente: (ville: string) => `En attente d'une sonde à ${ville}`,
+    attente: (ville: string) =>
+      ville ? `En attente d'une sonde à ${ville}` : "En attente d'une sonde",
     repondue: "Répondue par la donnée",
     contexteIncident: (
       demande: boolean,
@@ -340,7 +345,7 @@ export const fr = {
     ) =>
       `${demande ? "Demandée" : "Publiée"} pendant la dégradation ${service} · ${operateur} · ${ville}`,
     contexteLibre: (demande: boolean, quand: string, ville: string) =>
-      `${demande ? "Demandée" : "Publiée"} ${quand}${demande ? "" : ", hors incident"} · ${ville}`,
+      `${demande ? "Demandée" : "Publiée"} ${quand}${demande ? "" : ", hors incident"}${ville ? ` · ${ville}` : ""}`,
     lentTitre: "Lent chez vous en ce moment ?",
     lentTexte:
       "Votre navigateur mesure les services suivis en une dizaine de secondes et vous dit si les sondes de votre ville voient la même chose.",
@@ -411,7 +416,9 @@ export const fr = {
   publication: {
     aucune: "Aucune publication pour l'instant.",
     prochaineEtape:
-      "Publier, confirmer et répondre ouvriront avec la connexion GitHub, après le 23 novembre.",
+      "Chaque publication est relue par l'équipe avant d'apparaître. Confirmer et répondre ouvriront avec la connexion GitHub, après le 23 novembre.",
+    publier: "Publier",
+    proposer: "Proposer une solution ou une demande",
     ilYA: (minutes: number) => {
       if (minutes < 1) return "à l'instant";
       if (minutes < 60) return `il y a ${nombre(L, Math.round(minutes))} min`;
@@ -445,8 +452,9 @@ export const fr = {
       n ? compter(n, "réponse", "réponses") : "Répondre",
     signaler: "Signaler",
     connexionRequise:
-      "Pour confirmer, voter ou signaler, il faut se connecter avec GitHub. La connexion ouvrira avec l'API des échanges.",
-    statutAttente: (ville: string) => `en attente d'une sonde à ${ville}`,
+      "Pour confirmer, voter ou signaler, il faut se connecter avec GitHub. La connexion ouvrira après le 23 novembre.",
+    statutAttente: (ville: string) =>
+      ville ? `en attente d'une sonde à ${ville}` : "en attente d'une sonde",
     statutRepondue: "répondue par la donnée",
     suivent: (n: number) =>
       `${compter(n, "personne suit", "personnes suivent")} cette demande`,

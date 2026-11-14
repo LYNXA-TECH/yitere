@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Accueil from "@/app/[langue]/page";
 import FicheService from "@/app/[langue]/services/[cle]/page";
 import HebergerSonde from "@/app/[langue]/contribuer/sonde/page";
+import * as PageEchange from "@/app/[langue]/echanges/[id]/page";
 import Echanges from "@/app/[langue]/echanges/page";
 import MonEspace from "@/app/[langue]/moi/page";
 import Publier from "@/app/[langue]/publier/page";
@@ -21,7 +22,10 @@ import {
   siteEnExemple,
 } from "@/lib/donnees";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/fr" }));
+vi.mock("next/navigation", async (original) => ({
+  ...(await original<typeof import("next/navigation")>()),
+  usePathname: () => "/fr",
+}));
 
 /*
  * Des reponses ecrites a la forme exacte de serveur/api.js (main, 2e2a5bb) :
@@ -430,7 +434,11 @@ describe("pages traduites branchees sur l'API", () => {
     expect(html).toContain("Aucune publication pour l&#x27;instant.");
     expect(html).not.toContain("Publiée pendant cet incident");
     expect(html).not.toContain("Confirmée par la communauté");
-    expect(html).not.toContain('href="/fr/publier"');
+    // publier depuis la fiche : le service et le type sont deja choisis
+    expect(html).toContain(
+      'href="/fr/publier?service=npm&amp;type=contournement"',
+    );
+    expect(html).toContain('href="/fr/publier?service=npm&amp;type=demande"');
     const en = renderToStaticMarkup(
       await FicheService({
         params: Promise.resolve({ langue: "en", cle: "npm" }),
@@ -439,22 +447,143 @@ describe("pages traduites branchees sur l'API", () => {
     expect(en).toContain("No posts yet.");
   });
 
-  it("echanges : la liste vide, et rien a publier avant la connexion GitHub", async () => {
+  it("echanges : la liste vide, et les deux boutons pour publier sans compte", async () => {
     const html = renderToStaticMarkup(
       await Echanges({ params: Promise.resolve({ langue: "fr" }) }),
     );
     expect(html).toContain("Aucune publication pour l&#x27;instant.");
     expect(html).not.toContain("Rien ne correspond à ces filtres");
-    expect(html).not.toContain("Partager une solution");
+    expect(html).toContain('href="/fr/publier?type=contournement"');
+    expect(html).toContain('href="/fr/publier?type=demande"');
   });
 
-  it("publier et mon espace : « Bientot », jamais le profil d'une vraie sonde", async () => {
-    for (const Page of [Publier, MonEspace]) {
-      const html = renderToStaticMarkup(
-        (await Page({ params: Promise.resolve({ langue: "fr" }) }))!,
+  it("publier : le formulaire sans compte, avec le piege a robots, sans « Se connecter »", async () => {
+    const html = renderToStaticMarkup(
+      (await Publier({ params: Promise.resolve({ langue: "fr" }) }))!,
+    );
+    for (const id of [
+      "depot-service",
+      "depot-texte",
+      "depot-commande",
+      "depot-pays",
+      "depot-pseudonyme",
+    ])
+      expect(html, id).toContain(`id="${id}"`);
+    // le champ site : present, hors du parcours au clavier, cache aux lecteurs d'ecran
+    expect(html).toMatch(/aria-hidden="true"><label for="depot-site">/);
+    expect(html).toContain('tabindex="-1"');
+    expect(html).toContain("Envoyer pour relecture");
+    expect(html).not.toContain("Se connecter avec GitHub");
+    expect(html).not.toContain("<h1>Bientôt</h1>");
+  });
+
+  it("la page d'une publication est rendue a la visite : pas de 404 apres une relecture", () => {
+    // Avec generateStaticParams, le dynamicParams = false du gabarit [langue] l'emporte :
+    // toute publication validee apres le build repondait 404 (retour de Cellou, 14 novembre).
+    expect("generateStaticParams" in PageEchange).toBe(false);
+    expect(PageEchange.dynamic).toBe("force-dynamic");
+  });
+
+  it("echanges : la regle dit ce qui marche aujourd'hui, et le reste au futur", async () => {
+    const html = renderToStaticMarkup(
+      await Echanges({ params: Promise.resolve({ langue: "fr" }) }),
+    );
+    expect(html).toContain(
+      "Chaque publication est relue par l&#x27;équipe avant",
+    );
+    expect(html).toContain("Après le 23 novembre, avec la connexion GitHub");
+    expect(html).not.toContain("À partir de 3 confirmations");
+    expect(html).not.toContain(
+      "Après 3 signalements, une publication est masquée",
+    );
+  });
+
+  it("le message de connexion donne la date, pas « l'API des echanges »", async () => {
+    const { dictionnaire } = await import("@/lib/i18n");
+    for (const l of ["fr", "en"] as const) {
+      const m = dictionnaire(l).publication.connexionRequise;
+      expect(m).not.toMatch(/API/);
+      expect(m).toMatch(/23/);
+    }
+  });
+
+  it("mon espace : « Bientot », jamais le profil d'une vraie sonde", async () => {
+    const html = renderToStaticMarkup(
+      (await MonEspace({ params: Promise.resolve({ langue: "fr" }) }))!,
+    );
+    expect(html).toContain("<h1>Bientôt</h1>");
+    expect(html).not.toContain("@lynx-conakry-1");
+  });
+
+  it("une publication deposee sans compte : pseudonyme sans « @ », pays plutot que ville", async () => {
+    const avant = REPONSES["/api/v1/publications"];
+    REPONSES["/api/v1/publications"] = {
+      publications: [
+        {
+          id: 7,
+          cible: "npm",
+          auteur: "awa-dkr",
+          type: "contournement",
+          contenu: "Passer par le miroir npmmirror pendant la coupure",
+          commande: "npm config set registry https://registry.npmmirror.com",
+          pays: "SN",
+          votes: 0,
+          cree_le: CALCULE_LE,
+          verifie: false,
+        },
+        {
+          id: 8,
+          cible: "npm",
+          auteur: "moussa",
+          type: "demande",
+          contenu: "npm est-il lent depuis Bamako ?",
+          commande: null,
+          pays: null,
+          votes: 0,
+          cree_le: CALCULE_LE,
+          verifie: false,
+        },
+      ],
+    };
+    try {
+      const fiche = renderToStaticMarkup(
+        await FicheService({
+          params: Promise.resolve({ langue: "fr", cle: "npm" }),
+        }),
       );
-      expect(html).toContain("<h1>Bientôt</h1>");
-      expect(html).not.toContain("@lynx-conakry-1");
+      expect(fiche).toContain("awa-dkr");
+      expect(fiche).not.toContain("@awa-dkr");
+      expect(fiche).toContain("Sénégal");
+      // la demande s'affiche, sans ville inventee ni « 0 suivent »
+      expect(fiche).toContain("npm est-il lent depuis Bamako ?");
+      expect(fiche).not.toContain("sonde à  ");
+      expect(fiche).not.toContain("0 suivent");
+      expect(fiche).not.toContain(" ·  · ");
+      const liste = renderToStaticMarkup(
+        await Echanges({ params: Promise.resolve({ langue: "fr" }) }),
+      );
+      expect(liste).toContain("awa-dkr");
+      expect(liste).not.toContain("@awa-dkr");
+      expect(liste).not.toContain("0 personnes attendent");
+      // la page de la publication existe, lue dans GET /api/v1/publications
+      const detail = renderToStaticMarkup(
+        await PageEchange.default({
+          params: Promise.resolve({ langue: "fr", id: "7" }),
+        }),
+      );
+      expect(detail).toContain(
+        "Passer par le miroir npmmirror pendant la coupure",
+      );
+      expect(detail).toContain("awa-dkr");
+      expect(detail).not.toContain("@awa-dkr");
+      // un identifiant inconnu : la page introuvable
+      await expect(
+        PageEchange.default({
+          params: Promise.resolve({ langue: "fr", id: "999" }),
+        }),
+      ).rejects.toThrow(/NEXT_HTTP_ERROR_FALLBACK;404|NEXT_NOT_FOUND/);
+    } finally {
+      REPONSES["/api/v1/publications"] = avant;
     }
   });
 

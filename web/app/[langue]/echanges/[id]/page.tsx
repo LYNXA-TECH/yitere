@@ -1,3 +1,4 @@
+import { lieu, signature } from "@/lib/affichage/publications";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -17,11 +18,11 @@ import { lien } from "@/lib/navigation";
 
 type Props = { params: Promise<{ langue: string; id: string }> };
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  return (await lirePublications()).donnees.map(({ id }) => ({ id }));
-}
+// Rendue a chaque visite, a partir de GET /api/v1/publications (garde 60 s) : une
+// publication validee apres le build a sa page. Pas de generateStaticParams : avec lui,
+// le dynamicParams = false du gabarit [langue] l'emporte et toute publication publiee
+// apres le build repondait 404. Un identifiant inconnu donne la page introuvable.
+export const dynamic = "force-dynamic";
 
 async function trouver(id: string): Promise<Publication> {
   const p = (await lirePublications()).donnees.find((x) => x.id === id);
@@ -111,7 +112,8 @@ export default async function DetailPublication({ params }: Props) {
               </div>
             )}
             <span className={styles.petit}>
-              Par <span className={styles.auteur}>@{p.auteur}</span> · {p.ville}
+              Par <span className={styles.auteur}>{signature(p)}</span>
+              {lieu(p, "fr") ? ` · ${lieu(p, "fr")}` : ""}
               {p.operateur ? ` · ${pub.operateur(p.operateur)}` : ""} ·{" "}
               {pub.ilYA(minutesEntre(p.creeLe, maintenant))} (
               {heureUTC("fr", p.creeLe)}) · non vérifié par YITERE
