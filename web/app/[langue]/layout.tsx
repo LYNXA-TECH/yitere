@@ -29,6 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: { default: "YITERE", template: "%s · YITERE" },
     description: t.site.description,
+    // L'oeil du logo, sur fond sombre pour rester lisible dans un onglet clair.
+    icons: {
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
   };
 }
 
