@@ -25,6 +25,8 @@ const VIDE: Depot = {
   site: "",
 };
 
+const SERVICE_REQUIS = "Choisissez le service concerné.";
+
 const MESSAGES = {
   recu: "Merci, votre publication sera visible après relecture par l'équipe.",
   trop: "Trop d'envois depuis votre connexion pour l'instant : réessayez plus tard.",
@@ -41,10 +43,9 @@ const MESSAGES = {
  * Page en francais seulement (decision 0002, D13).
  */
 export function FormulaireDepot({ services, pays }: Props) {
-  const [d, setD] = useState<Depot>({
-    ...VIDE,
-    service: services[0]?.cle ?? "",
-  });
+  // Aucun service choisi d'avance : une question sur npm partait sur api.github.com, le
+  // premier de la liste, sans qu'on le voie (retour de Cellou). Sauf depuis une fiche.
+  const [d, setD] = useState<Depot>(VIDE);
   const [envoi, setEnvoi] = useState(false);
   const [resultat, setResultat] = useState<ResultatDepot | null>(null);
   const champs = useRef<Partial<Record<ChampDepot, HTMLElement | null>>>({});
@@ -101,6 +102,16 @@ export function FormulaireDepot({ services, pays }: Props) {
   };
 
   const envoyer = async () => {
+    // Le service est obligatoire : on le dit tout de suite, sans aller jusqu'a l'API.
+    if (!d.service) {
+      setResultat({
+        etat: "invalide",
+        champ: "service",
+        erreur: SERVICE_REQUIS,
+      });
+      champs.current.service?.focus();
+      return;
+    }
     setEnvoi(true);
     setResultat(null);
     const r = await deposer(d);
@@ -171,8 +182,12 @@ export function FormulaireDepot({ services, pays }: Props) {
           value={d.service}
           onChange={(e) => changer("service")(e.target.value)}
           className={styles.mono}
+          required
           {...aria("service")}
         >
+          <option value="" disabled>
+            Choisir un service
+          </option>
           {services.map((s) => (
             <option key={s.cle} value={s.cle}>
               {s.nom}

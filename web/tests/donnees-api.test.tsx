@@ -473,6 +473,11 @@ describe("pages traduites branchees sur l'API", () => {
     expect(html).toMatch(/aria-hidden="true"><label for="depot-site">/);
     expect(html).toContain('tabindex="-1"');
     expect(html).toContain("Envoyer pour relecture");
+    // aucun service choisi d'avance : « Choisir un service », obligatoire (retour de Cellou)
+    expect(html).toMatch(/<select id="depot-service"[^>]*required/);
+    expect(html).toContain(
+      '<option value="" disabled="" selected="">Choisir un service</option>',
+    );
     expect(html).not.toContain("Se connecter avec GitHub");
     expect(html).not.toContain("<h1>Bientôt</h1>");
   });
