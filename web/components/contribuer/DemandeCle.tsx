@@ -75,8 +75,7 @@ export function DemandeCle({
           </button>
         </div>
         <p className={styles.corps}>
-          Quelques informations, et votre demande est prête : l&apos;équipe vous
-          répond avec une clé personnelle.
+          L&apos;équipe vous répond avec une clé personnelle.
         </p>
         <form
           className={styles.demande}

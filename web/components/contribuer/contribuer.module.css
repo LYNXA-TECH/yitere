@@ -448,9 +448,47 @@
   grid-column: 1 / -1;
 }
 
+/* Telephone : la fenetre tient dans l'ecran, sans defiler ; les champs restent deux par deux. */
 @media (max-width: 480px) {
+  .fenetre {
+    padding: 16px 16px 18px;
+    border-radius: 16px;
+  }
+
+  .fenetreHaut h2 {
+    font-size: 18px;
+  }
+
+  .fermer {
+    width: 36px;
+    height: 36px;
+  }
+
+  .fenetre .corps {
+    font-size: 14px;
+  }
+
   .demande {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 12px 10px;
+    margin-top: 12px;
+  }
+
+  .demande .champ {
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .demande .champ input,
+  .demande .champ select {
+    padding: 0 10px;
+  }
+
+  .demande .discret {
+    font-size: 12px;
+  }
+
+  .demande .bouton {
+    width: 100%;
   }
 }
 
