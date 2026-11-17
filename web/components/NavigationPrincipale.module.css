@@ -51,7 +51,8 @@
     display: none;
   }
 
-  /* Fixee au bas de l'ecran sur toutes les pages, meme une page courte comme Mon espace. */
+  /* Fixee au bas de l'ecran sur toutes les pages, meme une page courte comme Mon espace.
+     Fond translucide et flou : le contenu glisse dessous sans que la barre pese. */
   .onglets {
     position: fixed;
     right: 0;
@@ -60,27 +61,78 @@
     z-index: 10;
     display: flex;
     justify-content: space-around;
-    padding: 4px 0 env(safe-area-inset-bottom);
-    background: var(--fond);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    background: rgb(11 18 32 / 0.95);
     border-top: 1px solid var(--trait);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
   }
 
-  /* Une icone au-dessus du nom, comme dans la maquette : on reconnait l'onglet d'un coup d'oeil. */
+  /* Une icone au-dessus du nom : on reconnait l'onglet d'un coup d'oeil. */
   .onglets a {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     align-items: center;
     justify-content: center;
     min-height: 56px;
     color: var(--texte-secondaire);
     font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* La pastille : l'onglet actif se lit par sa forme, pas seulement par sa couleur. */
+  .pastille {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 30px;
+    border-radius: 999px;
+    transition:
+      background-color var(--duree-moyenne) ease,
+      transform var(--duree-courte) ease;
+  }
+
+  .plein {
+    fill: transparent;
+    transition: fill var(--duree-moyenne) ease;
+  }
+
+  .onglets a:active .pastille {
+    transform: scale(0.92);
   }
 
   .onglets a[aria-current="page"] {
-    color: var(--interaction);
+    color: var(--texte);
     font-weight: 600;
+  }
+
+  .onglets a[aria-current="page"] .pastille {
+    color: var(--interaction);
+    background: rgb(47 208 200 / 0.14);
+  }
+
+  .onglets a[aria-current="page"] .plein {
+    fill: rgb(47 208 200 / 0.22);
+  }
+
+  .onglets a:focus-visible {
+    outline: none;
+  }
+
+  .onglets a:focus-visible .pastille {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 860px) and (prefers-reduced-motion: reduce) {
+  .pastille,
+  .plein {
+    transition: none;
   }
 }

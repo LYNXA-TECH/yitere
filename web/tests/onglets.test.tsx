@@ -25,6 +25,8 @@ describe("onglets du bas, sur telephone", () => {
     for (const o of onglets) {
       expect(o).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>.*<(path|circle)/);
     }
-    expect(html).toMatch(/<a aria-current="page" href="\/fr\/moi"><svg/);
+    expect(html).toMatch(
+      /<a aria-current="page" href="\/fr\/moi"><span class="[^"]*pastille[^"]*"><svg/,
+    );
   });
 });
