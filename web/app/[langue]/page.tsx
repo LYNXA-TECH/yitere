@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CarteInteractive } from "@/components/carte/CarteInteractive";
 import type { EtatSonde, VilleCarte } from "@/components/carte/types";
 import { Etiquette } from "@/components/Etiquette";
+import { avecEntraide } from "@/lib/affichage/entraide";
 import { contexte, statut } from "@/lib/affichage/publications";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import {
@@ -81,7 +82,11 @@ export default async function Accueil({ params }: Props) {
     publications: memeHorloge(publications),
   };
 
-  const villes = regrouper(sondes.donnees, langue, t);
+  const villes = avecEntraide(
+    regrouper(sondes.donnees, langue, t),
+    sondes.donnees,
+    datees.publications,
+  );
   const paysSondes = new Set(sondes.donnees.map((s) => s.pays));
   const developpeurs = sondes.donnees.filter((s) => s.type === "dev");
   const heures = Array.from({ length: 24 }, (_, i) =>
@@ -369,6 +374,12 @@ export default async function Accueil({ params }: Props) {
           ville: c.ville,
           sondes: c.sondes,
           repereHorsCalcul: c.repereHorsCalcul,
+          servicesTouches: c.servicesTouches,
+          solutionsPubliees: c.solutionsPubliees,
+          demandesMesure: c.demandesMesure,
+          voirEchanges: c.voirEchanges,
+          lienEchanges: lien(langue, "/echanges"),
+          cliquerDetail: c.cliquerDetail,
         }}
       />
     </main>
@@ -397,6 +408,7 @@ function regrouper(
       x: position?.x ?? null,
       y: position?.y ?? null,
       sondes: [],
+      entraide: { solutions: 0, demandes: 0 },
     };
     ville.sondes.push({
       id: s.pseudonyme,

@@ -1,7 +1,13 @@
 "use client";
 
 import { useVueCarte, ZOOM_MAX } from "./useVueCarte";
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import type {
   Bande,
   EtatSonde,
@@ -63,6 +69,44 @@ export function CarteInteractive(p: Props) {
   const [avecNavigateur, setAvecNavigateur] = useState(false);
   const [avecEntraide, setAvecEntraide] = useState(true);
   const [selection, setSelection] = useState<string | null>(null);
+  // Info-bulle : la ville survolee (ou atteinte au clavier) et sa place dans le cadre.
+  const [survol, setSurvol] = useState<{
+    nom: string;
+    x: number;
+    y: number;
+    dessous: boolean;
+    hauteur: number;
+  } | null>(null);
+  const fermeture = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const garderSurvol = () => {
+    if (fermeture.current) clearTimeout(fermeture.current);
+  };
+  // Un court delai : on peut passer du rond a la bulle pour cliquer sur son lien.
+  const quitterSurvol = () => {
+    garderSurvol();
+    fermeture.current = setTimeout(() => setSurvol(null), 150);
+  };
+  const montrerSurvol = (nom: string, el: Element) => {
+    const cadre = carte.cadre.current;
+    const point = el.querySelector("circle:last-of-type") ?? el;
+    if (!cadre) return;
+    garderSurvol();
+    const c = cadre.getBoundingClientRect();
+    const r = point.getBoundingClientRect();
+    const y = r.top - c.top;
+    const dessous = r.bottom - c.top;
+    // Au-dessus du rond s'il y a la place (environ 250 px), sinon du cote le plus libre.
+    const enBas = y < 250 && c.height - dessous > y;
+    setSurvol({
+      nom,
+      // La bulle (280 px) reste entiere dans le cadre.
+      x: Math.min(Math.max(r.left + r.width / 2 - c.left, 150), c.width - 150),
+      y: enBas ? dessous : y,
+      dessous: enBas,
+      // Jamais coupee par le bord du cadre : au pire, elle defile.
+      hauteur: Math.max((enBas ? c.height - dessous : y) - 24, 120),
+    });
+  };
 
   // Lecture de la frise : une heure par seconde (divisee par la vitesse).
   useEffect(() => {
@@ -79,6 +123,12 @@ export function CarteInteractive(p: Props) {
   useEffect(() => {
     if (lecture && pas >= DERNIERE) setLecture(false);
   }, [lecture, pas]);
+
+  // La carte bouge (zoom, glisser) ou change de vue : la bulle n'est plus a sa place.
+  useEffect(() => {
+    setSurvol(null);
+  }, [v0.x, v0.y, v0.k, vue]);
+  useEffect(() => garderSurvol, []);
 
   // Les boutons « Montrer sur la carte » du panneau sont des liens #service-<cle>.
   useEffect(() => {
@@ -124,6 +174,85 @@ export function CarteInteractive(p: Props) {
   const inverse = 1 / v0.k;
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
+  /** L'info-bulle d'une ville : ses sondes a l'heure affichee, et son entraide. */
+  const bulle = () => {
+    const v = p.villes.find((x) => x.nom === survol?.nom);
+    if (!v || !survol) return null;
+    const presentes = v.sondes.filter((s) => etatDe(s, cle, pas) !== "absente");
+    const etats = presentes.map((s) => etatDe(s, cle, pas));
+    const resume = etats.includes("degrade")
+      ? t.legendeDegrade
+      : etats.every((e) => e === "rodage" || e === "pas-de-donnee")
+        ? t.legendeRodage
+        : t.legendeNormal;
+    const touches = p.cibles.filter(
+      (c) =>
+        (cle === "tous" || cle === c.cle) &&
+        presentes.some((s) => s.etats[c.cle]?.[pas] === "degrade"),
+    );
+    const { solutions, demandes } = v.entraide;
+    return (
+      <div
+        id="carte-survol"
+        role="tooltip"
+        className={styles.bulle}
+        data-dessous={survol.dessous || undefined}
+        style={{ left: survol.x, top: survol.y, maxHeight: survol.hauteur }}
+        onPointerEnter={(e) => e.pointerType === "mouse" && garderSurvol()}
+        onPointerLeave={(e) => e.pointerType === "mouse" && quitterSurvol()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className={styles.bulleTitre}>
+          {v.nom} <span className={styles.discret}>· {v.pays}</span>
+        </p>
+        <p
+          className={styles.bulleEtat}
+          data-etat={etats.includes("degrade") ? "degrade" : undefined}
+        >
+          {resume}
+        </p>
+        <dl className={styles.bulleLignes}>
+          <div>
+            <dt>{t.sondes}</dt>
+            <dd>{presentes.length}</dd>
+          </div>
+          {touches.length > 0 && (
+            <div>
+              <dt>{t.servicesTouches}</dt>
+              <dd data-etat="degrade">
+                {touches
+                  .slice(0, 2)
+                  .map((c) => c.nom)
+                  .join(", ")}
+                {touches.length > 2 && ` +${touches.length - 2}`}
+              </dd>
+            </div>
+          )}
+        </dl>
+        {solutions + demandes > 0 && (
+          <dl className={styles.bulleLignes}>
+            <div>
+              <dt>{t.solutionsPubliees}</dt>
+              <dd>{solutions}</dd>
+            </div>
+            <div>
+              <dt>{t.demandesMesure}</dt>
+              <dd>{demandes}</dd>
+            </div>
+          </dl>
+        )}
+        <p className={styles.bulleBas}>
+          {solutions + demandes > 0 ? (
+            <a href={t.lienEchanges}>{t.voirEchanges}</a>
+          ) : (
+            <span className={styles.discret}>{t.cliquerDetail}</span>
+          )}
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.disposition} data-page="carte">
       <section aria-label={t.description} className={styles.scene}>
@@ -133,6 +262,8 @@ export function CarteInteractive(p: Props) {
           data-vue={vue}
           data-zoom={v0.k > 1 || undefined}
           {...(vue === "carte" ? carte.gestes : {})}
+          // Toucher ou cliquer ailleurs sur la carte ferme la bulle.
+          onClick={() => setSurvol(null)}
         >
           {vue === "carte" ? (
             <div
@@ -198,7 +329,26 @@ export function CarteInteractive(p: Props) {
                       tabIndex={0}
                       role="button"
                       aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
-                      onClick={() => setSelection(v.nom)}
+                      aria-describedby={
+                        survol?.nom === v.nom ? "carte-survol" : undefined
+                      }
+                      // Le survol, a la souris seulement : un doigt passe par le clic.
+                      onPointerEnter={(e) =>
+                        e.pointerType === "mouse" &&
+                        !carte.geste &&
+                        montrerSurvol(v.nom, e.currentTarget)
+                      }
+                      onPointerLeave={(e) =>
+                        e.pointerType === "mouse" && quitterSurvol()
+                      }
+                      onFocus={(e) => montrerSurvol(v.nom, e.currentTarget)}
+                      onBlur={quitterSurvol}
+                      onClick={(e) => {
+                        // Au toucher, pas de survol : le toucher ouvre aussi la bulle.
+                        e.stopPropagation();
+                        montrerSurvol(v.nom, e.currentTarget);
+                        setSelection(v.nom);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ")
                           setSelection(v.nom);
@@ -256,6 +406,8 @@ export function CarteInteractive(p: Props) {
               </ul>
             </div>
           )}
+
+          {vue === "carte" && survol && bulle()}
 
           <div className={styles.controles}>
             <nav aria-label={t.niveau} className={styles.groupe}>

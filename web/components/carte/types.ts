@@ -21,6 +21,8 @@ export type VilleCarte = {
   x: number | null;
   y: number | null;
   sondes: SondeCarte[];
+  /** Publications de la communaute rattachees a cette ville. */
+  entraide: { solutions: number; demandes: number };
 };
 
 export type Bande = { de: number; a: number; teinte: "degrade" | "vide" };
@@ -71,4 +73,11 @@ export type TextesCarte = {
   ville: string;
   sondes: string;
   repereHorsCalcul: string;
+  /* Info-bulle d'une ville, au survol ou au clavier. */
+  servicesTouches: string;
+  solutionsPubliees: string;
+  demandesMesure: string;
+  voirEchanges: string;
+  lienEchanges: string;
+  cliquerDetail: string;
 };
