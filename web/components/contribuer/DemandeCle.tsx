@@ -111,8 +111,8 @@ export function DemandeCle({
             <input
               id="cle-ville"
               ref={champVille}
-          // A l'ouverture de la fenetre, on ecrit tout de suite sa ville.
-          autoFocus
+              // A l'ouverture de la fenetre, on ecrit tout de suite sa ville.
+              autoFocus
               value={d.ville}
               onChange={(e) => changer("ville")(e.target.value)}
               placeholder="Conakry"
