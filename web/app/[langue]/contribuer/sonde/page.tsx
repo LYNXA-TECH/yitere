@@ -158,8 +158,8 @@ export default async function HebergerSonde({ params }: Props) {
                 <span className={styles.numero}>1 · à faire maintenant</span>
                 <h3>Demander votre clé</h3>
                 <p className={styles.corps}>
-                  Quelques informations, et votre demande est prête :
-                  l&apos;équipe vous répond avec une clé personnelle.
+                  Votre ville, votre pays, et c&apos;est envoyé : l&apos;équipe
+                  vous répond avec une clé personnelle.
                 </p>
                 <DemandeCle adresse={CONTACT} pays={pays} />
                 <p className={styles.petit}>

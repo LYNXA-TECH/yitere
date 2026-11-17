@@ -374,11 +374,90 @@
   display: grid;
 }
 
-/* La demande de cle : les champs du formulaire, serres dans la carte de l'etape 1. */
-.demande {
+/* La demande de cle : une petite fenetre au-dessus de la page, les champs deux par deux. */
+.fenetre {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 22px;
+  overflow-y: auto;
+  border: 1px solid var(--trait-fort);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.5);
+}
+
+.fenetre::backdrop {
+  background: rgb(5 9 18 / 0.7);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.fenetre[open] {
+  animation: fenetre-entree var(--duree-moyenne) ease-out;
+}
+
+@keyframes fenetre-entree {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.fenetreHaut {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
+  margin-bottom: 6px;
+}
+
+.fenetreHaut h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.fermer {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texte-secondaire);
+  cursor: pointer;
+}
+
+.fermer:hover {
+  color: var(--texte);
+  background: var(--surface-haute);
+}
+
+.demande {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+  margin-top: 14px;
+}
+
+/* Systeme, le bouton, le message et Copier prennent toute la largeur. */
+.demande > :nth-child(n + 5) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 480px) {
+  .demande {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fenetre[open] {
+    animation: none;
+  }
 }
 
 .erreur {
