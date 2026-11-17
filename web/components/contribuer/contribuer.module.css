@@ -374,6 +374,36 @@
   display: grid;
 }
 
+/* La demande de cle : les champs du formulaire, serres dans la carte de l'etape 1. */
+.demande {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.erreur {
+  color: var(--etat-degrade);
+  font-size: 13px;
+}
+
+.champ input[aria-invalid] {
+  border-color: var(--etat-degrade);
+}
+
+.copierMessage {
+  align-self: flex-start;
+  min-height: var(--zone-tactile);
+  padding: 0 14px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* Le guide d'installation : des etapes numerotees, un bloc de commandes copiable chacune. */
 /* Toute la largeur, comme les quatre etapes du haut ; chaque etape dans sa carte. */
 .guide {

@@ -1,0 +1,147 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { BoutonCopier } from "@/components/BoutonCopier";
+import {
+  DEMANDE_VIDE,
+  lienDemande,
+  messageDemande,
+  type DemandeCle as Demande,
+} from "@/lib/affichage/demande-cle";
+import styles from "./contribuer.module.css";
+
+/**
+ * Demander sa cle sans rediger d'e-mail : quelques champs, puis Envoyer ouvre la
+ * messagerie avec le message deja ecrit. Si rien ne s'ouvre (pas de messagerie
+ * configuree), le message et l'adresse restent a copier.
+ */
+export function DemandeCle({
+  adresse,
+  pays,
+}: {
+  adresse: string;
+  pays: { iso: string; nom: string }[];
+}) {
+  const [d, setD] = useState<Demande>(DEMANDE_VIDE);
+  const [erreur, setErreur] = useState(false);
+  const [prete, setPrete] = useState(false);
+  const champVille = useRef<HTMLInputElement>(null);
+  const changer = (k: keyof Demande) => (v: string) => {
+    setD((x) => ({ ...x, [k]: v }));
+    if (k === "ville") setErreur(false);
+  };
+
+  return (
+    <form
+      className={styles.demande}
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!d.ville.trim()) {
+          setErreur(true);
+          champVille.current?.focus();
+          return;
+        }
+        setPrete(true);
+        window.location.href = lienDemande(adresse, d);
+      }}
+    >
+      <div className={styles.champ}>
+        <label htmlFor="cle-pays">Pays</label>
+        <select
+          id="cle-pays"
+          value={d.pays}
+          onChange={(e) => changer("pays")(e.target.value)}
+        >
+          {pays.map((p) => (
+            <option key={p.iso} value={p.nom}>
+              {p.nom}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className={styles.champ}>
+        <label htmlFor="cle-ville">Ville</label>
+        <input
+          id="cle-ville"
+          ref={champVille}
+          value={d.ville}
+          onChange={(e) => changer("ville")(e.target.value)}
+          placeholder="Conakry"
+          autoComplete="address-level2"
+          required
+          aria-invalid={erreur || undefined}
+          aria-describedby={erreur ? "cle-ville-erreur" : undefined}
+        />
+        {erreur && (
+          <span id="cle-ville-erreur" className={styles.erreur}>
+            Indiquez votre ville.
+          </span>
+        )}
+      </div>
+      <div className={styles.champ}>
+        <label htmlFor="cle-operateur">
+          Opérateur <span className={styles.discret}>(facultatif)</span>
+        </label>
+        <input
+          id="cle-operateur"
+          value={d.operateur}
+          onChange={(e) => changer("operateur")(e.target.value)}
+          placeholder="Orange, MTN…"
+        />
+      </div>
+      <div className={styles.champ}>
+        <label htmlFor="cle-pseudo">
+          Pseudonyme <span className={styles.discret}>(facultatif)</span>
+        </label>
+        <input
+          id="cle-pseudo"
+          value={d.pseudonyme}
+          onChange={(e) => changer("pseudonyme")(e.target.value)}
+          placeholder="lynx-conakry-2"
+        />
+      </div>
+      <div className={styles.champ}>
+        <label htmlFor="cle-systeme">
+          Système <span className={styles.discret}>(facultatif)</span>
+        </label>
+        <select
+          id="cle-systeme"
+          value={d.systeme}
+          onChange={(e) => changer("systeme")(e.target.value)}
+        >
+          <option value="">Ne pas préciser</option>
+          <option>Windows</option>
+          <option>Linux</option>
+          <option>macOS</option>
+        </select>
+      </div>
+      <button type="submit" className={styles.bouton}>
+        Envoyer ma demande
+      </button>
+      <p className={styles.petit} role="status">
+        {prete ? (
+          <>
+            Votre messagerie s&apos;ouvre avec le message prêt : il ne reste
+            qu&apos;à l&apos;envoyer. Rien ne s&apos;ouvre ? Copiez le message
+            et envoyez-le à {adresse}.
+          </>
+        ) : (
+          <>
+            Votre messagerie s&apos;ouvre avec le message déjà écrit, vers{" "}
+            {adresse}. La clé vous est envoyée en réponse.
+          </>
+        )}
+      </p>
+      {prete && (
+        <BoutonCopier
+          texte={`${adresse}\n${messageDemande(d).objet}\n\n${messageDemande(d).texte}`}
+          libelle="Copier le message"
+          libelleCopie="Message copié"
+          titre="Copier l'adresse et le message de la demande"
+          className={styles.copierMessage}
+        />
+      )}
+    </form>
+  );
+}

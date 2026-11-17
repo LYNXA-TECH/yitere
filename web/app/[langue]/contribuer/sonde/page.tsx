@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
 import styles from "@/components/contribuer/contribuer.module.css";
+import { DemandeCle } from "@/components/contribuer/DemandeCle";
 import { GuideSonde } from "@/components/contribuer/GuideSonde";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import {
@@ -19,7 +20,7 @@ type Props = { params: Promise<{ langue: string }> };
 export const metadata: Metadata = { title: "Héberger une sonde" };
 
 /** L'adresse que donne docs/INSTALLER-UNE-SONDE.md pour demander ou desactiver une cle. */
-const CONTACT = "contact@lynxatech.com";
+const CONTACT = "kantecellou70@gmail.com";
 
 /** Les 54 pays d'Afrique, en codes ISO : la liste du formulaire se traduit seule avec Intl. */
 const PAYS_AFRIQUE =
@@ -157,18 +158,13 @@ export default async function HebergerSonde({ params }: Props) {
                 <span className={styles.numero}>1 · à faire maintenant</span>
                 <h3>Demander votre clé</h3>
                 <p className={styles.corps}>
-                  Écrivez-nous avec votre ville, votre pays et votre opérateur.
-                  L&apos;équipe vous répond avec une clé personnelle.
+                  Quelques informations, et votre demande est prête :
+                  l&apos;équipe vous répond avec une clé personnelle.
                 </p>
-                <a
-                  className={styles.github}
-                  href={`mailto:${CONTACT}?subject=${encodeURIComponent("Héberger une sonde YITERE")}`}
-                >
-                  Nous écrire
-                </a>
+                <DemandeCle adresse={CONTACT} pays={pays} />
                 <p className={styles.petit}>
-                  {CONTACT}. La connexion avec GitHub, qui donnera la clé
-                  directement, ouvre après le 23 novembre.
+                  La connexion avec GitHub, qui donnera la clé directement,
+                  ouvre après le 23 novembre.
                 </p>
               </div>
               <div className={styles.etape}>

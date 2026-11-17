@@ -592,12 +592,15 @@ describe("pages traduites branchees sur l'API", () => {
     }
   });
 
-  it("heberger une sonde : la cle se demande par courriel, pas « Se connecter avec GitHub »", async () => {
+  it("heberger une sonde : la cle se demande par un formulaire qui prepare le courriel, pas « Se connecter avec GitHub »", async () => {
     const html = renderToStaticMarkup(
       await HebergerSonde({ params: Promise.resolve({ langue: "fr" }) }),
     );
     expect(html).toContain("Demander votre clé");
-    expect(html).toContain('href="mailto:contact@lynxatech.com');
+    expect(html).toContain('id="cle-ville"');
+    expect(html).toContain("Envoyer ma demande");
+    expect(html).toContain("kantecellou70@gmail.com");
+    expect(html).not.toContain("contact@lynxatech.com");
     expect(html).toContain("ouvre après le 23 novembre");
     expect(html).not.toContain("Se connecter avec GitHub");
   });

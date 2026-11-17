@@ -158,7 +158,7 @@ Une fois la tâche en place, il n'y a plus rien à faire : votre sonde apparaît
 - Windows : `schtasks /Delete /TN YitereSonde /F`, puis supprimez le dossier `yitere` de
   votre dossier personnel.
 
-Prévenez-nous ensuite à contact@lynxatech.com : nous désactiverons votre clé. Vos mesures
+Prévenez-nous ensuite à kantecellou70@gmail.com : nous désactiverons votre clé. Vos mesures
 passées restent publiées.
 
 ### Si un message s'affiche
@@ -173,7 +173,7 @@ passées restent publiées.
 Une période sans mesure n'est pas un problème : elle apparaît sur la carte comme un trou
 daté, jamais comblé.
 
-Une question : contact@lynxatech.com. Le détail des mesures est dans la
+Une question : kantecellou70@gmail.com. Le détail des mesures est dans la
 [méthodologie](methodologie.md), et ce qui est publié dans la politique de
 confidentialité du site.
 
