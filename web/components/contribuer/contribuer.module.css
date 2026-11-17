@@ -370,7 +370,8 @@
 
 .lancer:has(input[value="unix"]:checked) [data-systeme="unix"],
 .lancer:has(input[value="windows"]:checked) [data-systeme="windows"] {
-  display: block;
+  /* grid, pas block : la liste des etapes garde l'espace entre ses cartes. */
+  display: grid;
 }
 
 /* Le guide d'installation : des etapes numerotees, un bloc de commandes copiable chacune. */
