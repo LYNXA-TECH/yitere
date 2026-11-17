@@ -197,8 +197,11 @@ export function GuideSonde({ contact }: { contact: string }) {
         ), et votre clé. Partout ci-dessous, remplacez <code>VOTRE-CLE</code>{" "}
         par cette clé.
       </p>
-      <fieldset className={styles.systemes}>
-        <legend className={styles.petit}>Votre système</legend>
+      <p className={styles.legende} aria-hidden="true">
+        Choisissez votre système :
+      </p>
+      <fieldset className={`${styles.systemes} ${styles.choix}`}>
+        <legend className={styles.cache}>Votre système</legend>
         <label>
           <input type="radio" name="systeme" value="unix" defaultChecked />
           Linux, macOS

@@ -374,13 +374,13 @@
 }
 
 /* Le guide d'installation : des etapes numerotees, un bloc de commandes copiable chacune. */
+/* Toute la largeur, comme les quatre etapes du haut ; chaque etape dans sa carte. */
 .guide {
   display: grid;
   /* minmax(0, 1fr) : une longue commande defile dans son bloc, sans elargir la page. */
   grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
-  max-width: 820px;
-  margin: 8px 0 0;
+  gap: 14px;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -388,8 +388,37 @@
 .guide li {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: 18px;
+}
+
+.guide li .commande {
+  background: var(--surface-creuse);
+}
+
+/* Le choix du systeme : la taille de ses deux boutons, pas toute la largeur. */
+.choix {
+  align-self: flex-start;
+  width: fit-content;
+}
+
+.section > .legende {
+  margin-bottom: -6px;
+  color: var(--texte);
+  font-weight: 600;
+}
+
+.cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .guide h3 {
@@ -453,7 +482,6 @@
 }
 
 .tableau {
-  max-width: 820px;
   overflow-x: auto;
   border: 1px solid var(--trait);
   border-radius: 10px;
@@ -504,6 +532,28 @@ a.github {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+}
+
+/* Telephone : cartes plus serrees, et Copier au-dessus du bloc pour ne rien masquer. */
+@media (max-width: 600px) {
+  .guide li {
+    padding: 14px;
+  }
+
+  .bloc {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+  }
+
+  .bloc .commande {
+    padding-right: 14px;
+  }
+
+  .copier {
+    position: static;
+    align-self: flex-end;
+  }
 }
 
 .faq {
