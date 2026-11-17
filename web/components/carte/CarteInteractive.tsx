@@ -64,23 +64,21 @@ export function CarteInteractive(p: Props) {
   const [avecEntraide, setAvecEntraide] = useState(true);
   const [selection, setSelection] = useState<string | null>(null);
 
-  // Lecture de la frise : une heure par seconde (divisee par la vitesse), arret au direct.
+  // Lecture de la frise : une heure par seconde (divisee par la vitesse).
   useEffect(() => {
     if (!lecture) return;
     const minuterie = setInterval(
-      () => {
-        setPas((h) => {
-          if (h >= DERNIERE) {
-            setLecture(false);
-            return DERNIERE;
-          }
-          return h + 1;
-        });
-      },
+      () => setPas((h) => Math.min(h + 1, DERNIERE)),
       1000 / (VITESSES[vitesse] ?? 1),
     );
     return () => clearInterval(minuterie);
   }, [lecture, vitesse]);
+
+  // Arrivee au direct : la lecture s'arrete sur l'heure actuelle, sans seconde de trop
+  // ou le bouton dirait encore « Pause ».
+  useEffect(() => {
+    if (lecture && pas >= DERNIERE) setLecture(false);
+  }, [lecture, pas]);
 
   // Les boutons « Montrer sur la carte » du panneau sont des liens #service-<cle>.
   useEffect(() => {
