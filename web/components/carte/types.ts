@@ -56,6 +56,8 @@ export type TextesCarte = {
   pause: string;
   enDirect: string;
   sousDirect: string;
+  /** A la place des commandes de relecture, quand aucune heure passee n'est connue. */
+  sansHistorique: string;
   /** Une phrase par heure : « Relecture · heure se terminant a 14:00 ». */
   sousRelecture: string[];
   vitesse: string[];

@@ -97,6 +97,15 @@ export function CarteInteractive(p: Props) {
   }, [p.cibles]);
 
   const direct = pas === DERNIERE;
+  // L'API ne sert encore que l'etat actuel des sondes : sans aucune heure passee, relire
+  // les 24 h viderait la carte pendant 23 secondes. On ne propose alors que le direct.
+  const historique = p.villes.some((v) =>
+    v.sondes.some((s) =>
+      Object.values(s.etats).some((l) =>
+        l.slice(0, DERNIERE).some((e) => e !== "absente"),
+      ),
+    ),
+  );
   const placees = p.villes.filter((v) => v.x !== null && v.y !== null);
   // Le premier zoom se fait autour des sondes, la ou il y a quelque chose a voir.
   const centre = placees.length
@@ -348,48 +357,60 @@ export function CarteInteractive(p: Props) {
 
         <div className={styles.frise}>
           <div className={styles.commandes}>
-            <button
-              type="button"
-              className={styles.lecture}
-              aria-label={lecture ? t.pause : t.lire}
-              onClick={() => {
-                if (!lecture && direct) setPas(0);
-                setLecture((x) => !x);
-              }}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+            {historique && (
+              <button
+                type="button"
+                className={styles.lecture}
+                aria-label={lecture ? t.pause : t.lire}
+                onClick={() => {
+                  if (!lecture && direct) setPas(0);
+                  setLecture((x) => !x);
+                }}
               >
-                {lecture ? (
-                  <>
-                    <rect x="6" y="5" width="4" height="14" rx="1" />
-                    <rect x="14" y="5" width="4" height="14" rx="1" />
-                  </>
-                ) : (
-                  <path d="M8 5v14l11-7z" />
-                )}
-              </svg>
-            </button>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  {lecture ? (
+                    <>
+                      <rect x="6" y="5" width="4" height="14" rx="1" />
+                      <rect x="14" y="5" width="4" height="14" rx="1" />
+                    </>
+                  ) : (
+                    <path d="M8 5v14l11-7z" />
+                  )}
+                </svg>
+              </button>
+            )}
             <div className={styles.heure}>
               <span>{p.heures[pas]}</span>
               <span>{direct ? t.sousDirect : t.sousRelecture[pas]}</span>
             </div>
-            <div role="group" aria-label={t.periode} className={styles.groupe}>
-              <button type="button" aria-pressed="true">
-                {t.h24}
-              </button>
-            </div>
-            <button
-              type="button"
-              className={styles.secondaire}
-              onClick={() => setVitesse((v) => (v + 1) % VITESSES.length)}
-            >
-              {t.vitesse[vitesse]}
-            </button>
+            {historique ? (
+              <>
+                <div
+                  role="group"
+                  aria-label={t.periode}
+                  className={styles.groupe}
+                >
+                  <button type="button" aria-pressed="true">
+                    {t.h24}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className={styles.secondaire}
+                  onClick={() => setVitesse((v) => (v + 1) % VITESSES.length)}
+                >
+                  {t.vitesse[vitesse]}
+                </button>
+              </>
+            ) : (
+              <span className={styles.sansHistorique}>{t.sansHistorique}</span>
+            )}
             <span className={styles.ressort} />
             <button
               type="button"
@@ -445,23 +466,27 @@ export function CarteInteractive(p: Props) {
                 className={styles.curseur}
                 style={{ left: `${((pas + 1) / 24) * 100}%` }}
               />
-              <label htmlFor="carte-heure" className={styles.masque}>
-                {t.heureAffichee}
-              </label>
-              <input
-                id="carte-heure"
-                type="range"
-                min={0}
-                max={DERNIERE}
-                step={1}
-                value={pas}
-                aria-valuetext={p.heures[pas]}
-                onChange={(e) => {
-                  setLecture(false);
-                  setPas(Number(e.target.value));
-                }}
-                className={styles.curseurSaisie}
-              />
+              {historique && (
+                <label htmlFor="carte-heure" className={styles.masque}>
+                  {t.heureAffichee}
+                </label>
+              )}
+              {historique && (
+                <input
+                  id="carte-heure"
+                  type="range"
+                  min={0}
+                  max={DERNIERE}
+                  step={1}
+                  value={pas}
+                  aria-valuetext={p.heures[pas]}
+                  onChange={(e) => {
+                    setLecture(false);
+                    setPas(Number(e.target.value));
+                  }}
+                  className={styles.curseurSaisie}
+                />
+              )}
               <div className={styles.axe}>
                 {p.axe.map((a) => (
                   <span key={a}>{a}</span>

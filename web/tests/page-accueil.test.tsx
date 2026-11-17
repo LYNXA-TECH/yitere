@@ -35,6 +35,9 @@ describe("accueil : la carte", () => {
     expect(html).toMatch(/data-teinte="degrade" style=/);
     expect(html).toContain('data-nature="publication"');
     expect(html).toContain('data-nature="navigateur"');
+    // l'exemple a un historique sur 24 h : la relecture est proposee
+    expect(html).toContain('id="carte-heure"');
+    expect(html).not.toContain("arrivera avec l&#x27;historique");
   });
 
   it("refuse une langue que le site ne parle pas", async () => {

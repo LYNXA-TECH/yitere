@@ -668,6 +668,12 @@ describe("pages traduites branchees sur l'API", () => {
     // incidents, publications et mesures navigateur d'exemple : hors de la frise
     expect(html).not.toMatch(/data-teinte="[^"]*" style=/);
     expect(html).not.toMatch(/data-nature="(publication|navigateur)"/);
+    // sans historique, pas de relecture qui viderait la carte : seulement le direct
+    expect(html).not.toContain('id="carte-heure"');
+    expect(html).not.toMatch(/aria-label="(Lire|Relire)/);
+    expect(html).toContain(
+      "La relecture des 24 dernières heures arrivera avec l&#x27;historique des mesures.",
+    );
     // la frise ne parle plus d'exemple quand les verdicts sont reels
     expect(html).toContain("En direct · mesures des sondes");
     expect(html).not.toContain("En direct · données d&#x27;exemple");

@@ -356,6 +356,7 @@ export default async function Accueil({ params }: Props) {
           pause: c.pause,
           enDirect: c.enDirect,
           sousDirect: c.sousDirect(verdicts.source === "exemple"),
+          sansHistorique: c.sansHistorique,
           sousRelecture: heures.map((h) => c.sousRelecture(h)),
           vitesse: [1, 2, 4].map((n) => c.vitesse(n)),
           heureAffichee: c.heureAffichee,

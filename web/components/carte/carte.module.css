@@ -719,3 +719,9 @@
     animation: none;
   }
 }
+
+/* Sans historique (l'API ne sert que le direct) : une phrase a la place de la relecture. */
+.sansHistorique {
+  color: var(--texte-discret);
+  font-size: 12px;
+}

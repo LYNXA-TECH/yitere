@@ -388,6 +388,8 @@ export const fr = {
     lire: "Lire",
     pause: "Pause",
     enDirect: "En direct",
+    sansHistorique:
+      "La relecture des 24 dernières heures arrivera avec l'historique des mesures.",
     sousDirect: (exemple: boolean) =>
       exemple
         ? "En direct · données d'exemple"

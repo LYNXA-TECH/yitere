@@ -387,6 +387,8 @@ export const en: Partielle<Dictionnaire> = {
     lire: "Play",
     pause: "Pause",
     enDirect: "Live",
+    sansHistorique:
+      "Replaying the last 24 hours will come with the measurement history.",
     sousDirect: (exemple: boolean) =>
       exemple ? "Live · sample data" : "Live · probe measurements",
     sousRelecture: (heure: string) => `Replay · hour ending at ${heure}`,
