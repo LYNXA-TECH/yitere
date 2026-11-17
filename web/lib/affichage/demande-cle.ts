@@ -10,7 +10,6 @@ export type DemandeCle = {
   ville: string;
   operateur: string;
   pseudonyme: string;
-  systeme: "" | "Linux" | "macOS" | "Windows";
 };
 
 export const DEMANDE_VIDE: DemandeCle = {
@@ -18,7 +17,6 @@ export const DEMANDE_VIDE: DemandeCle = {
   ville: "",
   operateur: "",
   pseudonyme: "",
-  systeme: "",
 };
 
 /** L'objet et le texte de l'e-mail, prets a relire. Les champs vides sont omis. */
@@ -32,7 +30,6 @@ export function messageDemande(d: DemandeCle): {
     ["Ville", ville],
     ["Opérateur", d.operateur.trim()],
     ["Pseudonyme souhaité", d.pseudonyme.trim()],
-    ["Système", d.systeme],
   ]
     .filter(([, v]) => v)
     .map(([k, v]) => `${k} : ${v}`);

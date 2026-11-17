@@ -148,21 +148,6 @@ export function DemandeCle({
               placeholder="lynx-conakry-2"
             />
           </div>
-          <div className={styles.champ}>
-            <label htmlFor="cle-systeme">
-              Système <span className={styles.discret}>(facultatif)</span>
-            </label>
-            <select
-              id="cle-systeme"
-              value={d.systeme}
-              onChange={(e) => changer("systeme")(e.target.value)}
-            >
-              <option value="">Ne pas préciser</option>
-              <option>Windows</option>
-              <option>Linux</option>
-              <option>macOS</option>
-            </select>
-          </div>
           <button type="submit" className={styles.bouton}>
             Envoyer ma demande
           </button>
