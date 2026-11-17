@@ -44,12 +44,12 @@ describe("en-tête", () => {
     );
   });
 
-  it("sans connexion GitHub, « Se connecter » devient « Bientôt », sans lien", () => {
+  it("sans connexion GitHub, ni « Se connecter » ni « Bientôt » : l'onglet Moi l'explique", () => {
     const html = rendu(false, "fr", false);
     expect(html).not.toContain("Se connecter");
     expect(html).not.toContain('href="/fr/moi"');
-    expect(html).toContain("Bientôt");
-    expect(rendu(false, "en", false)).toContain("Soon");
+    expect(html).not.toContain("Bientôt");
+    expect(rendu(false, "en", false)).not.toContain("Soon");
   });
 
   it("garde la même page quand on change de langue", () => {

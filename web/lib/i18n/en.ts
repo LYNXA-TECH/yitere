@@ -32,8 +32,6 @@ export const en: Partielle<Dictionnaire> = {
     mesurer: "Measure",
     moi: "Me",
     seConnecter: "Sign in",
-    bientot: "Soon",
-    bientotTitre: "Sign-in with GitHub is coming after 23 November.",
     mesurerChezMoi: "Measure from my place",
     langue: "Language",
     allerAuContenu: "Skip to content",

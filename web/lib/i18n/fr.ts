@@ -31,8 +31,6 @@ export const fr = {
     mesurer: "Mesurer",
     moi: "Moi",
     seConnecter: "Se connecter",
-    bientot: "Bientôt",
-    bientotTitre: "La connexion avec GitHub arrive après le 23 novembre.",
     mesurerChezMoi: "Mesurer depuis chez moi",
     langue: "Langue",
     allerAuContenu: "Aller au contenu",
