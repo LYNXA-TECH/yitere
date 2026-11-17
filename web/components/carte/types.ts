@@ -74,7 +74,10 @@ export type TextesCarte = {
   sondes: string;
   repereHorsCalcul: string;
   /* Info-bulle d'une ville, au survol ou au clavier. */
-  servicesTouches: string;
+  degradees: string;
+  aucuneSonde: string;
+  hebergerPremiere: string;
+  lienSonde: string;
   solutionsPubliees: string;
   demandesMesure: string;
   voirEchanges: string;

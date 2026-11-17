@@ -726,28 +726,38 @@
   font-size: 12px;
 }
 
-/* Info-bulle d'une ville, au survol ou au clavier : au-dessus du rond, ou dessous pres du haut. */
+/* Info-bulle d'une ville ou d'un pays, comme sur la maquette : courte, quelques chiffres. */
 .bulle {
   position: absolute;
   z-index: 5;
-  width: 280px;
+  min-width: 180px;
+  max-width: 240px;
   overflow-y: auto;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border: 1px solid var(--trait-fort);
-  border-radius: var(--rayon);
+  border-radius: 10px;
   background: var(--surface-haute);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.45);
-  font-size: var(--taille-petite);
-  line-height: 1.4;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+  font-size: 13px;
+  line-height: 1.35;
   cursor: auto;
   user-select: text;
   -webkit-user-select: text;
-  transform: translate(-50%, calc(-100% - 12px));
+  transform: translate(-50%, calc(-100% - 10px));
   animation: bulle-entree var(--duree-courte) ease-out;
 }
 
 .bulle[data-dessous] {
-  transform: translate(-50%, 12px);
+  transform: translate(-50%, 10px);
+}
+
+/* Celle d'un pays laisse passer le pointeur vers la carte, sauf sur son lien. */
+.bulle[data-pays] {
+  pointer-events: none;
+}
+
+.bulle[data-pays] a {
+  pointer-events: auto;
 }
 
 @keyframes bulle-entree {
@@ -756,38 +766,23 @@
   }
 }
 
-.bulle p {
-  margin: 0;
-}
-
 .bulleTitre {
+  margin: 0 0 4px;
   color: var(--texte);
   font-weight: 600;
-}
-
-.bulleEtat {
-  margin-top: 2px !important;
-  color: var(--etat-normal);
-  font-weight: 500;
-}
-
-.bulleEtat[data-etat="degrade"] {
-  color: var(--etat-degrade);
 }
 
 .bulleLignes {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 4px;
-  margin: 10px 0 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--trait);
+  gap: 2px;
+  margin: 0;
 }
 
 .bulleLignes div {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   color: var(--texte-corps);
 }
 
@@ -796,32 +791,62 @@
 }
 
 .bulleLignes dd {
-  min-width: 0;
   margin: 0;
-  overflow-wrap: anywhere;
   color: var(--texte);
   font-family: var(--police-chiffres);
   font-weight: 600;
-  text-align: right;
 }
 
 .bulleLignes dd[data-etat="degrade"] {
   color: var(--etat-degrade);
+}
+
+.bulleLignes dd[data-texte] {
   font-family: inherit;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.bulleBas {
-  margin-top: 10px !important;
+.bulleLien {
+  display: block;
+  margin-top: 6px;
+  color: var(--texte-secondaire);
+  font-size: 12px;
 }
 
-.bulleBas a {
+a.bulleLien {
   color: var(--interaction);
+  font-size: 13px;
   font-weight: 600;
+  text-decoration: none;
+}
+
+a.bulleLien:hover {
+  text-decoration: underline;
+}
+
+/* Le pays survole s'eclaire, comme sur la maquette. */
+.fond path[data-pays] {
+  transition: fill var(--duree-courte) ease;
+}
+
+.fond path[data-pays]:hover {
+  fill: #2e4a78;
+}
+
+/* Le calque des villes laisse passer le pointeur vers les pays, sauf sur les villes. */
+.calque {
+  pointer-events: none;
+}
+
+.calque .ville {
+  pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bulle {
+  .bulle,
+  .fond path[data-pays] {
     animation: none;
+    transition: none;
   }
 }

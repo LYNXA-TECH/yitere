@@ -161,6 +161,14 @@ export default async function Accueil({ params }: Props) {
                 key={`${iso}-${i}`}
                 d={d}
                 data-sondes={paysSondes.has(iso) || undefined}
+                // Pour l'info-bulle du pays : son nom et ses sondes developpeur.
+                data-pays={/^[A-Z]{2}$/.test(iso) ? iso : undefined}
+                data-nom={
+                  /^[A-Z]{2}$/.test(iso) ? nomPays(langue, iso) : undefined
+                }
+                data-nombre={
+                  developpeurs.filter((s) => s.pays === iso).length || undefined
+                }
               />
             ))}
           </svg>
@@ -374,7 +382,10 @@ export default async function Accueil({ params }: Props) {
           ville: c.ville,
           sondes: c.sondes,
           repereHorsCalcul: c.repereHorsCalcul,
-          servicesTouches: c.servicesTouches,
+          degradees: c.degradees,
+          aucuneSonde: c.aucuneSonde,
+          hebergerPremiere: c.hebergerPremiere,
+          lienSonde: lien(langue, "/contribuer/sonde"),
           solutionsPubliees: c.solutionsPubliees,
           demandesMesure: c.demandesMesure,
           voirEchanges: c.voirEchanges,

@@ -69,9 +69,10 @@ export function CarteInteractive(p: Props) {
   const [avecNavigateur, setAvecNavigateur] = useState(false);
   const [avecEntraide, setAvecEntraide] = useState(true);
   const [selection, setSelection] = useState<string | null>(null);
-  // Info-bulle : la ville survolee (ou atteinte au clavier) et sa place dans le cadre.
+  // Info-bulle : la ville ou le pays survole (ou atteint au clavier), et sa place dans le cadre.
   const [survol, setSurvol] = useState<{
-    nom: string;
+    ville?: string;
+    pays?: { iso: string; nom: string; sondes: number };
     x: number;
     y: number;
     dessous: boolean;
@@ -86,26 +87,57 @@ export function CarteInteractive(p: Props) {
     garderSurvol();
     fermeture.current = setTimeout(() => setSurvol(null), 150);
   };
-  const montrerSurvol = (nom: string, el: Element) => {
+  /** Place la bulle au-dessus de la zone r (en pixels de l'ecran), ou dessous pres du haut. */
+  const montrer = (
+    contenu: { ville: string } | { pays: NonNullable<typeof survol>["pays"] },
+    r: { left: number; top: number; bottom: number; width: number },
+  ) => {
     const cadre = carte.cadre.current;
-    const point = el.querySelector("circle:last-of-type") ?? el;
     if (!cadre) return;
     garderSurvol();
     const c = cadre.getBoundingClientRect();
-    const r = point.getBoundingClientRect();
     const y = r.top - c.top;
     const dessous = r.bottom - c.top;
-    // Au-dessus du rond s'il y a la place (environ 250 px), sinon du cote le plus libre.
-    const enBas = y < 250 && c.height - dessous > y;
+    // Au-dessus s'il y a la place (bulle d'une ville : 160 px, d'un pays : 110 px),
+    // sinon du cote le plus libre. Au-dessus, le pointeur qui descend ne la croise pas.
+    const enBas =
+      y < ("ville" in contenu ? 160 : 110) && c.height - dessous > y;
     setSurvol({
-      nom,
-      // La bulle (280 px) reste entiere dans le cadre.
-      x: Math.min(Math.max(r.left + r.width / 2 - c.left, 150), c.width - 150),
+      ...contenu,
+      // La bulle (240 px au plus) reste entiere dans le cadre.
+      x: Math.min(Math.max(r.left + r.width / 2 - c.left, 130), c.width - 130),
       y: enBas ? dessous : y,
       dessous: enBas,
       // Jamais coupee par le bord du cadre : au pire, elle defile.
-      hauteur: Math.max((enBas ? c.height - dessous : y) - 24, 120),
+      hauteur: Math.max((enBas ? c.height - dessous : y) - 24, 90),
     });
+  };
+  const montrerSurvol = (nom: string, el: Element) =>
+    montrer(
+      { ville: nom },
+      (el.querySelector("circle:last-of-type") ?? el).getBoundingClientRect(),
+    );
+  /** Un pays du fond de carte, sous le pointeur : son nom et ses sondes, lus sur le trace. */
+  const paysSous = (cible: EventTarget) => {
+    const trace =
+      cible instanceof Element ? cible.closest("path[data-pays]") : null;
+    if (!(trace instanceof SVGElement)) return false;
+    const iso = trace.dataset.pays ?? "";
+    if (survol?.pays?.iso === iso) return true;
+    // Ancree au centre du pays, comme celle d'une ville au-dessus de son rond.
+    const r = trace.getBoundingClientRect();
+    const milieu = r.top + r.height / 2;
+    montrer(
+      {
+        pays: {
+          iso,
+          nom: trace.dataset.nom ?? iso,
+          sondes: Number(trace.dataset.nombre ?? 0),
+        },
+      },
+      { left: r.left, top: milieu - 8, bottom: milieu + 8, width: r.width },
+    );
+    return true;
   };
 
   // Lecture de la frise : une heure par seconde (divisee par la vitesse).
@@ -174,81 +206,81 @@ export function CarteInteractive(p: Props) {
   const inverse = 1 / v0.k;
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
-  /** L'info-bulle d'une ville : ses sondes a l'heure affichee, et son entraide. */
+  /** L'info-bulle, courte comme sur la maquette : quelques chiffres et un lien. */
   const bulle = () => {
-    const v = p.villes.find((x) => x.nom === survol?.nom);
-    if (!v || !survol) return null;
-    const presentes = v.sondes.filter((s) => etatDe(s, cle, pas) !== "absente");
-    const etats = presentes.map((s) => etatDe(s, cle, pas));
-    const resume = etats.includes("degrade")
-      ? t.legendeDegrade
-      : etats.every((e) => e === "rodage" || e === "pas-de-donnee")
-        ? t.legendeRodage
-        : t.legendeNormal;
-    const touches = p.cibles.filter(
-      (c) =>
-        (cle === "tous" || cle === c.cle) &&
-        presentes.some((s) => s.etats[c.cle]?.[pas] === "degrade"),
+    if (!survol) return null;
+    const v = p.villes.find((x) => x.nom === survol.ville);
+    const ligne = (titre: string, valeur: ReactNode, alerte = false) => (
+      <div>
+        <dt>{titre}</dt>
+        <dd
+          data-etat={alerte ? "degrade" : undefined}
+          data-texte={typeof valeur === "string" || undefined}
+        >
+          {valeur}
+        </dd>
+      </div>
     );
-    const { solutions, demandes } = v.entraide;
+    let contenu: ReactNode = null;
+    if (v) {
+      const presentes = v.sondes.filter(
+        (s) => etatDe(s, cle, pas) !== "absente",
+      );
+      const degradees = presentes.filter(
+        (s) => etatDe(s, cle, pas) === "degrade",
+      ).length;
+      const { solutions, demandes } = v.entraide;
+      contenu = (
+        <>
+          <p className={styles.bulleTitre}>
+            {v.nom} · {v.pays}
+          </p>
+          <dl className={styles.bulleLignes}>
+            {ligne(t.sondes, presentes.length)}
+            {ligne(t.degradees, degradees, degradees > 0)}
+            {solutions + demandes > 0 && ligne(t.solutionsPubliees, solutions)}
+            {solutions + demandes > 0 && ligne(t.demandesMesure, demandes)}
+          </dl>
+          {solutions + demandes > 0 ? (
+            <a href={t.lienEchanges} className={styles.bulleLien}>
+              {t.voirEchanges}
+            </a>
+          ) : (
+            <span className={styles.bulleLien}>{t.cliquerDetail}</span>
+          )}
+        </>
+      );
+    } else if (survol.pays) {
+      const { nom, sondes } = survol.pays;
+      contenu = (
+        <>
+          <p className={styles.bulleTitre}>{nom}</p>
+          <dl className={styles.bulleLignes}>
+            {ligne(t.sondes, sondes > 0 ? sondes : t.aucuneSonde, sondes === 0)}
+          </dl>
+          {sondes === 0 && (
+            <a href={t.lienSonde} className={styles.bulleLien}>
+              {t.hebergerPremiere}
+            </a>
+          )}
+        </>
+      );
+    }
+    if (!contenu) return null;
     return (
       <div
         id="carte-survol"
         role="tooltip"
         className={styles.bulle}
         data-dessous={survol.dessous || undefined}
+        data-pays={survol.pays && !v ? "" : undefined}
         style={{ left: survol.x, top: survol.y, maxHeight: survol.hauteur }}
         onPointerEnter={(e) => e.pointerType === "mouse" && garderSurvol()}
         onPointerLeave={(e) => e.pointerType === "mouse" && quitterSurvol()}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
-        <p className={styles.bulleTitre}>
-          {v.nom} <span className={styles.discret}>· {v.pays}</span>
-        </p>
-        <p
-          className={styles.bulleEtat}
-          data-etat={etats.includes("degrade") ? "degrade" : undefined}
-        >
-          {resume}
-        </p>
-        <dl className={styles.bulleLignes}>
-          <div>
-            <dt>{t.sondes}</dt>
-            <dd>{presentes.length}</dd>
-          </div>
-          {touches.length > 0 && (
-            <div>
-              <dt>{t.servicesTouches}</dt>
-              <dd data-etat="degrade">
-                {touches
-                  .slice(0, 2)
-                  .map((c) => c.nom)
-                  .join(", ")}
-                {touches.length > 2 && ` +${touches.length - 2}`}
-              </dd>
-            </div>
-          )}
-        </dl>
-        {solutions + demandes > 0 && (
-          <dl className={styles.bulleLignes}>
-            <div>
-              <dt>{t.solutionsPubliees}</dt>
-              <dd>{solutions}</dd>
-            </div>
-            <div>
-              <dt>{t.demandesMesure}</dt>
-              <dd>{demandes}</dd>
-            </div>
-          </dl>
-        )}
-        <p className={styles.bulleBas}>
-          {solutions + demandes > 0 ? (
-            <a href={t.lienEchanges}>{t.voirEchanges}</a>
-          ) : (
-            <span className={styles.discret}>{t.cliquerDetail}</span>
-          )}
-        </p>
+        {contenu}
       </div>
     );
   };
@@ -262,8 +294,30 @@ export function CarteInteractive(p: Props) {
           data-vue={vue}
           data-zoom={v0.k > 1 || undefined}
           {...(vue === "carte" ? carte.gestes : {})}
-          // Toucher ou cliquer ailleurs sur la carte ferme la bulle.
-          onClick={() => setSurvol(null)}
+          // Toucher ou cliquer un pays ouvre sa bulle ; ailleurs, la bulle se ferme.
+          onClick={(e) => {
+            if (!paysSous(e.target)) setSurvol(null);
+          }}
+          onPointerMove={(e) => {
+            if (vue !== "carte") return;
+            // Le glisser de la carte d'abord, puis la bulle du pays survole.
+            carte.gestes.onPointerMove(e);
+            if (e.pointerType !== "mouse" || carte.geste) return;
+            // Sur la bulle elle-meme : elle reste ouverte.
+            if (
+              e.target instanceof Element &&
+              e.target.closest("#carte-survol")
+            )
+              return;
+            // La bulle d'une ville a la priorite : elle se ferme d'elle-meme en
+            // quittant le rond, ce qui laisse le temps d'aller cliquer sur son lien.
+            if (survol?.ville) return;
+            if (paysSous(e.target)) garderSurvol();
+            else if (survol?.pays) quitterSurvol();
+          }}
+          onPointerLeave={(e) =>
+            e.pointerType === "mouse" && survol?.pays && quitterSurvol()
+          }
         >
           {vue === "carte" ? (
             <div
@@ -330,7 +384,7 @@ export function CarteInteractive(p: Props) {
                       role="button"
                       aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
                       aria-describedby={
-                        survol?.nom === v.nom ? "carte-survol" : undefined
+                        survol?.ville === v.nom ? "carte-survol" : undefined
                       }
                       // Le survol, a la souris seulement : un doigt passe par le clic.
                       onPointerEnter={(e) =>
