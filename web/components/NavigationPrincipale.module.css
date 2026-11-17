@@ -65,14 +65,17 @@
     border-top: 1px solid var(--trait);
   }
 
+  /* Une icone au-dessus du nom, comme dans la maquette : on reconnait l'onglet d'un coup d'oeil. */
   .onglets a {
     flex: 1;
     display: flex;
+    flex-direction: column;
+    gap: 3px;
     align-items: center;
     justify-content: center;
-    min-height: 52px;
+    min-height: 56px;
     color: var(--texte-secondaire);
-    font-size: 13px;
+    font-size: 11px;
     text-decoration: none;
   }
 

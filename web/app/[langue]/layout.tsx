@@ -57,6 +57,7 @@ export default async function Disposition({ children, params }: Props) {
           langue={langue}
           libelle={t.navigation.mobile}
           onglets={ONGLETS_MOBILES.map(({ cle, chemin }) => ({
+            cle,
             href: lien(langue, chemin),
             texte: t.navigation[cle],
           }))}

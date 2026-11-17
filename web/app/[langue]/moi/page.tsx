@@ -45,7 +45,7 @@ export default async function MonEspace({ params }: Props) {
           langue={langue}
           surtitre="Mon espace"
           titre="Bientôt"
-          texte={`Votre espace (vos sondes, vos publications, vos suivis) ouvrira avec la connexion GitHub, après le 23 novembre. ${t.publication.aucune}`}
+          texte={`Votre espace (vos sondes, vos publications, vos suivis) ouvrira avec la connexion GitHub, après le 23 novembre. En attendant, vous pouvez publier sans compte depuis les échanges.`}
         />
       </>
     );
