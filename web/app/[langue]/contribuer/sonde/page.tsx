@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
-import { BoutonCopier } from "@/components/BoutonCopier";
 import styles from "@/components/contribuer/contribuer.module.css";
+import { GuideSonde } from "@/components/contribuer/GuideSonde";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import {
   ecritureOuverte,
@@ -20,9 +20,6 @@ export const metadata: Metadata = { title: "Héberger une sonde" };
 
 /** L'adresse que donne docs/INSTALLER-UNE-SONDE.md pour demander ou desactiver une cle. */
 const CONTACT = "contact@lynxatech.com";
-
-const SONDE =
-  "https://raw.githubusercontent.com/LYNXA-TECH/yitere/main/sonde/sonde.js";
 
 /** Les 54 pays d'Afrique, en codes ISO : la liste du formulaire se traduit seule avec Intl. */
 const PAYS_AFRIQUE =
@@ -188,45 +185,17 @@ export default async function HebergerSonde({ params }: Props) {
               </div>
             </>
           )}
-          <div className={`${styles.etape} ${styles.lancer}`}>
+          <div className={styles.etape}>
             <span className={styles.numero}>3 · ensuite</span>
-            <h3>Lancer la commande</h3>
-            <fieldset className={styles.systemes}>
-              <legend className={styles.petit}>Système</legend>
-              <label>
-                <input
-                  type="radio"
-                  name="systeme"
-                  value="unix"
-                  defaultChecked
-                />
-                Linux, macOS
-              </label>
-              <label>
-                <input type="radio" name="systeme" value="windows" />
-                Windows
-              </label>
-            </fieldset>
-            <p className={styles.petit}>
-              Dans un terminal, avec Node.js installé :
+            <h3>Installer la sonde</h3>
+            <p className={styles.corps}>
+              Sous Linux, macOS ou Windows, sans droits administrateur, avec
+              Node.js 20 ou plus : téléchargement, essai, puis un passage
+              automatique toutes les dix minutes.
             </p>
-            <pre className={styles.commande} data-systeme="unix">
-              {`curl -O ${SONDE}\nYITERE_JETON=votre-cle node sonde.js`}
-            </pre>
-            <pre className={styles.commande} data-systeme="windows">
-              {`curl.exe -O ${SONDE}\n$env:YITERE_JETON="votre-cle"; node sonde.js`}
-            </pre>
-            <BoutonCopier
-              texte={`curl -O ${SONDE}`}
-              libelle="Copier le téléchargement"
-              libelleCopie="Copié"
-              titre="Copier la commande de téléchargement"
-              className={styles.github}
-            />
-            <p className={styles.petit}>
-              Pour des mesures continues, programmez la commande toutes les dix
-              minutes (cron, ou le Planificateur de tâches sous Windows).
-            </p>
+            <a className={styles.github} href="#installer">
+              Suivre le guide
+            </a>
           </div>
           <div className={styles.etape}>
             <span className={styles.numero}>4 · ensuite</span>
@@ -238,6 +207,8 @@ export default async function HebergerSonde({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <GuideSonde contact={CONTACT} />
 
       <section
         aria-labelledby="exactement"
@@ -273,8 +244,14 @@ export default async function HebergerSonde({ params }: Props) {
           <div className={styles.carte}>
             <h3>Arrêter</h3>
             <p className={styles.corps}>
-              Un passage s&apos;arrête seul. Pour arrêter la sonde, retirez la
-              tâche programmée, ou <kbd>Ctrl+C</kbd> pendant un passage.
+              Linux : <code>crontab -e</code>, supprimez la ligne YITERE, puis{" "}
+              <code>rm -r ~/yitere</code>. Windows :{" "}
+              <code>schtasks /Delete /TN YitereSonde /F</code>, puis supprimez
+              le dossier <code>yitere</code> de votre dossier personnel.
+            </p>
+            <p className={styles.petit}>
+              Prévenez-nous ensuite à {CONTACT} : nous désactiverons votre clé.
+              Vos mesures passées restent publiées.
             </p>
           </div>
         </div>

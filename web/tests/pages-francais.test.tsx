@@ -82,6 +82,30 @@ describe("contenu", () => {
     expect(html).toContain("node sonde.js");
     expect(html).not.toContain("npx yitere-sonde");
   });
+
+  it("la page sonde donne le guide complet : passage toutes les dix minutes, verification, depannage", async () => {
+    const html = renderToStaticMarkup(
+      await HebergerSonde(params({ langue: "fr" })),
+    );
+    // Linux : la cle dans un fichier, puis la ligne de cron.
+    expect(html).toContain("chmod 600 cle");
+    expect(html).toContain("*/10 * * * * cd $HOME/yitere");
+    // Windows : le fichier de lancement, puis la tache programmee.
+    expect(html).toContain("lancer.cmd");
+    expect(html).toContain(
+      "schtasks /Create /SC MINUTE /MO 10 /TN YitereSonde",
+    );
+    // Ce qu'il faut voir, ce qu'il faut installer, et quoi faire si ca coince.
+    expect(html).toContain("passage: 8 mesures, 8 posees, 0 ignorees");
+    expect(html).toContain('href="https://nodejs.org"');
+    expect(html).toContain("401 ... jeton inconnu");
+    expect(html).toContain("schtasks /Delete /TN YitereSonde /F");
+    // Un bouton Copier par bloc de commandes : 4 sous Linux, 4 sous Windows.
+    expect(html.match(/>Copier</g)).toHaveLength(8);
+    // L'etape 3 du haut renvoie au guide.
+    expect(html).toContain('href="#installer"');
+    expect(html).toContain('id="installer"');
+  });
 });
 
 describe("confidentialité", () => {
