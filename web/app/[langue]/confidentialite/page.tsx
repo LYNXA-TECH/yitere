@@ -13,35 +13,29 @@ type Props = { params: Promise<{ langue: string }> };
 export const metadata: Metadata = { title: "Confidentialité" };
 
 /**
- * Brouillon, comme dans la maquette : les passages en orange attendent une decision
- * de l'equipe et restent visibles expres. Page en francais seulement (decision 0002, D13).
+ * La politique de confidentialite, avec les reponses validees par l'equipe le
+ * 18 novembre (plus aucun passage entre crochets). Page en francais seulement
+ * (decision 0002, D13).
  */
 export default async function Confidentialite({ params }: Props) {
   const langue = await langueDe(params);
-  const A = ({ children }: { children: React.ReactNode }) => (
-    <span className={styles.aFaire}>{children}</span>
-  );
   return (
     <main className={styles.page}>
       <MentionFrancais langue={langue} />
       <div className={styles.entete} lang="fr">
-        <span className={styles.surtitre}>
-          Politique de confidentialité · brouillon
-        </span>
+        <span className={styles.surtitre}>Politique de confidentialité</span>
         <h1>Vos données, et ce que vous pouvez en faire</h1>
         <p className={styles.chapeau}>
-          Les passages en orange sont à compléter par l&apos;équipe avant la
-          mise en ligne. Ils sont laissés visibles exprès : cette politique
-          n&apos;est pas encore définitive.
+          Ce que YITERE collecte, pourquoi, combien de temps, et vos droits.
+          Dernière mise à jour : 18 novembre 2026.
         </p>
       </div>
 
       <section className={styles.section} lang="fr">
         <h2>Qui est responsable</h2>
         <p>
-          YITERE est conçu par l&apos;équipe LYNXA. Responsable des données :{" "}
-          <A>[nom de la personne ou de l&apos;entité]</A>. Contact :{" "}
-          <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+          YITERE est conçu par l&apos;équipe LYNXA. Responsable des données :
+          LYNXA SARL. Contact : <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
         </p>
       </section>
 
@@ -66,9 +60,7 @@ export default async function Confidentialite({ params }: Props) {
                   quand une requête échoue.
                 </td>
                 <td>Diagnostiquer une panne du site</td>
-                <td>
-                  <A>[durée à confirmer]</A>
-                </td>
+                <td>14 jours</td>
               </tr>
               <tr>
                 <th scope="row">Vous hébergez une sonde</th>
@@ -78,7 +70,7 @@ export default async function Confidentialite({ params }: Props) {
                 </td>
                 <td>Publier les mesures et calculer les verdicts</td>
                 <td>
-                  <A>[durées à décider]</A>
+                  Mesures brutes : 90 jours. Médianes horaires : sans limite.
                 </td>
               </tr>
               <tr>
@@ -116,8 +108,7 @@ export default async function Confidentialite({ params }: Props) {
         </div>
         <p>
           Nous ne lisons aucun fichier de votre ordinateur, ne déposons aucun
-          cookie publicitaire et ne vendons aucune donnée. Cookies techniques :{" "}
-          <A>[à confirmer : cookie de session après connexion]</A>.
+          cookie publicitaire et ne vendons aucune donnée.
         </p>
       </section>
 
@@ -130,25 +121,19 @@ export default async function Confidentialite({ params }: Props) {
         </p>
         <p>
           Une sonde chez vous qui mesure toutes les 10 minutes peut indiquer
-          quand votre ordinateur est allumé.{" "}
-          <A>
-            [À décider : arrondir l&apos;heure des mesures brutes publiées, ou
-            ne publier que les médianes horaires pour les sondes à domicile.]
-          </A>
+          quand votre ordinateur est allumé. Aucune mesure brute n&apos;est
+          publiée à ce jour : seuls les verdicts et les médianes horaires le
+          sont. Si un export des mesures brutes ouvre, l&apos;heure de chaque
+          mesure y sera arrondie à 10 minutes.
         </p>
       </section>
 
       <section className={styles.section} lang="fr">
         <h2>Où sont les données</h2>
         <p>
-          Dans une base PostgreSQL hébergée par Supabase,{" "}
-          <A>[région du projet, à confirmer par Cellou]</A>, et sur notre
-          serveur Datacloud (Systalink) à Madrid, en Espagne : notre hébergeur
-          ne propose pas de région en Afrique à ce jour.{" "}
-          <A>
-            [À vérifier : obligations liées au transfert de données hors du pays
-            de l&apos;hôte.]
-          </A>
+          Dans une base PostgreSQL installée sur notre serveur Datacloud
+          (Systalink) à Madrid, en Espagne : notre hébergeur ne propose pas de
+          région en Afrique à ce jour.
         </p>
       </section>
 
@@ -161,8 +146,8 @@ export default async function Confidentialite({ params }: Props) {
             <Link href={lien(langue, "/moi")}>Mes sondes</Link>.
           </li>
           <li>
-            Supprimer toutes les mesures d&apos;une sonde depuis Mes sondes.{" "}
-            <A>[À décider : sort des médianes déjà publiées.]</A>
+            Supprimer toutes les mesures d&apos;une sonde depuis Mes sondes. Les
+            médianes horaires déjà publiées sont conservées.
           </li>
           <li>
             Supprimer une publication ou une confirmation, depuis Mes
