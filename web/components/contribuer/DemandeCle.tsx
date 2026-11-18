@@ -24,13 +24,15 @@ export function DemandeCle({
   pays: { iso: string; nom: string }[];
 }) {
   const [d, setD] = useState<Demande>(DEMANDE_VIDE);
-  const [erreur, setErreur] = useState(false);
+  // Le premier champ obligatoire laisse vide : la ville, puis l'operateur.
+  const [erreur, setErreur] = useState<"ville" | "operateur" | null>(null);
   const [prete, setPrete] = useState(false);
   const champVille = useRef<HTMLInputElement>(null);
+  const champOperateur = useRef<HTMLInputElement>(null);
   const fenetre = useRef<HTMLDialogElement>(null);
   const changer = (k: keyof Demande) => (v: string) => {
     setD((x) => ({ ...x, [k]: v }));
-    if (k === "ville") setErreur(false);
+    if (k === erreur) setErreur(null);
   };
 
   return (
@@ -83,8 +85,13 @@ export function DemandeCle({
           onSubmit={(e) => {
             e.preventDefault();
             if (!d.ville.trim()) {
-              setErreur(true);
+              setErreur("ville");
               champVille.current?.focus();
+              return;
+            }
+            if (!d.operateur.trim()) {
+              setErreur("operateur");
+              champOperateur.current?.focus();
               return;
             }
             setPrete(true);
@@ -117,25 +124,36 @@ export function DemandeCle({
               placeholder="Conakry"
               autoComplete="address-level2"
               required
-              aria-invalid={erreur || undefined}
-              aria-describedby={erreur ? "cle-ville-erreur" : undefined}
+              aria-invalid={erreur === "ville" || undefined}
+              aria-describedby={
+                erreur === "ville" ? "cle-ville-erreur" : undefined
+              }
             />
-            {erreur && (
+            {erreur === "ville" && (
               <span id="cle-ville-erreur" className={styles.erreur}>
                 Indiquez votre ville.
               </span>
             )}
           </div>
           <div className={styles.champ}>
-            <label htmlFor="cle-operateur">
-              Opérateur <span className={styles.discret}>(facultatif)</span>
-            </label>
+            <label htmlFor="cle-operateur">Opérateur</label>
             <input
               id="cle-operateur"
+              ref={champOperateur}
               value={d.operateur}
               onChange={(e) => changer("operateur")(e.target.value)}
-              placeholder="Orange, MTN…"
+              placeholder="Orange, MTN, Free"
+              required
+              aria-invalid={erreur === "operateur" || undefined}
+              aria-describedby={
+                erreur === "operateur" ? "cle-operateur-erreur" : undefined
+              }
             />
+            {erreur === "operateur" && (
+              <span id="cle-operateur-erreur" className={styles.erreur}>
+                Indiquez votre opérateur.
+              </span>
+            )}
           </div>
           <div className={styles.champ}>
             <label htmlFor="cle-pseudo">
