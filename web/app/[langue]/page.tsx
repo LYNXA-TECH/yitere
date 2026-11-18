@@ -26,8 +26,9 @@ import type {
 } from "@/lib/donnees/types";
 import { heureUTC, minutesEntre, nomPays } from "@/lib/format";
 import { PAYS_AFRIQUE } from "@/lib/geo/afrique";
-import { HAUTEUR, LARGEUR, projeter } from "@/lib/geo/projection";
-import { VILLES } from "@/lib/geo/villes";
+import { positionVille } from "@/lib/geo/position";
+import { nomVille } from "@/lib/geo/villes";
+import { HAUTEUR, LARGEUR } from "@/lib/geo/projection";
 import { dictionnaire, type Dictionnaire, type Langue } from "@/lib/i18n";
 import { langueDe } from "@/lib/i18n/params";
 import { lien } from "@/lib/navigation";
@@ -64,10 +65,11 @@ export default async function Accueil({ params }: Props) {
       : Math.min(24, Math.max(0, 24 - (fin - Date.parse(iso)) / HEURE_MS));
   const pasDe = (iso: string) =>
     Math.min(23, Math.max(0, Math.ceil(surFrise(iso)) - 1));
-  const position = (ville: string) => {
-    const v = VILLES[ville];
-    return v ? projeter(v.lat, v.lon) : null;
-  };
+  const paysDe = new Map(
+    sondes.donnees.map((s) => [nomVille(s.ville), s.pays]),
+  );
+  const position = (ville: string) =>
+    positionVille(ville, paysDe.get(nomVille(ville)) ?? "");
 
   /**
    * Ce qui est date ne se pose sur la frise que s'il suit la meme horloge que les verdicts :
@@ -101,7 +103,7 @@ export default async function Accueil({ params }: Props) {
     const vers = position(p.ville);
     return p.confirmations.flatMap((conf) => {
       const de = position(conf.ville);
-      return de && vers && conf.ville !== p.ville
+      return de && vers && nomVille(conf.ville) !== nomVille(p.ville)
         ? [{ x1: de.x, y1: de.y, x2: vers.x, y2: vers.y, pas: pasDe(conf.le) }]
         : [];
     });
@@ -179,7 +181,7 @@ export default async function Accueil({ params }: Props) {
             <p className={styles.resume}>
               {c.resume(
                 developpeurs.length,
-                new Set(developpeurs.map((s) => s.ville)).size,
+                new Set(developpeurs.map((s) => nomVille(s.ville))).size,
                 new Set(developpeurs.map((s) => s.pays)).size,
               )}
             </p>
@@ -354,7 +356,7 @@ export default async function Accueil({ params }: Props) {
           repere: c.repere,
           description: c.description(
             developpeurs.length,
-            new Set(developpeurs.map((s) => s.ville)).size,
+            new Set(developpeurs.map((s) => nomVille(s.ville))).size,
           ),
           listeDetail: c.listeDetail,
           listeTitre: c.listeTitre("{heure}"),
@@ -383,6 +385,9 @@ export default async function Accueil({ params }: Props) {
           sondes: c.sondes,
           repereHorsCalcul: c.repereHorsCalcul,
           degradees: c.degradees,
+          operateur: c.operateur,
+          operateurs: c.operateurs,
+          villes: c.villes,
           aucuneSonde: c.aucuneSonde,
           hebergerPremiere: c.hebergerPremiere,
           lienSonde: lien(langue, "/contribuer/sonde"),
@@ -391,6 +396,7 @@ export default async function Accueil({ params }: Props) {
           voirEchanges: c.voirEchanges,
           lienEchanges: lien(langue, "/echanges"),
           cliquerDetail: c.cliquerDetail,
+          cliquerZoom: c.cliquerZoom,
         }}
       />
     </main>
@@ -409,12 +415,11 @@ function regrouper(
   const c = t.carte;
   const villes = new Map<string, VilleCarte>();
   for (const s of sondes) {
-    const coordonnees = VILLES[s.ville];
-    const position = coordonnees
-      ? projeter(coordonnees.lat, coordonnees.lon)
-      : null;
-    const ville = villes.get(s.ville) ?? {
-      nom: s.ville,
+    const position = positionVille(s.ville, s.pays);
+    // « Labe » et « Labé » sont la meme ville : une seule pastille.
+    const ville = villes.get(nomVille(s.ville)) ?? {
+      // Le nom bien ecrit si la ville est connue : « labe » s'affiche « Labé ».
+      nom: nomVille(s.ville),
       pays: nomPays(langue, s.pays),
       x: position?.x ?? null,
       y: position?.y ?? null,
@@ -427,11 +432,12 @@ function regrouper(
         nomOperateur(s.operateur, t.verdict.operateurInconnu),
         s.numero,
       ),
+      operateur: nomOperateur(s.operateur, t.verdict.operateurInconnu),
       repere: s.type === "repere",
       enRodage: s.enRodage,
       etats: s.etats as Record<string, EtatSonde[]>,
     });
-    villes.set(s.ville, ville);
+    villes.set(ville.nom, ville);
   }
   return [...villes.values()];
 }

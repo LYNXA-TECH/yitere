@@ -5,6 +5,9 @@ import { langueDe } from "@/lib/i18n/params";
 import { lien } from "@/lib/navigation";
 import styles from "@/styles/document.module.css";
 
+/** La meme adresse que la page Heberger une sonde : l'equipe y lit les demandes. */
+const CONTACT = "kantecellou70@gmail.com";
+
 type Props = { params: Promise<{ langue: string }> };
 
 export const metadata: Metadata = { title: "Confidentialité" };
@@ -38,7 +41,7 @@ export default async function Confidentialite({ params }: Props) {
         <p>
           YITERE est conçu par l&apos;équipe LYNXA. Responsable des données :{" "}
           <A>[nom de la personne ou de l&apos;entité]</A>. Contact :{" "}
-          <A>[adresse e-mail dédiée]</A>.
+          <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
         </p>
       </section>
 
@@ -166,12 +169,12 @@ export default async function Confidentialite({ params }: Props) {
             contributions.
           </li>
           <li>
-            Supprimer une publication déposée sans compte : écrivez à
-            contact@lynxatech.com en citant son texte.
+            Supprimer une publication déposée sans compte : écrivez à{" "}
+            <a href={`mailto:${CONTACT}`}>{CONTACT}</a> en citant son texte.
           </li>
           <li>
-            Demander une copie ou la suppression de votre compte :{" "}
-            <A>[adresse de contact]</A>.
+            Demander une copie ou la suppression de votre compte : écrivez à{" "}
+            <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
           </li>
         </ul>
       </section>

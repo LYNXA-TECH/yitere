@@ -104,6 +104,9 @@
   --couleur: var(--texte-secondaire);
 }
 
+/* Le contour du navigateur suivrait le zoom (un cadre blanc enorme a k = 8) : le focus
+   se lit sur la pastille, au clavier seulement. */
+.ville:focus,
 .ville:focus-visible {
   outline: none;
 }
@@ -801,9 +804,14 @@
   color: var(--etat-degrade);
 }
 
+/* Une valeur en texte (les operateurs) tient sur une ligne : la bulle reste petite,
+   la fin est coupee par des points de suspension. */
 .bulleLignes dd[data-texte] {
+  min-width: 0;
+  overflow: hidden;
   font-family: inherit;
   font-weight: 500;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -849,4 +857,10 @@ a.bulleLien:hover {
     animation: none;
     transition: none;
   }
+}
+
+/* « +2 » apres le nom d'un groupe de villes proches : il s'ouvre en zoomant. */
+.plusVilles {
+  fill: var(--interaction);
+  font-weight: 700;
 }
