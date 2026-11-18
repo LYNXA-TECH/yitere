@@ -23,14 +23,11 @@ export default async function Confidentialite({ params }: Props) {
     <main className={styles.page}>
       <MentionFrancais langue={langue} />
       <div className={styles.entete} lang="fr">
-        <span className={styles.surtitre}>
-          Politique de confidentialité · brouillon
-        </span>
+        <span className={styles.surtitre}>Politique de confidentialité</span>
         <h1>Vos données, et ce que vous pouvez en faire</h1>
         <p className={styles.chapeau}>
-          Les passages en orange sont à compléter par l&apos;équipe avant la
-          mise en ligne. Ils sont laissés visibles exprès : cette politique
-          n&apos;est pas encore définitive.
+          Ce que YITERE collecte, pourquoi, combien de temps, et vos droits.
+          Dernière mise à jour : 18 novembre 2026.
         </p>
       </div>
 

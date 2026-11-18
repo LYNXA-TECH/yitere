@@ -146,6 +146,12 @@ describe("confidentialité", () => {
       (await Confidentialite(params({ langue: "fr" })))!,
     );
     expect(html).not.toContain("[");
+    // L'en-tete ne parle plus de brouillon ni de passages en orange.
+    expect(html).not.toMatch(/brouillon/i);
+    expect(html).not.toMatch(/orange/i);
+    expect(html).toContain(
+      "Ce que YITERE collecte, pourquoi, combien de temps, et vos droits. Dernière mise à jour : 18 novembre 2026.",
+    );
     // Les reponses validees par l'equipe, dans l'ordre de la page.
     expect(html).toContain("Responsable des données : LYNXA SARL.");
     expect(html).toContain("<td>14 jours</td>");
