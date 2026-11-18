@@ -134,8 +134,15 @@ Testez-le une fois avec `& "$HOME\yitere\lancer.cmd"`, puis
 ### 4. Le lancer toutes les dix minutes
 
 ```
-schtasks /Create /SC MINUTE /MO 10 /TN YitereSonde /TR "$HOME\yitere\lancer.cmd"
+$a = New-ScheduledTaskAction -Execute "$HOME\yitere\lancer.cmd" -WorkingDirectory "$HOME\yitere"
+$t = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 10)
+Register-ScheduledTask -TaskName YitereSonde -Action $a -Trigger $t -Force
 ```
+
+Ces commandes acceptent un nom d'utilisateur avec un espace (`C:\Users\Prénom Nom`).
+`schtasks /TR` ne l'accepte pas depuis PowerShell : la tâche est créée mais échoue avec
+le code -2147024894 (fichier introuvable). Pour vérifier :
+`Get-ScheduledTaskInfo -TaskName YitereSonde`, où `LastTaskResult` doit valoir 0.
 
 La tâche tourne tant que votre session Windows est ouverte. Une fenêtre noire peut
 apparaître une seconde toutes les dix minutes : c'est la sonde qui passe. Dix minutes
