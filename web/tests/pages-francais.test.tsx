@@ -128,4 +128,16 @@ describe("confidentialité", () => {
     expect(html).toContain("le pays s&#x27;il est donné");
     expect(html).toContain("Toujours aucune adresse IP.");
   });
+
+  it("donne l'adresse de l'equipe : contact, publication sans compte, compte", async () => {
+    const html = renderToStaticMarkup(
+      (await Confidentialite(params({ langue: "fr" })))!,
+    );
+    expect(html.match(/href="mailto:kantecellou70@gmail.com"/g)).toHaveLength(
+      3,
+    );
+    expect(html).not.toContain("contact@lynxatech.com");
+    expect(html).not.toContain("[adresse de contact]");
+    expect(html).not.toContain("[adresse e-mail dédiée]");
+  });
 });
