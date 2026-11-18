@@ -78,6 +78,19 @@ test('cause operateur : les touchees partagent un operateur, les epargnees sont 
   assert.deepEqual(v.preuves.sondes.map((s) => [s.pseudonyme, s.numero]), [['s1', 1], ['s2', 2], ['s3', 1]]);
 });
 
+test('cause operateur : le nom de l operateur quand il est connu, et l ASN qui decide', () => {
+  // Dakar, cinq sondes Orange Senegal touchees ; Conakry, Orange Guinee, epargnee.
+  const dakar = (id) => sonde(id, { asn: '8346', pays: 'SN', ville: 'Dakar' });
+  const v = verdict({
+    cibles: [NPM], sondes: [dakar(1), dakar(2), sonde(3, { asn: 37461 }), MADRID],
+    mesures: [...heure(1, NPM, 1200), ...heure(2, NPM, 1300), ...heure(3, NPM, 310), ...heure(9, NPM, 40)],
+    habitudes: [1, 2, 3].map((i) => habitude(i, NPM, 300)).concat(habitude(9, NPM, 40)),
+  });
+  assert.deepEqual(v.hypothese, { cause: 'operateur', operateur: 'Orange Sénégal', ville: 'Dakar' });
+  assert.deepEqual(v.preuves.sondes.map((s) => [s.operateur, s.numero]),
+    [['Orange Sénégal', 1], ['Orange Sénégal', 2], ['Orange Guinée', 1]]);
+});
+
 test('pas de cause operateur si une sonde du meme operateur est epargnee', () => {
   const v = verdict({
     cibles: [NPM], sondes: [sonde(1, { asn: 100 }), sonde(2, { asn: 100 }), sonde(3, { asn: 200 })],
@@ -162,7 +175,7 @@ test('les cibles de reference n ont pas de verdict', () => {
 test('la liste des sondes ne laisse sortir ni jeton, ni identifiant, ni login', () => {
   const s = { ...sonde(1, { asn: 37461 }), jeton_hache: 'abc', github_login: 'x' };
   const r = listerSondes([s, { ...MADRID, creee_le: il_y_a(60) }], MAINTENANT);
-  assert.deepEqual(r.sondes[0], { pseudonyme: 's1', pays: 'GN', ville: 'Conakry', operateur: 'AS37461', type: 'dev', en_rodage: false });
+  assert.deepEqual(r.sondes[0], { pseudonyme: 's1', pays: 'GN', ville: 'Conakry', operateur: 'Orange Guinée', type: 'dev', en_rodage: false });
   assert.equal(r.sondes[1].en_rodage, true);
   assert.ok(!JSON.stringify(r).match(/jeton|github|"id"/));
 });

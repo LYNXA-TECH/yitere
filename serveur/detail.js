@@ -3,6 +3,7 @@
 // Les statuts, la valeur habituelle et le repere viennent du verdict, pour qu'une fiche ne
 // contredise jamais le tableau des services ni la carte.
 'use strict';
+const { nomOperateur } = require('./operateurs.js');
 const verdicts = require('./verdicts.js');
 const { reussie, valeurDe, estObjet, arrondi, numeroter } = verdicts.outils;
 
@@ -68,7 +69,7 @@ function detailler(donnees, cle, maintenant = new Date()) {
     return {
       sonde: {
         pseudonyme: s.pseudonyme,
-        operateur: s.asn ? `AS${s.asn}` : null,
+        operateur: nomOperateur(s.asn),
         ville: s.ville,
         numero: numeros.get(s.id),
       },
