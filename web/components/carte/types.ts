@@ -79,6 +79,7 @@ export type TextesCarte = {
   degradees: string;
   operateur: string;
   operateurs: string;
+  villes: string;
   aucuneSonde: string;
   hebergerPremiere: string;
   lienSonde: string;
@@ -87,4 +88,5 @@ export type TextesCarte = {
   voirEchanges: string;
   lienEchanges: string;
   cliquerDetail: string;
+  cliquerZoom: string;
 };

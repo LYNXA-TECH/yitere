@@ -15,6 +15,10 @@ import type {
   TextesCarte,
   VilleCarte,
 } from "./types";
+import {
+  regrouperProches,
+  zoomPourSeparer,
+} from "@/lib/affichage/regroupement";
 import { resumeOperateurs } from "@/lib/affichage/sondes";
 import styles from "./carte.module.css";
 
@@ -205,25 +209,89 @@ export function CarteInteractive(p: Props) {
   };
   // Les pastilles et les noms gardent leur taille a l'ecran, quel que soit le zoom.
   const inverse = 1 / v0.k;
+
+  /*
+   * Les villes trop proches a l'ecran forment un groupe : une pastille au nom de la plus
+   * grosse, « Conakry +2 », qui se separe quand on zoome. Seules comptent les villes qui
+   * ont une sonde a l'heure affichee.
+   */
+  const groupes = regrouperProches(
+    placees.flatMap((v) => {
+      const n = v.sondes.filter(
+        (s) => etatDe(s, cle, pas) !== "absente",
+      ).length;
+      return n > 0 ? [{ ...v, x: v.x ?? 0, y: v.y ?? 0, poids: n }] : [];
+    }),
+    v0.k,
+  );
+  const groupeDe = (nom: string) => groupes.find((g) => g.ancre.nom === nom);
+  /** Zoomer sur un groupe jusqu'a ce que ses villes se separent. */
+  const ouvrirGroupe = (g: (typeof groupes)[number]) => {
+    // Chaque pas de zoom double l'echelle : autant de pas qu'il en faut pour separer.
+    const etapes = Math.max(
+      1,
+      Math.ceil(Math.log2(Math.min(zoomPourSeparer(g), ZOOM_MAX) / v0.k)),
+    );
+    const ici = (l: number, h: number) => {
+      const s = Math.min(l / p.largeur, h / p.hauteur);
+      return {
+        x: (l - p.largeur * s) / 2 + g.ancre.x * s,
+        y: (h - p.hauteur * s) / 2 + g.ancre.y * s,
+      };
+    };
+    setSurvol(null);
+    for (let i = 0; i < etapes; i++) carte.zoomer(1, ici);
+  };
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
   /** L'info-bulle, courte comme sur la maquette : quelques chiffres et un lien. */
   const bulle = () => {
     if (!survol) return null;
-    const v = p.villes.find((x) => x.nom === survol.ville);
+    const groupe = survol.ville ? groupeDe(survol.ville) : undefined;
+    const v =
+      groupe && groupe.membres.length > 1
+        ? undefined
+        : p.villes.find((x) => x.nom === survol.ville);
     const ligne = (titre: string, valeur: ReactNode, alerte = false) => (
       <div>
         <dt>{titre}</dt>
         <dd
           data-etat={alerte ? "degrade" : undefined}
           data-texte={typeof valeur === "string" || undefined}
+          // Coupee si elle est longue : le texte entier reste au survol.
+          title={typeof valeur === "string" ? valeur : undefined}
         >
           {valeur}
         </dd>
       </div>
     );
     let contenu: ReactNode = null;
-    if (v) {
+    if (groupe && groupe.membres.length > 1) {
+      // Un groupe de villes proches : combien, et comment les voir.
+      const sondes = groupe.membres.flatMap((m) =>
+        m.sondes.filter((s) => etatDe(s, cle, pas) !== "absente"),
+      );
+      const degradees = sondes.filter(
+        (s) => etatDe(s, cle, pas) === "degrade",
+      ).length;
+      contenu = (
+        <>
+          <p className={styles.bulleTitre}>
+            {groupe.membres
+              .slice(0, 3)
+              .map((m) => m.nom)
+              .join(", ")}
+            {groupe.membres.length > 3 && ` +${groupe.membres.length - 3}`}
+          </p>
+          <dl className={styles.bulleLignes}>
+            {ligne(t.villes, groupe.membres.length)}
+            {ligne(t.sondes, sondes.length)}
+            {ligne(t.degradees, degradees, degradees > 0)}
+          </dl>
+          <span className={styles.bulleLien}>{t.cliquerZoom}</span>
+        </>
+      );
+    } else if (v) {
       const presentes = v.sondes.filter(
         (s) => etatDe(s, cle, pas) !== "absente",
       );
@@ -260,28 +328,17 @@ export function CarteInteractive(p: Props) {
       );
     } else if (survol.pays) {
       const { nom, sondes } = survol.pays;
-      // Plusieurs villes peuvent avoir des sondes dans un meme pays : chacune avec
-      // ses operateurs.
-      const villes = p.villes
-        .filter((x) => x.pays === nom && x.sondes.some((s) => !s.repere))
-        .sort((a, b) => b.sondes.length - a.sondes.length);
+      // Plusieurs villes peuvent avoir des sondes dans un meme pays : la bulle les
+      // compte, la carte les montre chacune a sa place, avec son nom.
+      const villes = p.villes.filter(
+        (x) => x.pays === nom && x.sondes.some((s) => !s.repere),
+      );
       contenu = (
         <>
           <p className={styles.bulleTitre}>{nom}</p>
           <dl className={styles.bulleLignes}>
             {ligne(t.sondes, sondes > 0 ? sondes : t.aucuneSonde, sondes === 0)}
-            {villes.slice(0, 4).map((x) => (
-              <div key={x.nom} className={styles.bulleVille}>
-                <dt>{x.nom}</dt>
-                <dd data-texte>{resumeOperateurs(x.sondes).texte}</dd>
-              </div>
-            ))}
-            {villes.length > 4 && (
-              <div className={styles.bulleVille}>
-                <dt>+{villes.length - 4}</dt>
-                <dd />
-              </div>
-            )}
+            {villes.length > 1 && ligne(t.villes, villes.length)}
           </dl>
           {sondes === 0 && (
             <a href={t.lienSonde} className={styles.bulleLien}>
@@ -386,9 +443,11 @@ export function CarteInteractive(p: Props) {
                         r={4 * inverse}
                       />
                     ))}
-                {placees.map((v) => {
-                  const presentes = v.sondes.filter(
-                    (s) => etatDe(s, cle, pas) !== "absente",
+                {groupes.map((g) => {
+                  const v = g.ancre;
+                  const groupe = g.membres.length > 1;
+                  const presentes = g.membres.flatMap((m) =>
+                    m.sondes.filter((s) => etatDe(s, cle, pas) !== "absente"),
                   );
                   if (presentes.length === 0) return null;
                   const etats = presentes.map((s) => etatDe(s, cle, pas));
@@ -407,7 +466,12 @@ export function CarteInteractive(p: Props) {
                       data-direct={direct || undefined}
                       tabIndex={0}
                       role="button"
-                      aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
+                      data-groupe={groupe || undefined}
+                      aria-label={
+                        groupe
+                          ? `${g.membres.map((m) => m.nom).join(", ")} · ${presentes.length} ${t.sondes.toLowerCase()} · ${t.cliquerZoom}`
+                          : `${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`
+                      }
                       aria-describedby={
                         survol?.ville === v.nom ? "carte-survol" : undefined
                       }
@@ -423,14 +487,18 @@ export function CarteInteractive(p: Props) {
                       onFocus={(e) => montrerSurvol(v.nom, e.currentTarget)}
                       onBlur={quitterSurvol}
                       onClick={(e) => {
-                        // Au toucher, pas de survol : le toucher ouvre aussi la bulle.
                         e.stopPropagation();
+                        // Un groupe s'ouvre en zoomant ; une ville montre sa bulle (au
+                        // toucher, pas de survol) et son detail.
+                        if (groupe) return ouvrirGroupe(g);
                         montrerSurvol(v.nom, e.currentTarget);
                         setSelection(v.nom);
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ")
-                          setSelection(v.nom);
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        if (groupe) ouvrirGroupe(g);
+                        else setSelection(v.nom);
                       }}
                     >
                       <g
@@ -450,6 +518,12 @@ export function CarteInteractive(p: Props) {
                         </text>
                         <text x={24} dy="0.35em" className={styles.nomVille}>
                           {v.nom}
+                          {groupe && (
+                            <tspan className={styles.plusVilles}>
+                              {" "}
+                              +{g.membres.length - 1}
+                            </tspan>
+                          )}
                         </text>
                       </g>
                     </g>
