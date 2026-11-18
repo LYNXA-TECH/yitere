@@ -598,6 +598,10 @@ describe("pages traduites branchees sur l'API", () => {
     );
     expect(html).toContain("Demander votre clé");
     expect(html).toContain('id="cle-ville"');
+    // L'operateur est obligatoire, comme la ville.
+    expect(html).toMatch(
+      /<input id="cle-operateur"[^>]*placeholder="Orange, MTN, Free" required=""/,
+    );
     expect(html).toContain("Envoyer ma demande");
     expect(html).toContain("kantecellou70@gmail.com");
     expect(html).not.toContain("contact@lynxatech.com");
