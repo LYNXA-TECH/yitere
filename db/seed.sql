@@ -8,5 +8,5 @@ INSERT INTO targets (cle, nom, famille, url, methode, cadence_minutes, taille_at
  ('jsdelivr-obj',  'cdn.jsdelivr.net, objet témoin','Diffusion','https://cdn.jsdelivr.net/gh/LYNXA-TECH/yitere@10cb9d1/temoin.bin','objet', 180, 262144, 200),
  ('jsdelivr-min',  'cdn.jsdelivr.net, petite requête','Diffusion','https://cdn.jsdelivr.net/npm/jquery@3.7.1/package.json',     'entete', 10, NULL,   200),
  ('ref-dns',       'Résolveur DNS public',        'Reference', 'dns://1.1.1.1/example.com',                                     'dns',    10, NULL,   0),
- ('ref-contenu',   'Point de contenu très disponible','Reference','https://connectivity-check.gstatic.com/generate_204',        'entete', 10, NULL,   204)
+ ('ref-contenu',   'Point de contenu très disponible','Reference','https://www.cloudflare.com/cdn-cgi/trace',                   'entete', 10, NULL,   200)
 ON CONFLICT (cle) DO NOTHING;

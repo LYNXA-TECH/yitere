@@ -38,7 +38,7 @@ nombre de cibles suivies sérieusement à un grand nombre suivies mal.
 | Registres | `registry-1.docker.io` | 10 min |
 | Diffusion | `cdn.jsdelivr.net`, petite requête | 10 min |
 | Diffusion | `cdn.jsdelivr.net`, objet témoin | 3 h |
-| Référence | `cloudflare.com/cdn-cgi/trace` | 10 min |
+| Référence | `www.cloudflare.com/cdn-cgi/trace` | 10 min |
 | Référence | résolution DNS via `1.1.1.1` | 10 min |
 
 Les deux références ne sont pas des cibles d'intérêt : elles servent à savoir si
@@ -59,7 +59,7 @@ La sonde utilise trois modes selon la cible :
 - **Entête** : elle ouvre la connexion, lit les entêtes, puis interrompt le
   transfert. C'est le mode par défaut, celui qui coûte le moins de données.
 - **Objet** : elle télécharge entièrement l'objet témoin pour estimer un débit.
-  Réservé aux deux cibles à cadence de trois heures.
+  Réservé à l'objet témoin, mesuré toutes les trois heures.
 - **DNS** : elle interroge un résolveur et mesure le temps de réponse.
 
 Le délai maximal est de quinze secondes. Au delà, la mesure est enregistrée comme

@@ -82,7 +82,7 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 ## Questions ouvertes pour Cellou
 
 - [x] `datacloud-obj` retiré du seed et de la méthodologie · PR #5
-- [ ] Référence de contenu : `cloudflare.com/cdn-cgi/trace` ou `connectivity-check.gstatic.com/generate_204` ?
+- [x] Référence de contenu : `www.cloudflare.com/cdn-cgi/trace`, réponse 200, comme en production
 - [ ] Région du projet Supabase, pour la page Confidentialité
 - [x] Un seul terme pour tout le projet : « verdict »
 - [ ] Avertissement `install-scripts` sur `esbuild` avec npm 11
