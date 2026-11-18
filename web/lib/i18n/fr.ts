@@ -384,6 +384,8 @@ export const fr = {
     sonde: (operateur: string, numero: number) => `${operateur} · ${numero}`,
     repereHorsCalcul: "Point de repère, hors calcul",
     degradees: "Dégradées",
+    operateur: "Opérateur",
+    operateurs: "Opérateurs",
     aucuneSonde: "aucune pour l'instant",
     hebergerPremiere: "Héberger la première sonde",
     solutionsPubliees: "Solutions publiées",

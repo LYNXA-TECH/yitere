@@ -15,6 +15,7 @@ import type {
   TextesCarte,
   VilleCarte,
 } from "./types";
+import { resumeOperateurs } from "@/lib/affichage/sondes";
 import styles from "./carte.module.css";
 
 type Props = {
@@ -238,6 +239,13 @@ export function CarteInteractive(p: Props) {
           <dl className={styles.bulleLignes}>
             {ligne(t.sondes, presentes.length)}
             {ligne(t.degradees, degradees, degradees > 0)}
+            {resumeOperateurs(presentes).texte &&
+              ligne(
+                resumeOperateurs(presentes).nombre > 1
+                  ? t.operateurs
+                  : t.operateur,
+                resumeOperateurs(presentes).texte,
+              )}
             {solutions + demandes > 0 && ligne(t.solutionsPubliees, solutions)}
             {solutions + demandes > 0 && ligne(t.demandesMesure, demandes)}
           </dl>
@@ -252,11 +260,28 @@ export function CarteInteractive(p: Props) {
       );
     } else if (survol.pays) {
       const { nom, sondes } = survol.pays;
+      // Plusieurs villes peuvent avoir des sondes dans un meme pays : chacune avec
+      // ses operateurs.
+      const villes = p.villes
+        .filter((x) => x.pays === nom && x.sondes.some((s) => !s.repere))
+        .sort((a, b) => b.sondes.length - a.sondes.length);
       contenu = (
         <>
           <p className={styles.bulleTitre}>{nom}</p>
           <dl className={styles.bulleLignes}>
             {ligne(t.sondes, sondes > 0 ? sondes : t.aucuneSonde, sondes === 0)}
+            {villes.slice(0, 4).map((x) => (
+              <div key={x.nom} className={styles.bulleVille}>
+                <dt>{x.nom}</dt>
+                <dd data-texte>{resumeOperateurs(x.sondes).texte}</dd>
+              </div>
+            ))}
+            {villes.length > 4 && (
+              <div className={styles.bulleVille}>
+                <dt>+{villes.length - 4}</dt>
+                <dd />
+              </div>
+            )}
           </dl>
           {sondes === 0 && (
             <a href={t.lienSonde} className={styles.bulleLien}>

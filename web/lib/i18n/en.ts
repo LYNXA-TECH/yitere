@@ -383,6 +383,8 @@ export const en: Partielle<Dictionnaire> = {
     sonde: (operateur: string, numero: number) => `${operateur} · ${numero}`,
     repereHorsCalcul: "Reference point, not counted",
     degradees: "Degraded",
+    operateur: "Operator",
+    operateurs: "Operators",
     aucuneSonde: "none yet",
     hebergerPremiere: "Host the first probe",
     solutionsPubliees: "Published fixes",

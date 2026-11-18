@@ -8,6 +8,8 @@ export type EtatSonde = "normal" | "degrade" | "pas-de-donnee" | "absente";
 export type SondeCarte = {
   id: string;
   libelle: string;
+  /** Nom de l'operateur, deja mis en forme (ou « operateur non detecte »). */
+  operateur: string;
   repere: boolean;
   enRodage: boolean;
   /** Etat par cle de cible, un par heure (24 valeurs, la derniere : maintenant). */
@@ -75,6 +77,8 @@ export type TextesCarte = {
   repereHorsCalcul: string;
   /* Info-bulle d'une ville, au survol ou au clavier. */
   degradees: string;
+  operateur: string;
+  operateurs: string;
   aucuneSonde: string;
   hebergerPremiere: string;
   lienSonde: string;

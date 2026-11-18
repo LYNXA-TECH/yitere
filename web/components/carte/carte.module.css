@@ -804,7 +804,16 @@
 .bulleLignes dd[data-texte] {
   font-family: inherit;
   font-weight: 500;
-  white-space: nowrap;
+  text-align: right;
+}
+
+/* Les villes d'un pays, sous le nombre de sondes : la ville a gauche, ses operateurs a droite. */
+.bulleLignes .bulleVille dt {
+  color: var(--texte);
+}
+
+.bulleLignes .bulleVille dd {
+  color: var(--texte-secondaire);
 }
 
 .bulleLien {
