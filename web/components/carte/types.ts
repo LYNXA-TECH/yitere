@@ -88,5 +88,4 @@ export type TextesCarte = {
   voirEchanges: string;
   lienEchanges: string;
   cliquerDetail: string;
-  cliquerZoom: string;
 };

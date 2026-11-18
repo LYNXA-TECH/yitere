@@ -15,10 +15,7 @@ import type {
   TextesCarte,
   VilleCarte,
 } from "./types";
-import {
-  regrouperProches,
-  zoomPourSeparer,
-} from "@/lib/affichage/regroupement";
+import { ecarterProches } from "@/lib/affichage/regroupement";
 import { resumeOperateurs } from "@/lib/affichage/sondes";
 import styles from "./carte.module.css";
 
@@ -211,47 +208,24 @@ export function CarteInteractive(p: Props) {
   const inverse = 1 / v0.k;
 
   /*
-   * Les villes trop proches a l'ecran forment un groupe : une pastille au nom de la plus
-   * grosse, « Conakry +2 », qui se separe quand on zoome. Seules comptent les villes qui
-   * ont une sonde a l'heure affichee.
+   * Chaque ville avec une sonde a l'heure affichee garde sa pastille. Deux villes trop
+   * proches a l'ecran (Conakry et Freetown) ne se recouvrent pas : la plus petite est
+   * ecartee juste assez, un trait la relie a sa vraie place, et l'ecart disparait en
+   * zoomant.
    */
-  const groupes = regrouperProches(
-    placees.flatMap((v) => {
-      const n = v.sondes.filter(
-        (s) => etatDe(s, cle, pas) !== "absente",
-      ).length;
-      return n > 0 ? [{ ...v, x: v.x ?? 0, y: v.y ?? 0, poids: n }] : [];
-    }),
-    v0.k,
-  );
-  const groupeDe = (nom: string) => groupes.find((g) => g.ancre.nom === nom);
-  /** Zoomer sur un groupe jusqu'a ce que ses villes se separent. */
-  const ouvrirGroupe = (g: (typeof groupes)[number]) => {
-    // Chaque pas de zoom double l'echelle : autant de pas qu'il en faut pour separer.
-    const etapes = Math.max(
-      1,
-      Math.ceil(Math.log2(Math.min(zoomPourSeparer(g), ZOOM_MAX) / v0.k)),
-    );
-    const ici = (l: number, h: number) => {
-      const s = Math.min(l / p.largeur, h / p.hauteur);
-      return {
-        x: (l - p.largeur * s) / 2 + g.ancre.x * s,
-        y: (h - p.hauteur * s) / 2 + g.ancre.y * s,
-      };
-    };
-    setSurvol(null);
-    for (let i = 0; i < etapes; i++) carte.zoomer(1, ici);
-  };
+  const affichees = placees.flatMap((v) => {
+    const presentes = v.sondes.filter((s) => etatDe(s, cle, pas) !== "absente");
+    return presentes.length > 0
+      ? [{ ...v, x: v.x ?? 0, y: v.y ?? 0, poids: presentes.length, presentes }]
+      : [];
+  });
+  const ecarts = ecarterProches(affichees, v0.k);
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
   /** L'info-bulle, courte comme sur la maquette : quelques chiffres et un lien. */
   const bulle = () => {
     if (!survol) return null;
-    const groupe = survol.ville ? groupeDe(survol.ville) : undefined;
-    const v =
-      groupe && groupe.membres.length > 1
-        ? undefined
-        : p.villes.find((x) => x.nom === survol.ville);
+    const v = p.villes.find((x) => x.nom === survol.ville);
     const ligne = (titre: string, valeur: ReactNode, alerte = false) => (
       <div>
         <dt>{titre}</dt>
@@ -266,32 +240,7 @@ export function CarteInteractive(p: Props) {
       </div>
     );
     let contenu: ReactNode = null;
-    if (groupe && groupe.membres.length > 1) {
-      // Un groupe de villes proches : combien, et comment les voir.
-      const sondes = groupe.membres.flatMap((m) =>
-        m.sondes.filter((s) => etatDe(s, cle, pas) !== "absente"),
-      );
-      const degradees = sondes.filter(
-        (s) => etatDe(s, cle, pas) === "degrade",
-      ).length;
-      contenu = (
-        <>
-          <p className={styles.bulleTitre}>
-            {groupe.membres
-              .slice(0, 3)
-              .map((m) => m.nom)
-              .join(", ")}
-            {groupe.membres.length > 3 && ` +${groupe.membres.length - 3}`}
-          </p>
-          <dl className={styles.bulleLignes}>
-            {ligne(t.villes, groupe.membres.length)}
-            {ligne(t.sondes, sondes.length)}
-            {ligne(t.degradees, degradees, degradees > 0)}
-          </dl>
-          <span className={styles.bulleLien}>{t.cliquerZoom}</span>
-        </>
-      );
-    } else if (v) {
+    if (v) {
       const presentes = v.sondes.filter(
         (s) => etatDe(s, cle, pas) !== "absente",
       );
@@ -443,13 +392,33 @@ export function CarteInteractive(p: Props) {
                         r={4 * inverse}
                       />
                     ))}
-                {groupes.map((g) => {
-                  const v = g.ancre;
-                  const groupe = g.membres.length > 1;
-                  const presentes = g.membres.flatMap((m) =>
-                    m.sondes.filter((s) => etatDe(s, cle, pas) !== "absente"),
+                {/* Une ville ecartee de sa voisine : un trait la relie a sa vraie
+                    place, dessine sous toutes les pastilles. */}
+                {affichees.map((v) => {
+                  const ecart = ecarts.get(v.nom) ?? { dx: 0, dy: 0 };
+                  if (Math.hypot(ecart.dx, ecart.dy) * v0.k <= 2) return null;
+                  return (
+                    <g
+                      key={`rappel-${v.nom}`}
+                      className={styles.rappel}
+                      aria-hidden="true"
+                    >
+                      <line
+                        x1={v.x}
+                        y1={v.y}
+                        x2={v.x + ecart.dx}
+                        y2={v.y + ecart.dy}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <circle cx={v.x} cy={v.y} r={2.5 * inverse} />
+                    </g>
                   );
-                  if (presentes.length === 0) return null;
+                })}
+                {affichees.map((v) => {
+                  const { presentes } = v;
+                  const ecart = ecarts.get(v.nom) ?? { dx: 0, dy: 0 };
+                  const x = v.x + ecart.dx;
+                  const y = v.y + ecart.dy;
                   const etats = presentes.map((s) => etatDe(s, cle, pas));
                   const etat = etats.includes("degrade")
                     ? "degrade"
@@ -466,12 +435,7 @@ export function CarteInteractive(p: Props) {
                       data-direct={direct || undefined}
                       tabIndex={0}
                       role="button"
-                      data-groupe={groupe || undefined}
-                      aria-label={
-                        groupe
-                          ? `${g.membres.map((m) => m.nom).join(", ")} · ${presentes.length} ${t.sondes.toLowerCase()} · ${t.cliquerZoom}`
-                          : `${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`
-                      }
+                      aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
                       aria-describedby={
                         survol?.ville === v.nom ? "carte-survol" : undefined
                       }
@@ -488,22 +452,17 @@ export function CarteInteractive(p: Props) {
                       onBlur={quitterSurvol}
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Un groupe s'ouvre en zoomant ; une ville montre sa bulle (au
-                        // toucher, pas de survol) et son detail.
-                        if (groupe) return ouvrirGroupe(g);
+                        // Au toucher, pas de survol : le toucher ouvre aussi la bulle.
                         montrerSurvol(v.nom, e.currentTarget);
                         setSelection(v.nom);
                       }}
                       onKeyDown={(e) => {
                         if (e.key !== "Enter" && e.key !== " ") return;
                         e.preventDefault();
-                        if (groupe) ouvrirGroupe(g);
-                        else setSelection(v.nom);
+                        setSelection(v.nom);
                       }}
                     >
-                      <g
-                        transform={`translate(${v.x ?? 0} ${v.y ?? 0}) scale(${inverse})`}
-                      >
+                      <g transform={`translate(${x} ${y}) scale(${inverse})`}>
                         <circle className={styles.pulsation} r={20} />
                         {etat === "degrade" && (
                           <circle className={styles.anneau} r={24} />
@@ -518,12 +477,6 @@ export function CarteInteractive(p: Props) {
                         </text>
                         <text x={24} dy="0.35em" className={styles.nomVille}>
                           {v.nom}
-                          {groupe && (
-                            <tspan className={styles.plusVilles}>
-                              {" "}
-                              +{g.membres.length - 1}
-                            </tspan>
-                          )}
                         </text>
                       </g>
                     </g>

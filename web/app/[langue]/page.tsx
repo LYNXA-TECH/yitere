@@ -396,7 +396,6 @@ export default async function Accueil({ params }: Props) {
           voirEchanges: c.voirEchanges,
           lienEchanges: lien(langue, "/echanges"),
           cliquerDetail: c.cliquerDetail,
-          cliquerZoom: c.cliquerZoom,
         }}
       />
     </main>
