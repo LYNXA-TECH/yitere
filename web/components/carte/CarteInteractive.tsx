@@ -1,7 +1,13 @@
 "use client";
 
 import { useVueCarte, ZOOM_MAX } from "./useVueCarte";
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import type {
   Bande,
   EtatSonde,
@@ -63,24 +69,98 @@ export function CarteInteractive(p: Props) {
   const [avecNavigateur, setAvecNavigateur] = useState(false);
   const [avecEntraide, setAvecEntraide] = useState(true);
   const [selection, setSelection] = useState<string | null>(null);
+  // Info-bulle : la ville ou le pays survole (ou atteint au clavier), et sa place dans le cadre.
+  const [survol, setSurvol] = useState<{
+    ville?: string;
+    pays?: { iso: string; nom: string; sondes: number };
+    x: number;
+    y: number;
+    dessous: boolean;
+    hauteur: number;
+  } | null>(null);
+  const fermeture = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const garderSurvol = () => {
+    if (fermeture.current) clearTimeout(fermeture.current);
+  };
+  // Un court delai : on peut passer du rond a la bulle pour cliquer sur son lien.
+  const quitterSurvol = () => {
+    garderSurvol();
+    fermeture.current = setTimeout(() => setSurvol(null), 150);
+  };
+  /** Place la bulle au-dessus de la zone r (en pixels de l'ecran), ou dessous pres du haut. */
+  const montrer = (
+    contenu: { ville: string } | { pays: NonNullable<typeof survol>["pays"] },
+    r: { left: number; top: number; bottom: number; width: number },
+  ) => {
+    const cadre = carte.cadre.current;
+    if (!cadre) return;
+    garderSurvol();
+    const c = cadre.getBoundingClientRect();
+    const y = r.top - c.top;
+    const dessous = r.bottom - c.top;
+    // Au-dessus s'il y a la place (bulle d'une ville : 160 px, d'un pays : 110 px),
+    // sinon du cote le plus libre. Au-dessus, le pointeur qui descend ne la croise pas.
+    const enBas =
+      y < ("ville" in contenu ? 160 : 110) && c.height - dessous > y;
+    setSurvol({
+      ...contenu,
+      // La bulle (240 px au plus) reste entiere dans le cadre.
+      x: Math.min(Math.max(r.left + r.width / 2 - c.left, 130), c.width - 130),
+      y: enBas ? dessous : y,
+      dessous: enBas,
+      // Jamais coupee par le bord du cadre : au pire, elle defile.
+      hauteur: Math.max((enBas ? c.height - dessous : y) - 24, 90),
+    });
+  };
+  const montrerSurvol = (nom: string, el: Element) =>
+    montrer(
+      { ville: nom },
+      (el.querySelector("circle:last-of-type") ?? el).getBoundingClientRect(),
+    );
+  /** Un pays du fond de carte, sous le pointeur : son nom et ses sondes, lus sur le trace. */
+  const paysSous = (cible: EventTarget) => {
+    const trace =
+      cible instanceof Element ? cible.closest("path[data-pays]") : null;
+    if (!(trace instanceof SVGElement)) return false;
+    const iso = trace.dataset.pays ?? "";
+    if (survol?.pays?.iso === iso) return true;
+    // Ancree au centre du pays, comme celle d'une ville au-dessus de son rond.
+    const r = trace.getBoundingClientRect();
+    const milieu = r.top + r.height / 2;
+    montrer(
+      {
+        pays: {
+          iso,
+          nom: trace.dataset.nom ?? iso,
+          sondes: Number(trace.dataset.nombre ?? 0),
+        },
+      },
+      { left: r.left, top: milieu - 8, bottom: milieu + 8, width: r.width },
+    );
+    return true;
+  };
 
-  // Lecture de la frise : une heure par seconde (divisee par la vitesse), arret au direct.
+  // Lecture de la frise : une heure par seconde (divisee par la vitesse).
   useEffect(() => {
     if (!lecture) return;
     const minuterie = setInterval(
-      () => {
-        setPas((h) => {
-          if (h >= DERNIERE) {
-            setLecture(false);
-            return DERNIERE;
-          }
-          return h + 1;
-        });
-      },
+      () => setPas((h) => Math.min(h + 1, DERNIERE)),
       1000 / (VITESSES[vitesse] ?? 1),
     );
     return () => clearInterval(minuterie);
   }, [lecture, vitesse]);
+
+  // Arrivee au direct : la lecture s'arrete sur l'heure actuelle, sans seconde de trop
+  // ou le bouton dirait encore « Pause ».
+  useEffect(() => {
+    if (lecture && pas >= DERNIERE) setLecture(false);
+  }, [lecture, pas]);
+
+  // La carte bouge (zoom, glisser) ou change de vue : la bulle n'est plus a sa place.
+  useEffect(() => {
+    setSurvol(null);
+  }, [v0.x, v0.y, v0.k, vue]);
+  useEffect(() => garderSurvol, []);
 
   // Les boutons « Montrer sur la carte » du panneau sont des liens #service-<cle>.
   useEffect(() => {
@@ -97,6 +177,15 @@ export function CarteInteractive(p: Props) {
   }, [p.cibles]);
 
   const direct = pas === DERNIERE;
+  // L'API ne sert encore que l'etat actuel des sondes : sans aucune heure passee, relire
+  // les 24 h viderait la carte pendant 23 secondes. On ne propose alors que le direct.
+  const historique = p.villes.some((v) =>
+    v.sondes.some((s) =>
+      Object.values(s.etats).some((l) =>
+        l.slice(0, DERNIERE).some((e) => e !== "absente"),
+      ),
+    ),
+  );
   const placees = p.villes.filter((v) => v.x !== null && v.y !== null);
   // Le premier zoom se fait autour des sondes, la ou il y a quelque chose a voir.
   const centre = placees.length
@@ -117,6 +206,85 @@ export function CarteInteractive(p: Props) {
   const inverse = 1 / v0.k;
   const villeChoisie = p.villes.find((v) => v.nom === selection);
 
+  /** L'info-bulle, courte comme sur la maquette : quelques chiffres et un lien. */
+  const bulle = () => {
+    if (!survol) return null;
+    const v = p.villes.find((x) => x.nom === survol.ville);
+    const ligne = (titre: string, valeur: ReactNode, alerte = false) => (
+      <div>
+        <dt>{titre}</dt>
+        <dd
+          data-etat={alerte ? "degrade" : undefined}
+          data-texte={typeof valeur === "string" || undefined}
+        >
+          {valeur}
+        </dd>
+      </div>
+    );
+    let contenu: ReactNode = null;
+    if (v) {
+      const presentes = v.sondes.filter(
+        (s) => etatDe(s, cle, pas) !== "absente",
+      );
+      const degradees = presentes.filter(
+        (s) => etatDe(s, cle, pas) === "degrade",
+      ).length;
+      const { solutions, demandes } = v.entraide;
+      contenu = (
+        <>
+          <p className={styles.bulleTitre}>
+            {v.nom} · {v.pays}
+          </p>
+          <dl className={styles.bulleLignes}>
+            {ligne(t.sondes, presentes.length)}
+            {ligne(t.degradees, degradees, degradees > 0)}
+            {solutions + demandes > 0 && ligne(t.solutionsPubliees, solutions)}
+            {solutions + demandes > 0 && ligne(t.demandesMesure, demandes)}
+          </dl>
+          {solutions + demandes > 0 ? (
+            <a href={t.lienEchanges} className={styles.bulleLien}>
+              {t.voirEchanges}
+            </a>
+          ) : (
+            <span className={styles.bulleLien}>{t.cliquerDetail}</span>
+          )}
+        </>
+      );
+    } else if (survol.pays) {
+      const { nom, sondes } = survol.pays;
+      contenu = (
+        <>
+          <p className={styles.bulleTitre}>{nom}</p>
+          <dl className={styles.bulleLignes}>
+            {ligne(t.sondes, sondes > 0 ? sondes : t.aucuneSonde, sondes === 0)}
+          </dl>
+          {sondes === 0 && (
+            <a href={t.lienSonde} className={styles.bulleLien}>
+              {t.hebergerPremiere}
+            </a>
+          )}
+        </>
+      );
+    }
+    if (!contenu) return null;
+    return (
+      <div
+        id="carte-survol"
+        role="tooltip"
+        className={styles.bulle}
+        data-dessous={survol.dessous || undefined}
+        data-pays={survol.pays && !v ? "" : undefined}
+        style={{ left: survol.x, top: survol.y, maxHeight: survol.hauteur }}
+        onPointerEnter={(e) => e.pointerType === "mouse" && garderSurvol()}
+        onPointerLeave={(e) => e.pointerType === "mouse" && quitterSurvol()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {contenu}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.disposition} data-page="carte">
       <section aria-label={t.description} className={styles.scene}>
@@ -126,6 +294,30 @@ export function CarteInteractive(p: Props) {
           data-vue={vue}
           data-zoom={v0.k > 1 || undefined}
           {...(vue === "carte" ? carte.gestes : {})}
+          // Toucher ou cliquer un pays ouvre sa bulle ; ailleurs, la bulle se ferme.
+          onClick={(e) => {
+            if (!paysSous(e.target)) setSurvol(null);
+          }}
+          onPointerMove={(e) => {
+            if (vue !== "carte") return;
+            // Le glisser de la carte d'abord, puis la bulle du pays survole.
+            carte.gestes.onPointerMove(e);
+            if (e.pointerType !== "mouse" || carte.geste) return;
+            // Sur la bulle elle-meme : elle reste ouverte.
+            if (
+              e.target instanceof Element &&
+              e.target.closest("#carte-survol")
+            )
+              return;
+            // La bulle d'une ville a la priorite : elle se ferme d'elle-meme en
+            // quittant le rond, ce qui laisse le temps d'aller cliquer sur son lien.
+            if (survol?.ville) return;
+            if (paysSous(e.target)) garderSurvol();
+            else if (survol?.pays) quitterSurvol();
+          }}
+          onPointerLeave={(e) =>
+            e.pointerType === "mouse" && survol?.pays && quitterSurvol()
+          }
         >
           {vue === "carte" ? (
             <div
@@ -191,7 +383,26 @@ export function CarteInteractive(p: Props) {
                       tabIndex={0}
                       role="button"
                       aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
-                      onClick={() => setSelection(v.nom)}
+                      aria-describedby={
+                        survol?.ville === v.nom ? "carte-survol" : undefined
+                      }
+                      // Le survol, a la souris seulement : un doigt passe par le clic.
+                      onPointerEnter={(e) =>
+                        e.pointerType === "mouse" &&
+                        !carte.geste &&
+                        montrerSurvol(v.nom, e.currentTarget)
+                      }
+                      onPointerLeave={(e) =>
+                        e.pointerType === "mouse" && quitterSurvol()
+                      }
+                      onFocus={(e) => montrerSurvol(v.nom, e.currentTarget)}
+                      onBlur={quitterSurvol}
+                      onClick={(e) => {
+                        // Au toucher, pas de survol : le toucher ouvre aussi la bulle.
+                        e.stopPropagation();
+                        montrerSurvol(v.nom, e.currentTarget);
+                        setSelection(v.nom);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ")
                           setSelection(v.nom);
@@ -249,6 +460,8 @@ export function CarteInteractive(p: Props) {
               </ul>
             </div>
           )}
+
+          {vue === "carte" && survol && bulle()}
 
           <div className={styles.controles}>
             <nav aria-label={t.niveau} className={styles.groupe}>
@@ -348,48 +561,60 @@ export function CarteInteractive(p: Props) {
 
         <div className={styles.frise}>
           <div className={styles.commandes}>
-            <button
-              type="button"
-              className={styles.lecture}
-              aria-label={lecture ? t.pause : t.lire}
-              onClick={() => {
-                if (!lecture && direct) setPas(0);
-                setLecture((x) => !x);
-              }}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+            {historique && (
+              <button
+                type="button"
+                className={styles.lecture}
+                aria-label={lecture ? t.pause : t.lire}
+                onClick={() => {
+                  if (!lecture && direct) setPas(0);
+                  setLecture((x) => !x);
+                }}
               >
-                {lecture ? (
-                  <>
-                    <rect x="6" y="5" width="4" height="14" rx="1" />
-                    <rect x="14" y="5" width="4" height="14" rx="1" />
-                  </>
-                ) : (
-                  <path d="M8 5v14l11-7z" />
-                )}
-              </svg>
-            </button>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  {lecture ? (
+                    <>
+                      <rect x="6" y="5" width="4" height="14" rx="1" />
+                      <rect x="14" y="5" width="4" height="14" rx="1" />
+                    </>
+                  ) : (
+                    <path d="M8 5v14l11-7z" />
+                  )}
+                </svg>
+              </button>
+            )}
             <div className={styles.heure}>
               <span>{p.heures[pas]}</span>
               <span>{direct ? t.sousDirect : t.sousRelecture[pas]}</span>
             </div>
-            <div role="group" aria-label={t.periode} className={styles.groupe}>
-              <button type="button" aria-pressed="true">
-                {t.h24}
-              </button>
-            </div>
-            <button
-              type="button"
-              className={styles.secondaire}
-              onClick={() => setVitesse((v) => (v + 1) % VITESSES.length)}
-            >
-              {t.vitesse[vitesse]}
-            </button>
+            {historique ? (
+              <>
+                <div
+                  role="group"
+                  aria-label={t.periode}
+                  className={styles.groupe}
+                >
+                  <button type="button" aria-pressed="true">
+                    {t.h24}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className={styles.secondaire}
+                  onClick={() => setVitesse((v) => (v + 1) % VITESSES.length)}
+                >
+                  {t.vitesse[vitesse]}
+                </button>
+              </>
+            ) : (
+              <span className={styles.sansHistorique}>{t.sansHistorique}</span>
+            )}
             <span className={styles.ressort} />
             <button
               type="button"
@@ -445,23 +670,27 @@ export function CarteInteractive(p: Props) {
                 className={styles.curseur}
                 style={{ left: `${((pas + 1) / 24) * 100}%` }}
               />
-              <label htmlFor="carte-heure" className={styles.masque}>
-                {t.heureAffichee}
-              </label>
-              <input
-                id="carte-heure"
-                type="range"
-                min={0}
-                max={DERNIERE}
-                step={1}
-                value={pas}
-                aria-valuetext={p.heures[pas]}
-                onChange={(e) => {
-                  setLecture(false);
-                  setPas(Number(e.target.value));
-                }}
-                className={styles.curseurSaisie}
-              />
+              {historique && (
+                <label htmlFor="carte-heure" className={styles.masque}>
+                  {t.heureAffichee}
+                </label>
+              )}
+              {historique && (
+                <input
+                  id="carte-heure"
+                  type="range"
+                  min={0}
+                  max={DERNIERE}
+                  step={1}
+                  value={pas}
+                  aria-valuetext={p.heures[pas]}
+                  onChange={(e) => {
+                    setLecture(false);
+                    setPas(Number(e.target.value));
+                  }}
+                  className={styles.curseurSaisie}
+                />
+              )}
               <div className={styles.axe}>
                 {p.axe.map((a) => (
                   <span key={a}>{a}</span>

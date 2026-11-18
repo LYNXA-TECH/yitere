@@ -719,3 +719,134 @@
     animation: none;
   }
 }
+
+/* Sans historique (l'API ne sert que le direct) : une phrase a la place de la relecture. */
+.sansHistorique {
+  color: var(--texte-discret);
+  font-size: 12px;
+}
+
+/* Info-bulle d'une ville ou d'un pays, comme sur la maquette : courte, quelques chiffres. */
+.bulle {
+  position: absolute;
+  z-index: 5;
+  min-width: 180px;
+  max-width: 240px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  background: var(--surface-haute);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+  font-size: 13px;
+  line-height: 1.35;
+  cursor: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  transform: translate(-50%, calc(-100% - 10px));
+  animation: bulle-entree var(--duree-courte) ease-out;
+}
+
+.bulle[data-dessous] {
+  transform: translate(-50%, 10px);
+}
+
+/* Celle d'un pays laisse passer le pointeur vers la carte, sauf sur son lien. */
+.bulle[data-pays] {
+  pointer-events: none;
+}
+
+.bulle[data-pays] a {
+  pointer-events: auto;
+}
+
+@keyframes bulle-entree {
+  from {
+    opacity: 0;
+  }
+}
+
+.bulleTitre {
+  margin: 0 0 4px;
+  color: var(--texte);
+  font-weight: 600;
+}
+
+.bulleLignes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  margin: 0;
+}
+
+.bulleLignes div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--texte-corps);
+}
+
+.bulleLignes dt {
+  white-space: nowrap;
+}
+
+.bulleLignes dd {
+  margin: 0;
+  color: var(--texte);
+  font-family: var(--police-chiffres);
+  font-weight: 600;
+}
+
+.bulleLignes dd[data-etat="degrade"] {
+  color: var(--etat-degrade);
+}
+
+.bulleLignes dd[data-texte] {
+  font-family: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bulleLien {
+  display: block;
+  margin-top: 6px;
+  color: var(--texte-secondaire);
+  font-size: 12px;
+}
+
+a.bulleLien {
+  color: var(--interaction);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a.bulleLien:hover {
+  text-decoration: underline;
+}
+
+/* Le pays survole s'eclaire, comme sur la maquette. */
+.fond path[data-pays] {
+  transition: fill var(--duree-courte) ease;
+}
+
+.fond path[data-pays]:hover {
+  fill: #2e4a78;
+}
+
+/* Le calque des villes laisse passer le pointeur vers les pays, sauf sur les villes. */
+.calque {
+  pointer-events: none;
+}
+
+.calque .ville {
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulle,
+  .fond path[data-pays] {
+    animation: none;
+    transition: none;
+  }
+}

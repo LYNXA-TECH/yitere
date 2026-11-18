@@ -592,12 +592,15 @@ describe("pages traduites branchees sur l'API", () => {
     }
   });
 
-  it("heberger une sonde : la cle se demande par courriel, pas « Se connecter avec GitHub »", async () => {
+  it("heberger une sonde : la cle se demande par un formulaire qui prepare le courriel, pas « Se connecter avec GitHub »", async () => {
     const html = renderToStaticMarkup(
       await HebergerSonde({ params: Promise.resolve({ langue: "fr" }) }),
     );
     expect(html).toContain("Demander votre clé");
-    expect(html).toContain('href="mailto:contact@lynxatech.com');
+    expect(html).toContain('id="cle-ville"');
+    expect(html).toContain("Envoyer ma demande");
+    expect(html).toContain("kantecellou70@gmail.com");
+    expect(html).not.toContain("contact@lynxatech.com");
     expect(html).toContain("ouvre après le 23 novembre");
     expect(html).not.toContain("Se connecter avec GitHub");
   });
@@ -668,6 +671,12 @@ describe("pages traduites branchees sur l'API", () => {
     // incidents, publications et mesures navigateur d'exemple : hors de la frise
     expect(html).not.toMatch(/data-teinte="[^"]*" style=/);
     expect(html).not.toMatch(/data-nature="(publication|navigateur)"/);
+    // sans historique, pas de relecture qui viderait la carte : seulement le direct
+    expect(html).not.toContain('id="carte-heure"');
+    expect(html).not.toMatch(/aria-label="(Lire|Relire)/);
+    expect(html).toContain(
+      "La relecture des 24 dernières heures arrivera avec l&#x27;historique des mesures.",
+    );
     // la frise ne parle plus d'exemple quand les verdicts sont reels
     expect(html).toContain("En direct · mesures des sondes");
     expect(html).not.toContain("En direct · données d&#x27;exemple");

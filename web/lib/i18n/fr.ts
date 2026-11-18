@@ -31,8 +31,6 @@ export const fr = {
     mesurer: "Mesurer",
     moi: "Moi",
     seConnecter: "Se connecter",
-    bientot: "Bientôt",
-    bientotTitre: "La connexion avec GitHub arrive après le 23 novembre.",
     mesurerChezMoi: "Mesurer depuis chez moi",
     langue: "Langue",
     allerAuContenu: "Aller au contenu",
@@ -385,9 +383,18 @@ export const fr = {
       })[etat],
     sonde: (operateur: string, numero: number) => `${operateur} · ${numero}`,
     repereHorsCalcul: "Point de repère, hors calcul",
+    degradees: "Dégradées",
+    aucuneSonde: "aucune pour l'instant",
+    hebergerPremiere: "Héberger la première sonde",
+    solutionsPubliees: "Solutions publiées",
+    demandesMesure: "Demandes de mesure",
+    voirEchanges: "Voir dans Échanges",
+    cliquerDetail: "Cliquer pour le détail",
     lire: "Lire",
     pause: "Pause",
     enDirect: "En direct",
+    sansHistorique:
+      "La relecture des 24 dernières heures arrivera avec l'historique des mesures.",
     sousDirect: (exemple: boolean) =>
       exemple
         ? "En direct · données d'exemple"

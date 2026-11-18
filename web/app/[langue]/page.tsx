@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CarteInteractive } from "@/components/carte/CarteInteractive";
 import type { EtatSonde, VilleCarte } from "@/components/carte/types";
 import { Etiquette } from "@/components/Etiquette";
+import { avecEntraide } from "@/lib/affichage/entraide";
 import { contexte, statut } from "@/lib/affichage/publications";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import {
@@ -81,7 +82,11 @@ export default async function Accueil({ params }: Props) {
     publications: memeHorloge(publications),
   };
 
-  const villes = regrouper(sondes.donnees, langue, t);
+  const villes = avecEntraide(
+    regrouper(sondes.donnees, langue, t),
+    sondes.donnees,
+    datees.publications,
+  );
   const paysSondes = new Set(sondes.donnees.map((s) => s.pays));
   const developpeurs = sondes.donnees.filter((s) => s.type === "dev");
   const heures = Array.from({ length: 24 }, (_, i) =>
@@ -156,6 +161,14 @@ export default async function Accueil({ params }: Props) {
                 key={`${iso}-${i}`}
                 d={d}
                 data-sondes={paysSondes.has(iso) || undefined}
+                // Pour l'info-bulle du pays : son nom et ses sondes developpeur.
+                data-pays={/^[A-Z]{2}$/.test(iso) ? iso : undefined}
+                data-nom={
+                  /^[A-Z]{2}$/.test(iso) ? nomPays(langue, iso) : undefined
+                }
+                data-nombre={
+                  developpeurs.filter((s) => s.pays === iso).length || undefined
+                }
               />
             ))}
           </svg>
@@ -356,6 +369,7 @@ export default async function Accueil({ params }: Props) {
           pause: c.pause,
           enDirect: c.enDirect,
           sousDirect: c.sousDirect(verdicts.source === "exemple"),
+          sansHistorique: c.sansHistorique,
           sousRelecture: heures.map((h) => c.sousRelecture(h)),
           vitesse: [1, 2, 4].map((n) => c.vitesse(n)),
           heureAffichee: c.heureAffichee,
@@ -368,6 +382,15 @@ export default async function Accueil({ params }: Props) {
           ville: c.ville,
           sondes: c.sondes,
           repereHorsCalcul: c.repereHorsCalcul,
+          degradees: c.degradees,
+          aucuneSonde: c.aucuneSonde,
+          hebergerPremiere: c.hebergerPremiere,
+          lienSonde: lien(langue, "/contribuer/sonde"),
+          solutionsPubliees: c.solutionsPubliees,
+          demandesMesure: c.demandesMesure,
+          voirEchanges: c.voirEchanges,
+          lienEchanges: lien(langue, "/echanges"),
+          cliquerDetail: c.cliquerDetail,
         }}
       />
     </main>
@@ -396,6 +419,7 @@ function regrouper(
       x: position?.x ?? null,
       y: position?.y ?? null,
       sondes: [],
+      entraide: { solutions: 0, demandes: 0 },
     };
     ville.sondes.push({
       id: s.pseudonyme,
