@@ -140,4 +140,23 @@ describe("confidentialité", () => {
     expect(html).not.toContain("[adresse de contact]");
     expect(html).not.toContain("[adresse e-mail dédiée]");
   });
+
+  it("ne laisse plus aucun texte entre crochets, visible par le jury", async () => {
+    const html = renderToStaticMarkup(
+      (await Confidentialite(params({ langue: "fr" })))!,
+    );
+    expect(html).not.toContain("[");
+    // Les reponses validees par l'equipe, dans l'ordre de la page.
+    expect(html).toContain("Responsable des données : LYNXA SARL.");
+    expect(html).toContain("<td>14 jours</td>");
+    expect(html).toContain(
+      "Mesures brutes : 90 jours. Médianes horaires : sans limite.",
+    );
+    expect(html).toContain("ne vendons aucune donnée.</p>");
+    expect(html).toContain("arrondie à 10 minutes.");
+    expect(html).not.toContain("Supabase");
+    expect(html).toContain(
+      "Les médianes horaires déjà publiées sont conservées.",
+    );
+  });
 });
