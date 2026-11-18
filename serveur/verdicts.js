@@ -31,14 +31,17 @@ const valeurDe = (m, cible) => (estObjet(cible) ? m.debit_bps / 1e6 : m.ttfb_ms)
 const pire = (valeur, habituel, cible) =>
   estObjet(cible) ? valeur < habituel / SEUILS.facteur : valeur > habituel * SEUILS.facteur;
 
-const operateurDe = (sonde) => (sonde.asn ? `AS${sonde.asn}` : null);
+const { nomOperateur } = require('./operateurs.js');
+// Le nom affiche ; les comparaisons, elles, se font sur le numero (asnDe).
+const operateurDe = (sonde) => nomOperateur(sonde.asn);
+const asnDe = (sonde) => (sonde.asn ? Number(sonde.asn) : null);
 
 // « Operateur A · Conakry · 1 » : le numero distingue les sondes d'un meme operateur et d'une meme ville.
 function numeroter(sondes) {
   const compte = new Map();
   const numeros = new Map();
   for (const s of [...sondes].sort((a, b) => a.id - b.id)) {
-    const cle = `${operateurDe(s)}|${s.ville}`;
+    const cle = `${asnDe(s)}|${s.ville}`;
     compte.set(cle, (compte.get(cle) || 0) + 1);
     numeros.set(s.id, compte.get(cle));
   }
@@ -87,12 +90,12 @@ function proposerCause(jugees, repere, locales) {
   // Les sondes touchees le sont sur la plupart des services, les autres sondes non :
   // le probleme est chez l'hote, pas chez ce service.
   if (touchees.every((j) => locales.has(j.sonde.id))) return { cause: 'connexion-locale' };
-  const operateurs = new Set(touchees.map((j) => operateurDe(j.sonde)));
-  const [operateur] = operateurs;
-  if (operateurs.size === 1 && operateur &&
-      !epargnees.some((j) => operateurDe(j.sonde) === operateur)) {
+  const asns = new Set(touchees.map((j) => asnDe(j.sonde)));
+  const [asn] = asns;
+  if (asns.size === 1 && asn &&
+      !epargnees.some((j) => asnDe(j.sonde) === asn)) {
     const villes = new Set(touchees.map((j) => j.sonde.ville));
-    const h = { cause: 'operateur', operateur };
+    const h = { cause: 'operateur', operateur: nomOperateur(asn) };
     if (villes.size === 1 && [...villes][0]) h.ville = [...villes][0];
     return h;
   }
