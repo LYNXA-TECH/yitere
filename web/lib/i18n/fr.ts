@@ -393,7 +393,6 @@ export const fr = {
     demandesMesure: "Demandes de mesure",
     voirEchanges: "Voir dans Échanges",
     cliquerDetail: "Cliquer pour le détail",
-    cliquerZoom: "Cliquer pour zoomer",
     lire: "Lire",
     pause: "Pause",
     enDirect: "En direct",

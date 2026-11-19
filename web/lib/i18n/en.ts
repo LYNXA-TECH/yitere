@@ -392,7 +392,6 @@ export const en: Partielle<Dictionnaire> = {
     demandesMesure: "Measurement requests",
     voirEchanges: "See in Exchanges",
     cliquerDetail: "Click for details",
-    cliquerZoom: "Click to zoom in",
     lire: "Play",
     pause: "Pause",
     enDirect: "Live",
