@@ -74,6 +74,8 @@ export type TextesCarte = {
   fermer: string;
   ville: string;
   sondes: string;
+  /** Au singulier, pour « 1 sonde ». */
+  uneSonde: string;
   repereHorsCalcul: string;
   /* Info-bulle d'une ville, au survol ou au clavier. */
   degradees: string;

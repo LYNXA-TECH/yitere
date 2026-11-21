@@ -71,14 +71,15 @@ function nettoyer(v) {
  * Verifie un depot. Rend { ok: true, valeurs } ou { ok: false, erreur, champ }.
  * Le champ « site » est un leurre invisible dans le formulaire : rempli, c'est un robot.
  */
-function valider(corps) {
+function valider(corps, { connecte = false } = {}) {
   const refus = (champ, erreur) => ({ ok: false, champ, erreur });
   if (corps === null || typeof corps !== 'object' || Array.isArray(corps)) return refus('corps', 'corps invalide');
   if (corps.site !== undefined && corps.site !== null && String(corps.site) !== '') return refus('site', 'depot refuse');
   for (const c of ['cible', 'type', 'contenu'])
     if (typeof corps[c] !== 'string') return refus(c, `${c} manquant`);
   // Le pseudonyme s'envoie sous « pseudonyme » ou sous « auteur », le nom qu'il porte a la lecture.
-  const nomDonne = corps.pseudonyme ?? corps.auteur;
+  // Connecte, l'auteur est le login GitHub : le pseudonyme envoye est ignore.
+  const nomDonne = connecte ? 'compte' : (corps.pseudonyme ?? corps.auteur);
   if (typeof nomDonne !== 'string') return refus('pseudonyme', 'pseudonyme manquant');
   for (const c of ['commande', 'pays'])
     if (corps[c] !== undefined && corps[c] !== null && typeof corps[c] !== 'string') return refus(c, `${c} invalide`);
@@ -119,21 +120,31 @@ function guichet(parHeure = PAR_HEURE) {
   };
 }
 
+const PAR_COMPTE_JOUR = 10;        // publications par compte GitHub sur 24 heures
+
 /**
- * Range un depot valide, masque, en attente de relecture.
+ * Range un depot valide. Sans compte : masque, en attente de relecture. `auteurGithub` donne
+ * (session ouverte, decision du 21/11) : visible tout de suite sous le login GitHub, marque
+ * verifie ; l'equipe peut toujours la masquer apres coup. 10 publications par compte et par jour.
  * Rend { ok: true } ou { ok: false, code, erreur } : 404 cible inconnue, 503 file pleine.
  */
-async function deposer(db, v) {
+async function deposer(db, v, auteurGithub = null) {
   const t = await db.query("SELECT id FROM targets WHERE cle = $1 AND active AND famille <> 'Reference'", [v.cible]);
   if (!t.rows[0]) return { ok: false, code: 404, erreur: 'cible inconnue' };
   const f = await db.query('SELECT count(*)::int AS n FROM posts WHERE masque AND NOT signale');
-  if (f.rows[0].n >= ATTENTE_MAX) return { ok: false, code: 503, erreur: 'trop de depots en attente de relecture, reessayez plus tard' };
+  if (!auteurGithub && f.rows[0].n >= ATTENTE_MAX) return { ok: false, code: 503, erreur: 'trop de depots en attente de relecture, reessayez plus tard' };
+  if (auteurGithub) {
+    const j = await db.query(
+      "SELECT count(*)::int AS n FROM posts WHERE lower(github_login) = lower($1) AND cree_le > now() - interval '24 hours'",
+      [auteurGithub]);
+    if (j.rows[0].n >= PAR_COMPTE_JOUR) return { ok: false, code: 429, erreur: `${PAR_COMPTE_JOUR} publications par jour au plus` };
+  }
   await db.query(
     `INSERT INTO posts (target_id, github_login, type, contenu, commande, pays, masque)
-     VALUES ($1, $2, $3, $4, $5, $6, true)`,
-    [t.rows[0].id, '~' + v.pseudonyme, v.type, v.contenu, v.commande, v.pays]);
-  return { ok: true };
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [t.rows[0].id, auteurGithub || ('~' + v.pseudonyme), v.type, v.contenu, v.commande, v.pays, !auteurGithub]);
+  return { ok: true, visible: Boolean(auteurGithub) };
 }
 
 module.exports = { lire, lister, mettreEnForme, valider, deposer, guichet, nettoyer,
-  CLE_VALIDE, LIMITE, CORPS_MAX, ATTENTE_MAX, PAR_HEURE, TAILLES };
+  CLE_VALIDE, LIMITE, CORPS_MAX, ATTENTE_MAX, PAR_HEURE, PAR_COMPTE_JOUR, TAILLES };

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
+import { BoutonAMarche } from "@/components/compte/BoutonAMarche";
 import { BoutonCopier } from "@/components/BoutonCopier";
 import { compterVilles } from "@/components/CartePublication";
 import { Etiquette } from "@/components/Etiquette";
@@ -119,18 +120,13 @@ export default async function DetailPublication({ params }: Props) {
               {heureUTC("fr", p.creeLe)}) · non vérifié par YITERE
             </span>
             <div className={styles.actions}>
-              <BoutonConnexion
+              <BoutonAMarche
+                id={p.id}
                 className={styles.bouton}
+                texte={pub.aMarche}
+                votes={p.votes}
                 message={pub.connexionRequise}
-              >
-                {pub.aMarche}
-              </BoutonConnexion>
-              <BoutonConnexion
-                className={styles.bouton}
-                message={pub.connexionRequise}
-              >
-                Utile · {p.votes}
-              </BoutonConnexion>
+              />
               <BoutonConnexion
                 className={styles.bouton}
                 message={pub.connexionRequise}

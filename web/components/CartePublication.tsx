@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
+import { BoutonAMarche } from "@/components/compte/BoutonAMarche";
 import { BoutonCopier } from "@/components/BoutonCopier";
 import { lieu, signature } from "@/lib/affichage/publications";
 import type { Publication } from "@/lib/donnees/types";
@@ -19,7 +20,10 @@ type Props = {
   lienDetail: string;
 };
 
-/** Une solution, sur une fiche de service : votes, commande, contexte et confirmations. */
+/**
+ * Une solution, sur une fiche de service : commande, contexte, et le seul vote,
+ * « A marche pour moi aussi » (le bouton « Utile » est supprime, decision du 21/11).
+ */
 export function CarteSolution({
   publication: p,
   t,
@@ -39,29 +43,6 @@ export function CarteSolution({
   ];
   return (
     <article className={styles.carte} data-confirmee={p.confirmee || undefined}>
-      <div className={styles.vote}>
-        <BoutonConnexion
-          className={styles.boutonVote}
-          message={pub.connexionRequise}
-          aria-label={pub.voterUtile(p.votes)}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M6 15l6-6 6 6" />
-          </svg>
-          <span className={styles.chiffre}>{p.votes}</span>
-        </BoutonConnexion>
-        <span className={styles.utile}>{pub.utile}</span>
-      </div>
       <div className={styles.contenu}>
         <div className={styles.badges}>
           {p.confirmee && (
@@ -104,12 +85,13 @@ export function CarteSolution({
             .join(" · ")}
         </span>
         <div className={styles.actions}>
-          <BoutonConnexion
+          <BoutonAMarche
+            id={p.id}
             className={styles.confirmer}
+            texte={pub.aMarche}
+            votes={p.votes}
             message={pub.connexionRequise}
-          >
-            {pub.aMarche}
-          </BoutonConnexion>
+          />
           <span
             className={
               p.confirmations.length ? styles.confirmations : styles.petit

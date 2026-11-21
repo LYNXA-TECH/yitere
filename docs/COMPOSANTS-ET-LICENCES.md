@@ -33,23 +33,31 @@ Aucune dépendance : seulement les modules intégrés de Node.js.
 
 ## Interface web (`web/package.json`)
 
-123 paquets installés. Les dépendances directes :
+245 paquets installés. Les dépendances directes :
 
 | Paquet | Version | Licence | Rôle |
 |---|---|---|---|
-| next | 15.5.28 | MIT | Cadre de l'interface |
+| next | 15.5.29 | MIT | Cadre de l'interface |
 | react, react-dom | 19.2.9 | MIT | Rendu |
 | marked | 18.1.2 | MIT | Mise en forme des textes de méthode |
 | geist | 1.8.2 | SIL OFL 1.1 | Polices Geist et Geist Mono, servies par le site |
 | typescript | 5.9.3 | Apache-2.0 | Vérification des types (développement) |
 | vitest, vite | 4.1.12, 7.3.7 | MIT | Tests (développement) |
 | prettier | 3.9.10 | MIT | Formatage (développement) |
+| eslint | 9.39.5 | MIT | Vérification du code (développement) |
+| typescript-eslint | 8.73.0 | MIT | Règles TypeScript pour ESLint (développement) |
+| eslint-plugin-react-hooks | 5.2.0 | MIT | Règles des hooks React (développement) |
+| @next/eslint-plugin-next | 15.5.29 | MIT | Règles de Next.js (développement) |
 | @types/node, @types/react, @types/react-dom | | MIT | Types (développement) |
 
 Licences présentes parmi les paquets indirects, en plus de MIT : Apache-2.0
 (`@swc/helpers`, `expect-type`), ISC (`picocolors`, `siginfo`), BSD-3-Clause
 (`source-map-js`), 0BSD (`tslib`), CC BY 4.0 (`caniuse-lite`, données de compatibilité
 des navigateurs).
+
+`eslint-config-next` n'est pas utilisé : il tire `eslint-plugin-jsx-a11y`, qui dépend
+d'`axe-core`, sous MPL-2.0 (refusée). `web/eslint.config.mjs` reprend directement les
+règles de Next.js, des hooks React et de TypeScript.
 
 `sharp` est remplacé par un module vide (`web/stubs/sharp`, MIT) : le paquet d'origine
 embarque libvips, sous LGPL, et YITERE n'optimise aucune image côté serveur.

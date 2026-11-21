@@ -418,6 +418,7 @@ export const en: Partielle<Dictionnaire> = {
     fermer: "Close the selection",
     ville: "City",
     sondes: "Probes",
+    uneSonde: "probe",
   },
   publication: {
     aucune: "No posts yet.",
@@ -440,8 +441,6 @@ export const en: Partielle<Dictionnaire> = {
     demande: "Measurement request",
     confirmee: "Confirmed by the community",
     pendantIncident: "Posted during this incident",
-    utile: "useful",
-    voterUtile: (n: number) => `Useful, ${compter(n, "vote", "votes")}`,
     operateur: (nom: string) => nom,
     pendantDegradation: (service: string, operateur: string) =>
       `during the ${service} degradation · ${operateur}`,

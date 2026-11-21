@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { BoutonCopier } from "@/components/BoutonCopier";
+import { useCompte } from "@/lib/compte";
 import {
   DEMANDE_VIDE,
   lienDemande,
@@ -11,12 +13,47 @@ import {
 import styles from "./contribuer.module.css";
 
 /**
+ * « Demander ma cle » (contrat, section 6, regle 7). Avec la connexion GitHub ouverte, la
+ * demande se fait dans Mon espace, sans adresse e-mail : connectee, le bouton y mene ;
+ * pas connectee, il envoie vers la connexion, qui ramene dans Mon espace. Tant que la
+ * connexion n'est pas ouverte, la demande par e-mail d'avant.
+ */
+export function DemandeCle({
+  adresse,
+  pays,
+  espace = "/fr/moi",
+}: {
+  adresse: string;
+  pays: { iso: string; nom: string }[];
+  /** Le chemin de Mon espace, dans la langue de la page. */
+  espace?: string;
+}) {
+  const compte = useCompte();
+  if (compte.etat === "connecte")
+    return (
+      <Link href={`${espace}#demande`} className={styles.github}>
+        Demander ma clé
+      </Link>
+    );
+  if (compte.etat === "anonyme")
+    return (
+      <a
+        href={`/api/v1/connexion/github?retour=${encodeURIComponent(espace)}`}
+        className={styles.github}
+      >
+        Demander ma clé
+      </a>
+    );
+  return <DemandeParEmail adresse={adresse} pays={pays} />;
+}
+
+/**
  * Demander sa cle sans rediger d'e-mail : un bouton ouvre une petite fenetre (dialog
  * natif : Echap la ferme, le focus y reste), quelques champs, puis Envoyer ouvre la
  * messagerie avec le message deja ecrit. Si rien ne s'ouvre (pas de messagerie
  * configuree), le message et l'adresse restent a copier.
  */
-export function DemandeCle({
+function DemandeParEmail({
   adresse,
   pays,
 }: {

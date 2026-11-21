@@ -422,6 +422,7 @@ export const fr = {
     fermer: "Fermer la sélection",
     ville: "Ville",
     sondes: "Sondes",
+    uneSonde: "sonde",
   },
   publication: {
     aucune: "Aucune publication pour l'instant.",
@@ -444,8 +445,6 @@ export const fr = {
     demande: "Demande de mesure",
     confirmee: "Confirmée par la communauté",
     pendantIncident: "Publiée pendant cet incident",
-    utile: "utile",
-    voterUtile: (n: number) => `Utile, ${compter(n, "vote", "votes")}`,
     operateur: (nom: string) => nom.replace(/^Opérateur/, "opérateur"),
     pendantDegradation: (service: string, operateur: string) =>
       `pendant la dégradation ${service} · ${operateur.replace(/^Opérateur/, "opérateur")}`,

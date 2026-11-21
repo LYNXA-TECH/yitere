@@ -29,10 +29,20 @@ describe("depot d'une publication sans compte", () => {
     });
   });
 
-  it("201 : recu, rien d'autre", async () => {
+  it("201 : recu ; publiee seulement si l'API le dit (publication avec un compte)", async () => {
     expect(await lireReponseDepot(new Response(null, { status: 201 }))).toEqual(
-      { etat: "recu" },
+      { etat: "recu", publiee: false },
     );
+    expect(
+      await lireReponseDepot(
+        Response.json({ statut: "en-attente" }, { status: 201 }),
+      ),
+    ).toEqual({ etat: "recu", publiee: false });
+    expect(
+      await lireReponseDepot(
+        Response.json({ statut: "publiee" }, { status: 201 }),
+      ),
+    ).toEqual({ etat: "recu", publiee: true });
   });
 
   it("400 : l'erreur va sous le champ nomme, avec le nom de l'API ou le notre", async () => {

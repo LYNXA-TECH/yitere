@@ -11,40 +11,6 @@
   border-color: var(--etat-normal-trait);
 }
 
-.vote {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.boutonVote {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 52px;
-  min-height: 56px;
-  border: 1px solid var(--trait-fort);
-  border-radius: 12px;
-  background: transparent;
-  color: var(--texte);
-  font: inherit;
-  cursor: pointer;
-}
-
-.chiffre {
-  font-family: var(--police-chiffres);
-  font-weight: 600;
-}
-
-.utile {
-  color: var(--texte-secondaire);
-  font-size: 11px;
-}
-
 .contenu {
   flex: 1 1 auto;
   min-width: 0;

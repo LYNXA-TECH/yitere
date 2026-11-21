@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useCompte } from "@/lib/compte";
 import {
   deposer,
   type ChampDepot,
@@ -43,6 +44,9 @@ const MESSAGES = {
  * Page en francais seulement (decision 0002, D13).
  */
 export function FormulaireDepot({ services, pays }: Props) {
+  // Connectee : l'auteur est le login GitHub, le pseudonyme n'est plus demande.
+  const compte = useCompte();
+  const connecte = compte.etat === "connecte";
   // Aucun service choisi d'avance : une question sur npm partait sur api.github.com, le
   // premier de la liste, sans qu'on le voie (retour de Cellou). Sauf depuis une fiche.
   const [d, setD] = useState<Depot>(VIDE);
@@ -125,7 +129,12 @@ export function FormulaireDepot({ services, pays }: Props) {
     resultat === null
       ? null
       : resultat.etat === "recu"
-        ? { texte: MESSAGES.recu, genre: "recu" }
+        ? {
+            texte: resultat.publiee
+              ? `Publié en tant que @${connecte ? compte.login : ""}.`
+              : MESSAGES.recu,
+            genre: "recu",
+          }
         : resultat.etat === "plus-tard"
           ? { texte: MESSAGES[resultat.raison], genre: "erreur" }
           : resultat.etat === "echec"
@@ -269,24 +278,31 @@ export function FormulaireDepot({ services, pays }: Props) {
         <Erreur c="pays" />
       </div>
 
-      <div className={styles.champ}>
-        <label htmlFor="depot-pseudonyme">Pseudonyme</label>
-        <input
-          id="depot-pseudonyme"
-          ref={(e) => {
-            champs.current.pseudonyme = e;
-          }}
-          value={d.pseudonyme}
-          onChange={(e) => changer("pseudonyme")(e.target.value)}
-          autoComplete="nickname"
-          {...aria("pseudonyme")}
-        />
-        <span className={styles.petit}>
-          Affiché tel quel, sans « @ » : il n&apos;est relié à aucun compte. Pas
-          votre nom complet.
-        </span>
-        <Erreur c="pseudonyme" />
-      </div>
+      {connecte ? (
+        <p className={styles.petit}>
+          Vous publiez en tant que <strong>@{compte.login}</strong>, votre
+          identifiant GitHub.
+        </p>
+      ) : (
+        <div className={styles.champ}>
+          <label htmlFor="depot-pseudonyme">Pseudonyme</label>
+          <input
+            id="depot-pseudonyme"
+            ref={(e) => {
+              champs.current.pseudonyme = e;
+            }}
+            value={d.pseudonyme}
+            onChange={(e) => changer("pseudonyme")(e.target.value)}
+            autoComplete="nickname"
+            {...aria("pseudonyme")}
+          />
+          <span className={styles.petit}>
+            Affiché tel quel, sans « @ » : il n&apos;est relié à aucun compte.
+            Pas votre nom complet.
+          </span>
+          <Erreur c="pseudonyme" />
+        </div>
+      )}
 
       {/* Piege a robots : invisible et hors du parcours au clavier ; un humain le laisse vide. */}
       <div className={styles.piege} aria-hidden="true">
@@ -303,11 +319,12 @@ export function FormulaireDepot({ services, pays }: Props) {
 
       <div className={styles.envoi}>
         <button type="submit" className={styles.bouton} disabled={envoi}>
-          {envoi ? "Envoi…" : "Envoyer pour relecture"}
+          {envoi ? "Envoi…" : connecte ? "Publier" : "Envoyer pour relecture"}
         </button>
         <span className={styles.petit}>
-          Relue par l&apos;équipe avant d&apos;apparaître. Aucune adresse IP
-          n&apos;est enregistrée.
+          {connecte
+            ? "En ligne tout de suite, sous votre compte GitHub ; l'équipe peut la masquer après coup. Aucune adresse IP n'est enregistrée."
+            : "Relue par l'équipe avant d'apparaître. Aucune adresse IP n'est enregistrée."}
         </span>
       </div>
       <p role="status" className={styles.resultat} data-genre={general?.genre}>

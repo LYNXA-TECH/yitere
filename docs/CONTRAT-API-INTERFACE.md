@@ -228,8 +228,67 @@ Si une route répond une erreur ou une forme inattendue, la page échoue au lieu
 un exemple à la place : avec le cache de 60 secondes, Next.js continue de servir la
 dernière version réussie.
 
-## Après : écrire
+## 6. Connexion GitHub (serveur/connexion.js)
 
-Publier, confirmer (« a marché pour moi aussi ») et signaler demandent la connexion GitHub.
-C'est un chantier à part (OAuth, session, limite anti-abus) qu'on définira ensemble quand
-les trois lectures seront en place.
+Tant que les variables `YITERE_GITHUB_CLIENT_ID`, `YITERE_GITHUB_CLIENT_SECRET` et
+`YITERE_URL_PUBLIQUE` ne sont pas posées sur le serveur, toutes ces routes répondent
+`503 {"erreur":"connexion GitHub pas encore ouverte"}` et le reste de l'API marche comme avant.
+
+| Route | Rôle | Réponses |
+|---|---|---|
+| `GET /api/v1/connexion/github?retour=/fr/moi` | Lien du bouton « Se connecter avec GitHub ». Redirige vers GitHub. | 302 |
+| `GET /api/v1/connexion/github/rappel` | Retour de GitHub (adresse déclarée dans l'application OAuth). Ouvre la session et renvoie vers `retour`. | 302 vers `retour`, ou vers `/fr/moi?connexion=echec` |
+| `GET /api/v1/moi` | L'espace de la personne connectée. | 200, ou 401 `{"erreur":"non connecte"}` |
+| `POST /api/v1/deconnexion` | Ferme la session. | 204 |
+| `POST /api/v1/publications/{id}/vote` | « A marché pour moi aussi ». Un vote par compte, voter deux fois ne compte qu'une fois. | 200 `{"votes": 4}`, 401, 404 |
+| `POST /api/v1/publications` | Sans session : inchangé (pseudonyme, relecture). Avec une session : pas de pseudonyme, l'auteur est le login GitHub (`verifie: true`) et la publication est **visible tout de suite** (décision du 21/11), 10 par compte et par jour. Réponse `{"statut":"publiee"}` ou `{"statut":"en-attente"}`. | 201, 400, 403, 429 |
+| `POST /api/v1/moi/demandes` | Demander une sonde : `{"pays":"GN","ville":"Labé","operateur":"Orange Guinée"}`. Aucune adresse e-mail. Une seule demande en attente par compte. | 201 `{"id":4,"statut":"en-attente"}`, 400, 401, 409, 429 |
+| `POST /api/v1/moi/sondes/{pseudonyme}/cle` | Générer (ou régénérer) la clé d'une de ses sondes. La clé n'est rendue **qu'une fois** et n'est jamais stockée ; régénérer rend l'ancienne inutilisable tout de suite. | 200 `{"pseudonyme":"…","cle":"…"}`, 401, 404 |
+
+Forme de `GET /api/v1/moi` :
+
+```json
+{
+  "login": "Aissatoulamarana",
+  "demandes": [
+    { "id": 4, "pays": "GN", "ville": "Labé", "operateur": "Orange Guinée",
+      "statut": "en-attente", "cree_le": "2026-11-21T10:00:00.000Z" }
+  ],
+  "sondes": [
+    { "pseudonyme": "lynx-dakar-4", "pays": "SN", "ville": "Dakar", "asn": 8346,
+      "active": true, "vue_le": "2026-11-20T23:54:00.000Z", "mesures_24h": 143,
+      "cle_generee": true }
+  ],
+  "publications": [
+    { "id": 12, "cible": "npm", "type": "contournement", "contenu": "…", "commande": null,
+      "votes": 3, "statut": "publiee", "cree_le": "2026-11-21T10:00:00.000Z" }
+  ]
+}
+```
+
+`statut` d'une publication : `publiee`, `en-attente` (dépôt sans compte, pas encore relu) ou
+`refusee`. `statut` d'une demande : `en-attente`, `acceptee` ou `refusee`.
+
+Parcours d'une sonde : la personne connectée envoie sa demande depuis Mon espace ; l'équipe
+l'accepte sur le serveur (`node serveur/demandes.js lister`, puis `accepter <id> --pseudonyme …`) ;
+la sonde apparaît alors dans Mon espace avec `cle_generee: false` et un bouton « Générer ma clé ».
+La clé s'affiche une seule fois, avec un bouton Copier et l'avertissement « Notez-la maintenant :
+elle ne sera plus jamais affichée. La régénérer désactive l'ancienne. » Pour les sondes déjà
+installées, l'équipe remplit `probes.github_login` ; leur hôte peut ensuite régénérer sa clé.
+
+Règles pour l'interface :
+
+1. **Le navigateur parle directement à l'API**, sur la même adresse (`/api/v1/...`) : le cookie
+   `yitere_session` est `HttpOnly`, le JavaScript de la page ne le lit jamais. Les appels se font
+   depuis le navigateur avec `fetch('/api/v1/moi', { credentials: 'same-origin' })`.
+2. Une page rendue côté serveur (Next.js) qui a besoin de la session transmet l'en-tête `Cookie`
+   reçu à l'API (`headers().get('cookie')`) et se marque dynamique (pas de `revalidate`) :
+   une page personnelle ne doit jamais être mise en cache.
+3. Les écritures (`POST`) partent du site lui-même : l'API refuse (403) une requête dont l'en-tête
+   `Origin` n'est pas `https://yitere.lynxatech.com`.
+4. Après `?connexion=echec`, afficher un message simple : « La connexion n'a pas abouti. Réessayez. »
+5. Un seul bouton de vote : « A marché pour moi aussi » (le bouton « Utile » est supprimé, décision
+   du 21/11).
+6. Signaler une publication n'est pas encore ouvert : le bouton garde son message actuel.
+7. La demande de clé par e-mail (`DemandeCle`) est remplacée par la demande dans Mon espace :
+   non connecté, le bouton « Demander ma clé » envoie vers la connexion GitHub.

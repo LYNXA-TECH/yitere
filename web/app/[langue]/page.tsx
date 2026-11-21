@@ -383,6 +383,7 @@ export default async function Accueil({ params }: Props) {
           fermer: c.fermer,
           ville: c.ville,
           sondes: c.sondes,
+          uneSonde: c.uneSonde,
           repereHorsCalcul: c.repereHorsCalcul,
           degradees: c.degradees,
           operateur: c.operateur,

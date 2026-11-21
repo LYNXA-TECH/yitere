@@ -1,4 +1,6 @@
 import { Bientot } from "@/components/Bientot";
+import { Espace } from "@/components/compte/Espace";
+import { PAYS_AFRIQUE } from "@/lib/geo/afrique";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -37,15 +39,29 @@ export default async function MonEspace({ params }: Props) {
     lirePublications(),
   ]);
   // Sans connexion, pas d'espace personnel : jamais le profil d'une vraie sonde en demonstration.
+  // Avec l'API : l'espace de la personne connectee, lu dans son navigateur (GET /api/v1/moi).
+  // Tant que la connexion GitHub n'est pas ouverte, la page « bientot » d'avant. Jamais le
+  // profil d'une vraie sonde en demonstration.
   if (!ecritureOuverte(publications))
     return (
       <>
         <MentionFrancais langue={langue} />
-        <Bientot
-          langue={langue}
-          surtitre="Mon espace"
-          titre="Bientôt"
-          texte={`Votre espace (vos sondes, vos publications, vos suivis) ouvrira avec la connexion GitHub, après le 23 novembre. En attendant, vous pouvez publier sans compte depuis les échanges.`}
+        <Espace
+          pays={PAYS_AFRIQUE.filter(({ iso }) => /^[A-Z]{2}$/.test(iso))
+            .map(({ iso }): [string, string] => [iso, nomPays("fr", iso)])
+            .sort((a, b) => a[1].localeCompare(b[1], "fr"))}
+          guide={lien(langue, "/contribuer/sonde")}
+          echanges={lien(langue, "/echanges")}
+          publier={lien(langue, "/publier")}
+          confidentialite={lien(langue, "/confidentialite")}
+          fallback={
+            <Bientot
+              langue={langue}
+              surtitre="Mon espace"
+              titre="Bientôt"
+              texte={`Votre espace (vos sondes, vos publications, vos suivis) ouvrira avec la connexion GitHub, après le 23 novembre. En attendant, vous pouvez publier sans compte depuis les échanges.`}
+            />
+          }
         />
       </>
     );
