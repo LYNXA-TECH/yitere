@@ -23,12 +23,12 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 - [x] Pastille d'état · `663fe16`
 - [x] Bloc verdict · `4808586`
 - [x] Contrôles positifs de la pastille et du verdict montrés · rejoués par Cellou, revue de la PR #4
-- [ ] ESLint
+- [ ] ESLint (sans eslint-config-next : axe-core est sous MPL-2.0) · branche `site-connexion`
 - [x] En-tête, navigation et barre d'onglets mobile, avec le badge « Données d'exemple » · branche `interface-pages`
 - [x] Chiffre de mesure : valeur, nombre de mesures, période · branche `interface-pages`
 - [x] Carte de publication · branche `interface-pages`
 - [x] États vides (pas de donnée, aucune publication) · branche `interface-pages`
-- [ ] États d'erreur de l'API
+- [ ] États d'erreur de l'API : page `error.tsx` · branche `site-connexion`
 
 ## 2. Données
 
@@ -67,14 +67,14 @@ montré rouge, puis vert (protocole, section 3). Le SHA du commit suit la case.
 
 ## 4. Connexion et échanges
 
-- [ ] Connexion GitHub
-- [ ] Migration du schéma des échanges, écrite ici, appliquée par Cellou (protocole, section 9)
-- [ ] Votes, confirmations « a marché pour moi aussi », réponses, signalement
+- [ ] Connexion GitHub : serveur de Cellou (branche `connexion-github`), interface branchée dessus (branche `site-connexion`) : bouton « Se connecter », Mon espace, « A marché pour moi aussi », publier connectée
+- [ ] Migration `db/migrations/0002-sessions.sql`, appliquée par Cellou après sauvegarde (protocole, section 9)
+- [ ] Confirmations avec la ville, réponses, signalement (après le concours)
 
 ## 5. Qualité et mise en ligne
 
 - [ ] Tests Playwright des parcours A à D de la conception
-- [ ] En-têtes de sécurité HTTP
+- [ ] En-têtes de sécurité HTTP · branche `site-connexion`
 - [ ] Vérification à 390 px, au clavier et en mouvement réduit
 - [ ] Service `yitere-web` en production, avec Cellou
 - [ ] Non-régression de la section 7 rejouée après la mise en ligne

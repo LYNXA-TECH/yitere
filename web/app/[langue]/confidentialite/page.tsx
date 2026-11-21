@@ -27,7 +27,7 @@ export default async function Confidentialite({ params }: Props) {
         <h1>Vos données, et ce que vous pouvez en faire</h1>
         <p className={styles.chapeau}>
           Ce que YITERE collecte, pourquoi, combien de temps, et vos droits.
-          Dernière mise à jour : 18 novembre 2026.
+          Dernière mise à jour : 21 novembre 2026.
         </p>
       </div>
 
@@ -81,9 +81,19 @@ export default async function Confidentialite({ params }: Props) {
               </tr>
               <tr>
                 <th scope="row">Vous vous connectez</th>
-                <td>Identifiant GitHub, pseudonyme public</td>
-                <td>Publier, confirmer, voter, suivre, gérer vos sondes</td>
-                <td>Tant que le compte existe</td>
+                <td>
+                  Votre identifiant GitHub et son numéro, rien d&apos;autre :
+                  jamais le jeton de GitHub (il sert une fois, puis il est
+                  oublié), ni votre adresse e-mail. Un cookie de session.
+                </td>
+                <td>
+                  Publier sous votre nom, dire qu&apos;une solution a marché,
+                  voir vos sondes
+                </td>
+                <td>
+                  Cookie de session : 30 jours. Identifiant : tant que vos
+                  publications existent
+                </td>
               </tr>
               <tr>
                 <th scope="row">Vous publiez ou confirmez</th>
@@ -108,7 +118,8 @@ export default async function Confidentialite({ params }: Props) {
         </div>
         <p>
           Nous ne lisons aucun fichier de votre ordinateur, ne déposons aucun
-          cookie publicitaire et ne vendons aucune donnée.
+          cookie publicitaire et ne vendons aucune donnée. Le seul cookie est
+          celui de la session, après connexion à GitHub, pour 30 jours.
         </p>
       </section>
 
@@ -141,17 +152,18 @@ export default async function Confidentialite({ params }: Props) {
         <h2>Vos droits</h2>
         <ul>
           <li>
-            Arrêter une sonde à tout moment : retirer la tâche programmée, ou «
-            Mettre en pause » dans{" "}
-            <Link href={lien(langue, "/moi")}>Mes sondes</Link>.
+            Arrêter une sonde à tout moment : retirez la tâche programmée (les
+            commandes sont dans{" "}
+            <Link href={lien(langue, "/contribuer/sonde")}>
+              Héberger une sonde
+            </Link>
+            ), puis écrivez à <a href={`mailto:${CONTACT}`}>{CONTACT}</a> : nous
+            désactivons sa clé.
           </li>
           <li>
-            Supprimer toutes les mesures d&apos;une sonde depuis Mes sondes. Les
-            médianes horaires déjà publiées sont conservées.
-          </li>
-          <li>
-            Supprimer une publication ou une confirmation, depuis Mes
-            contributions.
+            Supprimer toutes les mesures d&apos;une sonde : écrivez à{" "}
+            <a href={`mailto:${CONTACT}`}>{CONTACT}</a>. Les médianes horaires
+            déjà publiées sont conservées.
           </li>
           <li>
             Supprimer une publication déposée sans compte : écrivez à{" "}

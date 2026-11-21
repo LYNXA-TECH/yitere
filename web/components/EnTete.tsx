@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Dictionnaire, Langue } from "@/lib/i18n";
 import { lien, RUBRIQUES } from "@/lib/navigation";
+import { BoutonCompte } from "./compte/BoutonCompte";
 import { Logo } from "./Logo";
 import { ChoixLangue, Rubriques } from "./NavigationPrincipale";
 import styles from "./EnTete.module.css";
@@ -11,8 +12,8 @@ type Props = {
   /** Vrai tant qu'une page du site affiche des donnees d'exemple (directive de Cellou). */
   exemple: boolean;
   /**
-   * Faux tant que la connexion GitHub n'existe pas : « Se connecter » n'apparait pas.
-   * Un « Bientot » seul disait trop peu ; l'onglet Moi explique quand et comment.
+   * Vrai dans la demonstration d'exemple : « Se connecter » mene a l'espace d'exemple.
+   * Avec l'API, BoutonCompte demande a l'API si la connexion GitHub est ouverte.
    */
   connexion: boolean;
 };
@@ -55,10 +56,16 @@ export function EnTete({ langue, textes: t, exemple, connexion }: Props) {
           </span>
         )}
         <ChoixLangue langue={langue} libelle={t.navigation.langue} />
-        {connexion && (
+        {connexion ? (
           <Link href={lien(langue, "/moi")} className={styles.connexion}>
             {t.navigation.seConnecter}
           </Link>
+        ) : (
+          // Avec l'API : lu dans le navigateur, n'apparait qu'une fois la connexion GitHub ouverte.
+          <BoutonCompte
+            libelle={t.navigation.seConnecter}
+            espace={lien(langue, "/moi")}
+          />
         )}
         <Link href={lien(langue, "/mesurer")} className={styles.mesurer}>
           <svg

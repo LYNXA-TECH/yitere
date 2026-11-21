@@ -129,12 +129,13 @@ describe("confidentialité", () => {
     expect(html).toContain("Toujours aucune adresse IP.");
   });
 
-  it("donne l'adresse de l'equipe : contact, publication sans compte, compte", async () => {
+  it("donne l'adresse de l'equipe : contact, arret d'une sonde, mesures, publication sans compte, compte", async () => {
     const html = renderToStaticMarkup(
       (await Confidentialite(params({ langue: "fr" })))!,
     );
+    // Vos droits passe par l'equipe tant que Mon espace ne gere pas les sondes.
     expect(html.match(/href="mailto:kantecellou70@gmail.com"/g)).toHaveLength(
-      3,
+      5,
     );
     expect(html).not.toContain("contact@lynxatech.com");
     expect(html).not.toContain("[adresse de contact]");
@@ -150,7 +151,7 @@ describe("confidentialité", () => {
     expect(html).not.toMatch(/brouillon/i);
     expect(html).not.toMatch(/orange/i);
     expect(html).toContain(
-      "Ce que YITERE collecte, pourquoi, combien de temps, et vos droits. Dernière mise à jour : 18 novembre 2026.",
+      "Ce que YITERE collecte, pourquoi, combien de temps, et vos droits. Dernière mise à jour : 21 novembre 2026.",
     );
     // Les reponses validees par l'equipe, dans l'ordre de la page.
     expect(html).toContain("Responsable des données : LYNXA SARL.");
@@ -158,11 +159,22 @@ describe("confidentialité", () => {
     expect(html).toContain(
       "Mesures brutes : 90 jours. Médianes horaires : sans limite.",
     );
-    expect(html).toContain("ne vendons aucune donnée.</p>");
+    expect(html).toContain("ne vendons aucune donnée.");
     expect(html).toContain("arrondie à 10 minutes.");
     expect(html).not.toContain("Supabase");
     expect(html).toContain(
       "Les médianes horaires déjà publiées sont conservées.",
     );
+    // Vos droits ne renvoie pas a des pages qui n'existent pas encore.
+    expect(html).not.toContain("Mes sondes");
+    expect(html).not.toContain("Mes contributions");
+    expect(html).not.toContain("Mettre en pause");
+    expect(html).toContain('href="/fr/contribuer/sonde"');
+    // La connexion GitHub (contrat, section 6) : le login et son numero, jamais le jeton
+    // ni l'adresse e-mail ; le cookie de session dure 30 jours.
+    expect(html).toContain("Votre identifiant GitHub et son numéro");
+    expect(html).toContain("jamais le jeton de GitHub");
+    expect(html).toContain("ni votre adresse e-mail");
+    expect(html).toContain("Cookie de session : 30 jours.");
   });
 });

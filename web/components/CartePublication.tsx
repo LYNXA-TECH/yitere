@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
+import { BoutonAMarche } from "@/components/compte/BoutonAMarche";
 import { BoutonCopier } from "@/components/BoutonCopier";
 import { lieu, signature } from "@/lib/affichage/publications";
 import type { Publication } from "@/lib/donnees/types";
@@ -104,12 +105,12 @@ export function CarteSolution({
             .join(" · ")}
         </span>
         <div className={styles.actions}>
-          <BoutonConnexion
+          <BoutonAMarche
+            id={p.id}
             className={styles.confirmer}
+            texte={pub.aMarche}
             message={pub.connexionRequise}
-          >
-            {pub.aMarche}
-          </BoutonConnexion>
+          />
           <span
             className={
               p.confirmations.length ? styles.confirmations : styles.petit
