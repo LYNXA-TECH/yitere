@@ -41,6 +41,9 @@ jobs:
       - name: Verifier le formatage
         run: npm run format:verifier
 
+      - name: Verifier le code (ESLint)
+        run: npm run lint
+
       - name: Verifier les licences
         run: npm run licences
 

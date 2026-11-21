@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "@/styles/document.module.css";
 
 /**
@@ -12,12 +13,12 @@ export default function Introuvable() {
         <span lang="en">Page not found</span>
       </h1>
       <p className={styles.ligne}>
-        <a href="/fr" lang="fr">
+        <Link href="/fr" lang="fr">
           Retour à la carte
-        </a>
-        <a href="/en" lang="en">
+        </Link>
+        <Link href="/en" lang="en">
           Back to the map
-        </a>
+        </Link>
       </p>
     </main>
   );

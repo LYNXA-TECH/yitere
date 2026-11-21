@@ -15,7 +15,8 @@
     "test": "vitest run",
     "licences": "node scripts/verifier-licences.mjs",
     "format": "prettier --write .",
-    "format:verifier": "prettier --check ."
+    "format:verifier": "prettier --check .",
+    "lint": "eslint ."
   },
   "dependencies": {
     "geist": "1.8.2",
@@ -26,11 +27,15 @@
     "sharp": "file:stubs/sharp"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "15.5.29",
     "@types/node": "22.20.5",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "5.2.0",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.73.0",
     "vite": "7.3.7",
     "vitest": "4.1.12"
   },
