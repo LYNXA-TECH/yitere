@@ -205,7 +205,8 @@ export function ListeEchanges({
             >
               <div className={styles.votes}>
                 <span>{c.votes}</span>
-                <span>utile</span>
+                {/* Le compteur des « A marché pour moi aussi » (decision du 21/11). */}
+                <span>{c.votes > 1 ? "ont confirmé" : "a confirmé"}</span>
               </div>
               <div className={styles.corpsCarte}>
                 <span className={styles.badges}>

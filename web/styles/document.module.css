@@ -75,6 +75,25 @@
   color: var(--etat-degrade-clair);
 }
 
+.tableau,
+.prose table {
+  /* Ombres de defilement : un liseré turquoise apparait du cote ou il reste a voir,
+     et disparait quand on arrive au bout (CSS seul, attachments local et scroll). */
+  background:
+    linear-gradient(to right, var(--fond) 30%, rgb(11 18 32 / 0)) left / 40px
+      100% no-repeat local,
+    linear-gradient(to left, var(--fond) 30%, rgb(11 18 32 / 0)) right / 40px
+      100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgb(47 208 200 / 0.35), transparent)
+      left / 14px 100% no-repeat scroll,
+    radial-gradient(
+        farthest-side at 100% 50%,
+        rgb(47 208 200 / 0.35),
+        transparent
+      )
+      right / 14px 100% no-repeat scroll;
+}
+
 .tableau {
   overflow-x: auto;
 }
@@ -457,5 +476,24 @@
 
   .page h1 {
     font-size: 30px;
+  }
+}
+
+/* Apparition progressive au defilement (refonte, lot 2) : seulement si le navigateur
+   sait lier une animation au defilement et si l'appareil ne demande pas moins de mouvement. */
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cadre {
+      animation: apparition linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
   }
 }

@@ -706,6 +706,8 @@ a.github {
   .copier {
     position: static;
     align-self: flex-end;
+    min-height: var(--zone-tactile);
+    border-radius: 999px;
   }
 }
 
@@ -747,4 +749,27 @@ a.github {
   display: inline-flex;
   align-items: center;
   text-decoration: none;
+}
+
+/* Apparition progressive au defilement (refonte, lot 2) : seulement si le navigateur
+   sait lier une animation au defilement et si l'appareil ne demande pas moins de mouvement. */
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .carte,
+    .manque,
+    .bilan,
+    .etape,
+    .guide li {
+      animation: apparition linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
 }

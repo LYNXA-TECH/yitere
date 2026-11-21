@@ -912,3 +912,11 @@ a.bulleLien:hover {
   fill: var(--texte-secondaire);
   opacity: 0.8;
 }
+
+/* Telephone : zones tactiles de 44 px pour les commandes du direct (refonte, lot 2). */
+@media (max-width: 860px) {
+  .direct,
+  .secondaire {
+    min-height: var(--zone-tactile);
+  }
+}
