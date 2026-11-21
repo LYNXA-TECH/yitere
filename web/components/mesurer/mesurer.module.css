@@ -41,7 +41,8 @@
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .bouton {

@@ -107,7 +107,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .grille {
@@ -204,7 +205,7 @@
   min-height: var(--zone-tactile);
   padding: 0 10px;
   border: 1px solid var(--trait-fort);
-  border-radius: 10px;
+  border-radius: var(--rayon-champ);
   background: var(--fond);
   color: var(--texte);
   font: inherit;

@@ -88,7 +88,7 @@
   padding: 0 12px;
   background: var(--surface-creuse);
   border: 1px solid var(--trait-fort);
-  border-radius: 10px;
+  border-radius: var(--rayon-champ);
   color: var(--texte);
   font: inherit;
   font-size: 16px;

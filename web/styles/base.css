@@ -81,3 +81,21 @@ a:hover {
   min-height: 24px;
   line-height: 24px;
 }
+
+/* Toucher : un bouton s'enfonce legerement (refonte visuelle, lot 1). */
+button {
+  transition:
+    transform var(--duree-courte) var(--courbe),
+    background-color var(--duree-moyenne) var(--courbe),
+    border-color var(--duree-moyenne) var(--courbe),
+    color var(--duree-moyenne) var(--courbe);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* L'en-tete collant ne doit pas cacher le titre vise par une ancre. */
+html {
+  scroll-padding-top: 72px;
+}

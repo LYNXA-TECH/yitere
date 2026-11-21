@@ -124,7 +124,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .diagnostic[data-teinte="degrade"],
@@ -281,7 +282,8 @@
   padding: 18px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .tuile > span:first-child {
@@ -314,7 +316,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .cadre h2 {
