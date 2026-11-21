@@ -82,7 +82,8 @@
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .ligneFiltres {
@@ -135,7 +136,7 @@
   min-height: var(--zone-tactile);
   padding: 0 10px;
   border: 1px solid var(--trait-fort);
-  border-radius: 10px;
+  border-radius: var(--rayon-champ);
   background: var(--surface-creuse);
   color: var(--texte);
   font: inherit;
@@ -212,7 +213,8 @@
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .carte[data-confirmee] {
@@ -379,8 +381,9 @@
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
   font-size: 14px;
+  box-shadow: var(--ombre-carte);
 }
 
 .encadre h2 {

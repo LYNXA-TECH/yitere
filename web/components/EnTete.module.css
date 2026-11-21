@@ -1,6 +1,20 @@
 .entete {
-  background: var(--fond);
-  border-bottom: 1px solid var(--trait);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--verre-repli);
+  border-bottom: 1px solid var(--verre-trait);
+}
+
+/* Verre depoli la ou le navigateur sait le faire ; sinon un fond presque opaque. */
+@supports (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .entete {
+    background: var(--verre);
+    -webkit-backdrop-filter: blur(var(--flou)) saturate(170%);
+    backdrop-filter: blur(var(--flou)) saturate(170%);
+  }
 }
 
 .interieur {
@@ -65,9 +79,20 @@
   text-decoration: none;
 }
 
+.mesurer {
+  box-shadow: 0 8px 24px -10px rgb(47 208 200 / 0.6);
+  transition:
+    background-color var(--duree-moyenne) var(--courbe),
+    transform var(--duree-courte) var(--courbe);
+}
+
 .mesurer:hover {
   background: var(--focus);
   color: var(--interaction-texte);
+}
+
+.mesurer:active {
+  transform: scale(0.97);
 }
 
 .evitement {

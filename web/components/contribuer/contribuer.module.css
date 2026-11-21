@@ -68,7 +68,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .carte[data-mise-en-avant] {
@@ -119,7 +120,8 @@
   padding: 18px;
   background: var(--surface);
   border: 1px dashed var(--demande-trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .manque a {
@@ -147,7 +149,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .bilanTitre {
@@ -236,7 +239,8 @@
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .etape[data-active] {
@@ -286,7 +290,7 @@
   min-height: var(--zone-tactile);
   padding: 0 12px;
   border: 1px solid var(--trait-fort);
-  border-radius: 10px;
+  border-radius: var(--rayon-champ);
   background: var(--fond);
   color: var(--texte);
   font: inherit;
@@ -382,7 +386,7 @@
   padding: 22px;
   overflow-y: auto;
   border: 1px solid var(--trait-fort);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
   background: var(--surface);
   color: var(--texte);
   box-shadow: 0 20px 60px rgb(0 0 0 / 0.5);
@@ -541,7 +545,8 @@
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .guide li .commande {

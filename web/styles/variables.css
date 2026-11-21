@@ -80,4 +80,24 @@
   /* Animations d'interface */
   --duree-courte: 150ms;
   --duree-moyenne: 250ms;
+
+  /* Finition (refonte visuelle, lot 1). Les couleurs ne changent pas : seules la matiere,
+     les arrondis, la profondeur et le mouvement s'ajoutent. */
+  --rayon-champ: 14px; /* champs, listes deroulantes */
+  --rayon-carte: 22px; /* cartes et panneaux */
+  --rayon-surface: 32px; /* grandes surfaces */
+  --duree-lente: 400ms;
+  --courbe: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Ombres longues et douces, teintees de --interaction, jamais grises ni dures */
+  --ombre-carte:
+    0 1px 0 rgb(255 255 255 / 0.03) inset,
+    0 12px 32px -18px rgb(47 208 200 / 0.18), 0 4px 14px -6px rgb(0 0 0 / 0.45);
+  --ombre-haute:
+    0 1px 0 rgb(255 255 255 / 0.05) inset,
+    0 22px 48px -20px rgb(47 208 200 / 0.28), 0 8px 22px -8px rgb(0 0 0 / 0.55);
+  /* Verre depoli : seulement l'en-tete et la barre d'onglets (cout sur Android) */
+  --verre: rgb(17 26 43 / 0.78);
+  --verre-repli: rgb(11 18 32 / 0.97);
+  --verre-trait: rgb(255 255 255 / 0.07);
+  --flou: 18px;
 }
