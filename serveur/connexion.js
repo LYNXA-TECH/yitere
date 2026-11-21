@@ -137,10 +137,10 @@ function origineAdmise(cfg, entetes) {
   return Boolean(cfg) && entetes.origin === cfg.urlPublique;
 }
 
-/** L'espace d'une personne connectee : ses sondes et ses publications, masquees comprises. */
+/** L'espace d'une personne connectee : ses sondes, ses demandes de sonde et ses publications. */
 async function monEspace(db, session) {
   const s = await db.query(
-    `SELECT p.pseudonyme, p.pays, p.ville, p.asn, p.active, p.vue_le,
+    `SELECT p.pseudonyme, p.pays, p.ville, p.asn, p.active, p.vue_le, (p.jeton_hache IS NOT NULL) AS cle_generee,
             (SELECT count(*)::int FROM measurements m
               WHERE m.probe_id = p.id AND m.mesure_le > now() - interval '24 hours') AS mesures_24h
        FROM probes p WHERE lower(p.github_login) = lower($1) ORDER BY p.pseudonyme`, [session.login]);
@@ -148,11 +148,14 @@ async function monEspace(db, session) {
     `SELECT p.id, t.cle AS cible, p.type, p.contenu, p.commande, p.votes, p.masque, p.signale, p.cree_le
        FROM posts p JOIN targets t ON t.id = p.target_id
       WHERE lower(p.github_login) = lower($1) ORDER BY p.cree_le DESC LIMIT 50`, [session.login]);
+  const demandes = await require('./demandes.js').demandesDe(db, session);
   return {
     login: session.login,
+    demandes,
     sondes: s.rows.map((r) => ({
       pseudonyme: r.pseudonyme, pays: r.pays, ville: r.ville, asn: r.asn, active: r.active,
       vue_le: r.vue_le ? new Date(r.vue_le).toISOString() : null, mesures_24h: r.mesures_24h,
+      cle_generee: Boolean(r.cle_generee),
     })),
     publications: p.rows.map((r) => ({
       id: Number(r.id), cible: r.cible, type: r.type, contenu: r.contenu, commande: r.commande ?? null,

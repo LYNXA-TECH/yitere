@@ -123,11 +123,11 @@ test('le depot nait masque, sous un pseudonyme marque « ~ », jamais visible sa
     if (sql.includes('FROM targets')) return { rows: [{ id: 6 }] };
     if (sql.includes('count(*)')) return { rows: [{ n: 0 }] };
     return { rows: [] }; } };
-  assert.deepEqual(await deposer(db, valider(DEPOT).valeurs), { ok: true });
+  assert.deepEqual(await deposer(db, valider(DEPOT).valeurs), { ok: true, visible: false });
   const ins = appels.at(-1);
   assert.match(ins.sql, /INSERT INTO posts/);
-  assert.match(ins.sql, /true\)\s*$/);                 // masque = true, ecrit en dur
-  assert.deepEqual(ins.p, [6, '~Kadi G.', 'contournement', DEPOT.contenu, DEPOT.commande, 'GN']);
+  // masque = true pour un depot sans compte
+  assert.deepEqual(ins.p, [6, '~Kadi G.', 'contournement', DEPOT.contenu, DEPOT.commande, 'GN', true]);
   assert.match(appels[0].sql, /famille <> 'Reference'/);
 });
 
@@ -159,7 +159,7 @@ test('a la lecture, un pseudonyme sans compte perd son « ~ » et porte verifie:
   assert.equal(publications[0].verifie, false);
 });
 
-test('connecte : le pseudonyme n\'est pas demande, l\'auteur sera le login GitHub', async () => {
+test('connecte : pas de pseudonyme, auteur = login GitHub, visible tout de suite, 10 par jour', async () => {
   const corps = { cible: 'npm', type: 'contournement', contenu: 'Un contenu assez long pour passer.' };
   assert.equal(valider(corps).ok, false);
   const v = valider(corps, { connecte: true });
@@ -169,8 +169,13 @@ test('connecte : le pseudonyme n\'est pas demande, l\'auteur sera le login GitHu
     if (sql.includes('FROM targets')) return { rows: [{ id: 3 }] };
     if (sql.includes('count(*)')) return { rows: [{ n: 0 }] };
     return { rows: [] }; } };
-  await deposer(db, v.valeurs, 'kadi-gn');
+  assert.deepEqual(await deposer(db, v.valeurs, 'kadi-gn'), { ok: true, visible: true });
   const ins = requetes.find((r) => r.sql.includes('INSERT INTO posts'));
   assert.equal(ins.p[1], 'kadi-gn');
-  assert.match(ins.sql, /masque\)\s+VALUES[\s\S]*true\)/);
+  assert.equal(ins.p[6], false);
+  const plein = { async query(sql) {
+    if (sql.includes('FROM targets')) return { rows: [{ id: 3 }] };
+    if (sql.includes('count(*)')) return { rows: [{ n: 10 }] };
+    throw new Error('rien ne doit etre ecrit'); } };
+  assert.equal((await deposer(plein, v.valeurs, 'kadi-gn')).code, 429);
 });
