@@ -422,6 +422,7 @@ export const fr = {
     fermer: "Fermer la sélection",
     ville: "Ville",
     sondes: "Sondes",
+    uneSonde: "sonde",
   },
   publication: {
     aucune: "Aucune publication pour l'instant.",

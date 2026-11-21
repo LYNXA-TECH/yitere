@@ -418,6 +418,7 @@ export const en: Partielle<Dictionnaire> = {
     fermer: "Close the selection",
     ville: "City",
     sondes: "Probes",
+    uneSonde: "probe",
   },
   publication: {
     aucune: "No posts yet.",

@@ -20,7 +20,7 @@
   "dependencies": {
     "geist": "1.8.2",
     "marked": "18.1.2",
-    "next": "15.5.28",
+    "next": "15.5.29",
     "react": "19.2.9",
     "react-dom": "19.2.9",
     "sharp": "file:stubs/sharp"

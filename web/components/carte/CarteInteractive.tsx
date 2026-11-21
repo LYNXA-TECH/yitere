@@ -435,7 +435,7 @@ export function CarteInteractive(p: Props) {
                       data-direct={direct || undefined}
                       tabIndex={0}
                       role="button"
-                      aria-label={`${v.nom} · ${presentes.length} ${t.sondes.toLowerCase()}`}
+                      aria-label={`${v.nom} · ${presentes.length} ${presentes.length > 1 ? t.sondes.toLowerCase() : t.uneSonde}`}
                       aria-describedby={
                         survol?.ville === v.nom ? "carte-survol" : undefined
                       }
