@@ -13,6 +13,7 @@ const services = require('./services.js');
 const publications = require('./publications.js');
 const detail = require('./detail.js');
 const connexion = require('./connexion.js');
+const demandes = require('./demandes.js');
 const CONNEXION = connexion.configuration();
 
 const PORT = Number(process.env.PORT || 8787);
@@ -69,6 +70,17 @@ async function avecGarde(cle, produire) {
 
 // Le guichet des depots : un plafond par heure, sans lire aucune adresse IP.
 const depots = publications.guichet();
+const guichetDemandes = demandes.guichet();
+
+/** Lit un petit corps JSON (4 Ko au plus). Rend une promesse de l'objet, ou rejette. */
+function lireJson(req, max = 4096) {
+  return new Promise((ok, ko) => {
+    if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) return ko(Object.assign(new Error('json'), { code: 415 }));
+    let recu = '';
+    req.on('data', (c) => { recu += c; if (recu.length > max) { req.destroy(); ko(Object.assign(new Error('long'), { code: 413 })); } });
+    req.on('end', () => { try { ok(JSON.parse(recu || 'null')); } catch { ko(Object.assign(new Error('corps'), { code: 400 })); } });
+  });
+}
 
 const serveur = http.createServer((req, res) => {
   const repondre = (code, obj) => {
@@ -84,7 +96,7 @@ const serveur = http.createServer((req, res) => {
   const parametre = (nom) => { try { return new URL(req.url, 'http://local').searchParams.get(nom); } catch { return null; } };
 
   // Connexion GitHub. Non configuree (variables absentes) : 503, le reste de l'API marche.
-  if (chemin.startsWith('/api/v1/connexion') || chemin === '/api/v1/moi' || chemin === '/api/v1/deconnexion' ||
+  if (chemin.startsWith('/api/v1/connexion') || chemin.startsWith('/api/v1/moi') || chemin === '/api/v1/deconnexion' ||
       /^\/api\/v1\/publications\/\d+\/vote$/.test(chemin)) {
     if (!CONNEXION) return repondre(503, { erreur: 'connexion GitHub pas encore ouverte' });
   }
@@ -114,6 +126,36 @@ const serveur = http.createServer((req, res) => {
       .then((c) => { res.writeHead(204, { 'set-cookie': c }); res.end(); })
       .catch(() => repondre(500, { erreur: 'base injoignable' }));
   }
+  // Demande de sonde (compte GitHub, aucune adresse e-mail) et generation de la cle dans Mon espace.
+  if (req.method === 'POST' && chemin === '/api/v1/moi/demandes') {
+    if (!connexion.origineAdmise(CONNEXION, req.headers)) return repondre(403, { erreur: 'origine refusee' });
+    return (async () => {
+      const s = await connexion.sessionDe(db, req.headers.cookie);
+      if (!s) return repondre(401, { erreur: 'non connecte' });
+      let corps;
+      try { corps = await lireJson(req); } catch (e) { return repondre(e.code || 400, { erreur: 'corps invalide' }); }
+      const v = demandes.valider(corps);
+      if (!v.ok) return repondre(400, { erreur: v.erreur, champ: v.champ });
+      if (!guichetDemandes.ouvert()) return repondre(429, { erreur: 'trop de demandes cette heure-ci, reessayez plus tard' });
+      const r = await demandes.demander(db, s, v.valeurs);
+      if (!r.ok) return repondre(r.code, { erreur: r.erreur });
+      guichetDemandes.noter();
+      repondre(201, { id: r.id, statut: 'en-attente' });
+    })().catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+  const genCle = /^\/api\/v1\/moi\/sondes\/([a-z0-9-]{3,32})\/cle$/.exec(chemin);
+  if (req.method === 'POST' && genCle) {
+    if (!connexion.origineAdmise(CONNEXION, req.headers)) return repondre(403, { erreur: 'origine refusee' });
+    return (async () => {
+      const s = await connexion.sessionDe(db, req.headers.cookie);
+      if (!s) return repondre(401, { erreur: 'non connecte' });
+      const r = await demandes.genererCle(db, s, genCle[1]);
+      if (!r.ok) return repondre(404, { erreur: 'sonde inconnue' });
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(JSON.stringify({ pseudonyme: genCle[1], cle: r.cle }));
+    })().catch(() => repondre(500, { erreur: 'base injoignable' }));
+  }
+
   const vote = /^\/api\/v1\/publications\/(\d+)\/vote$/.exec(chemin);
   if (req.method === 'POST' && vote) {
     if (!connexion.origineAdmise(CONNEXION, req.headers)) return repondre(403, { erreur: 'origine refusee' });
@@ -206,6 +248,7 @@ const serveur = http.createServer((req, res) => {
         const r = await publications.deposer(db, v.valeurs, session ? session.login : null);
         if (!r.ok) return repondre(r.code, { erreur: r.erreur });
         depots.noter();
+        if (r.visible) return repondre(201, { statut: 'publiee', message: 'Merci, votre publication est en ligne.' });
         repondre(201, { statut: 'en-attente', message: 'Merci. Votre publication sera visible apres relecture par l\'equipe.' });
       } catch {
         repondre(500, { erreur: 'base injoignable' });
