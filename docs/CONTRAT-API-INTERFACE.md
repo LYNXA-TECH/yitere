@@ -228,8 +228,49 @@ Si une route répond une erreur ou une forme inattendue, la page échoue au lieu
 un exemple à la place : avec le cache de 60 secondes, Next.js continue de servir la
 dernière version réussie.
 
-## Après : écrire
+## 6. Connexion GitHub (serveur/connexion.js)
 
-Publier, confirmer (« a marché pour moi aussi ») et signaler demandent la connexion GitHub.
-C'est un chantier à part (OAuth, session, limite anti-abus) qu'on définira ensemble quand
-les trois lectures seront en place.
+Tant que les variables `YITERE_GITHUB_CLIENT_ID`, `YITERE_GITHUB_CLIENT_SECRET` et
+`YITERE_URL_PUBLIQUE` ne sont pas posées sur le serveur, toutes ces routes répondent
+`503 {"erreur":"connexion GitHub pas encore ouverte"}` et le reste de l'API marche comme avant.
+
+| Route | Rôle | Réponses |
+|---|---|---|
+| `GET /api/v1/connexion/github?retour=/fr/moi` | Lien du bouton « Se connecter avec GitHub ». Redirige vers GitHub. | 302 |
+| `GET /api/v1/connexion/github/rappel` | Retour de GitHub (adresse déclarée dans l'application OAuth). Ouvre la session et renvoie vers `retour`. | 302 vers `retour`, ou vers `/fr/moi?connexion=echec` |
+| `GET /api/v1/moi` | L'espace de la personne connectée. | 200, ou 401 `{"erreur":"non connecte"}` |
+| `POST /api/v1/deconnexion` | Ferme la session. | 204 |
+| `POST /api/v1/publications/{id}/vote` | « A marché pour moi aussi ». Un vote par compte, voter deux fois ne compte qu'une fois. | 200 `{"votes": 4}`, 401, 404 |
+| `POST /api/v1/publications` | Inchangé. Avec une session, le pseudonyme n'est plus demandé : l'auteur est le login GitHub, affiché `verifie: true`. La publication reste masquée jusqu'à relecture. | 201, 400, 403 |
+
+Forme de `GET /api/v1/moi` :
+
+```json
+{
+  "login": "Aissatoulamarana",
+  "sondes": [
+    { "pseudonyme": "lynx-dakar-4", "pays": "SN", "ville": "Dakar", "asn": 8346,
+      "active": true, "vue_le": "2026-11-20T23:54:00.000Z", "mesures_24h": 143 }
+  ],
+  "publications": [
+    { "id": 12, "cible": "npm", "type": "contournement", "contenu": "…", "commande": null,
+      "votes": 3, "statut": "publiee", "cree_le": "2026-11-21T10:00:00.000Z" }
+  ]
+}
+```
+
+`statut` vaut `publiee`, `en-attente` (pas encore relue) ou `refusee`. Une sonde apparaît dans
+l'espace de son hôte quand l'équipe a rempli `probes.github_login`.
+
+Règles pour l'interface :
+
+1. **Le navigateur parle directement à l'API**, sur la même adresse (`/api/v1/...`) : le cookie
+   `yitere_session` est `HttpOnly`, le JavaScript de la page ne le lit jamais. Les appels se font
+   depuis le navigateur avec `fetch('/api/v1/moi', { credentials: 'same-origin' })`.
+2. Une page rendue côté serveur (Next.js) qui a besoin de la session transmet l'en-tête `Cookie`
+   reçu à l'API (`headers().get('cookie')`) et se marque dynamique (pas de `revalidate`) :
+   une page personnelle ne doit jamais être mise en cache.
+3. Les écritures (`POST`) partent du site lui-même : l'API refuse (403) une requête dont l'en-tête
+   `Origin` n'est pas `https://yitere.lynxatech.com`.
+4. Après `?connexion=echec`, afficher un message simple : « La connexion n'a pas abouti. Réessayez. »
+5. Signaler une publication n'est pas encore ouvert : le bouton garde son message actuel.

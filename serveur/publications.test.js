@@ -158,3 +158,19 @@ test('a la lecture, un pseudonyme sans compte perd son « ~ » et porte verifie:
   assert.equal(publications[0].auteur, 'Kadi G.');
   assert.equal(publications[0].verifie, false);
 });
+
+test('connecte : le pseudonyme n\'est pas demande, l\'auteur sera le login GitHub', async () => {
+  const corps = { cible: 'npm', type: 'contournement', contenu: 'Un contenu assez long pour passer.' };
+  assert.equal(valider(corps).ok, false);
+  const v = valider(corps, { connecte: true });
+  assert.equal(v.ok, true);
+  const requetes = [];
+  const db = { async query(sql, p) { requetes.push({ sql, p });
+    if (sql.includes('FROM targets')) return { rows: [{ id: 3 }] };
+    if (sql.includes('count(*)')) return { rows: [{ n: 0 }] };
+    return { rows: [] }; } };
+  await deposer(db, v.valeurs, 'kadi-gn');
+  const ins = requetes.find((r) => r.sql.includes('INSERT INTO posts'));
+  assert.equal(ins.p[1], 'kadi-gn');
+  assert.match(ins.sql, /masque\)\s+VALUES[\s\S]*true\)/);
+});

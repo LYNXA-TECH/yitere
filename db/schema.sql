@@ -53,3 +53,13 @@ CREATE TABLE IF NOT EXISTS post_votes (
   github_login text NOT NULL,
   PRIMARY KEY (post_id, github_login)
 );
+-- Sessions de la connexion GitHub. Seule l'empreinte SHA-256 du jeton de session est gardee ;
+-- le jeton d'acces GitHub ne l'est jamais. Migration : db/migrations/0002-sessions.sql.
+CREATE TABLE IF NOT EXISTS sessions (
+  id_hache     text PRIMARY KEY,
+  github_id    bigint NOT NULL,
+  github_login text NOT NULL,
+  cree_le      timestamptz NOT NULL DEFAULT now(),
+  expire_le    timestamptz NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sessions_expire ON sessions (expire_le);

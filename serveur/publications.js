@@ -71,14 +71,15 @@ function nettoyer(v) {
  * Verifie un depot. Rend { ok: true, valeurs } ou { ok: false, erreur, champ }.
  * Le champ « site » est un leurre invisible dans le formulaire : rempli, c'est un robot.
  */
-function valider(corps) {
+function valider(corps, { connecte = false } = {}) {
   const refus = (champ, erreur) => ({ ok: false, champ, erreur });
   if (corps === null || typeof corps !== 'object' || Array.isArray(corps)) return refus('corps', 'corps invalide');
   if (corps.site !== undefined && corps.site !== null && String(corps.site) !== '') return refus('site', 'depot refuse');
   for (const c of ['cible', 'type', 'contenu'])
     if (typeof corps[c] !== 'string') return refus(c, `${c} manquant`);
   // Le pseudonyme s'envoie sous « pseudonyme » ou sous « auteur », le nom qu'il porte a la lecture.
-  const nomDonne = corps.pseudonyme ?? corps.auteur;
+  // Connecte, l'auteur est le login GitHub : le pseudonyme envoye est ignore.
+  const nomDonne = connecte ? 'compte' : (corps.pseudonyme ?? corps.auteur);
   if (typeof nomDonne !== 'string') return refus('pseudonyme', 'pseudonyme manquant');
   for (const c of ['commande', 'pays'])
     if (corps[c] !== undefined && corps[c] !== null && typeof corps[c] !== 'string') return refus(c, `${c} invalide`);
@@ -120,10 +121,11 @@ function guichet(parHeure = PAR_HEURE) {
 }
 
 /**
- * Range un depot valide, masque, en attente de relecture.
+ * Range un depot valide, masque, en attente de relecture. `auteurGithub` donne (session ouverte) :
+ * la publication porte le login GitHub, sans « ~ », et s'affichera comme verifiee.
  * Rend { ok: true } ou { ok: false, code, erreur } : 404 cible inconnue, 503 file pleine.
  */
-async function deposer(db, v) {
+async function deposer(db, v, auteurGithub = null) {
   const t = await db.query("SELECT id FROM targets WHERE cle = $1 AND active AND famille <> 'Reference'", [v.cible]);
   if (!t.rows[0]) return { ok: false, code: 404, erreur: 'cible inconnue' };
   const f = await db.query('SELECT count(*)::int AS n FROM posts WHERE masque AND NOT signale');
@@ -131,7 +133,7 @@ async function deposer(db, v) {
   await db.query(
     `INSERT INTO posts (target_id, github_login, type, contenu, commande, pays, masque)
      VALUES ($1, $2, $3, $4, $5, $6, true)`,
-    [t.rows[0].id, '~' + v.pseudonyme, v.type, v.contenu, v.commande, v.pays]);
+    [t.rows[0].id, auteurGithub || ('~' + v.pseudonyme), v.type, v.contenu, v.commande, v.pays]);
   return { ok: true };
 }
 
