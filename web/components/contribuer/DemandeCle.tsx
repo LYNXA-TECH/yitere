@@ -12,9 +12,10 @@ import styles from "./contribuer.module.css";
 
 /**
  * Demander sa cle sans rediger d'e-mail : un bouton ouvre une petite fenetre (dialog
- * natif : Echap la ferme, le focus y reste), quelques champs, puis Envoyer ouvre la
- * messagerie avec le message deja ecrit. Si rien ne s'ouvre (pas de messagerie
- * configuree), le message et l'adresse restent a copier.
+ * natif : Echap la ferme, le focus y reste), quelques champs, puis Envoyer.
+ * La demande part directement a l'equipe (POST /api/v1/demandes-cle) ; si l'API ne la
+ * prend pas (route absente, base pas migree, reseau), Envoyer ouvre la messagerie avec
+ * le message deja ecrit, comme avant, et le message reste a copier.
  */
 export function DemandeCle({
   adresse,
@@ -25,8 +26,14 @@ export function DemandeCle({
 }) {
   const [d, setD] = useState<Demande>(DEMANDE_VIDE);
   // Le premier champ obligatoire laisse vide : la ville, puis l'operateur.
-  const [erreur, setErreur] = useState<"ville" | "operateur" | null>(null);
+  const [erreur, setErreur] = useState<
+    "ville" | "operateur" | "contact" | null
+  >(null);
   const [prete, setPrete] = useState(false);
+  const [envoyee, setEnvoyee] = useState(false);
+  const [envoi, setEnvoi] = useState(false);
+  const [contact, setContact] = useState("");
+  const champContact = useRef<HTMLInputElement>(null);
   const champVille = useRef<HTMLInputElement>(null);
   const champOperateur = useRef<HTMLInputElement>(null);
   const fenetre = useRef<HTMLDialogElement>(null);
@@ -82,7 +89,7 @@ export function DemandeCle({
         <form
           className={styles.demande}
           noValidate
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!d.ville.trim()) {
               setErreur("ville");
@@ -94,6 +101,34 @@ export function DemandeCle({
               champOperateur.current?.focus();
               return;
             }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.trim())) {
+              setErreur("contact");
+              champContact.current?.focus();
+              return;
+            }
+            setEnvoi(true);
+            const iso = pays.find((p) => p.nom === d.pays)?.iso ?? "";
+            const r = await fetch("/api/v1/demandes-cle", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                pseudonyme: d.pseudonyme.trim() || d.ville.trim(),
+                pays: iso,
+                ville: d.ville.trim(),
+                operateur: d.operateur.trim(),
+                contact: contact.trim(),
+              }),
+            }).catch(() => null);
+            setEnvoi(false);
+            if (r?.status === 201) return setEnvoyee(true);
+            if (r?.status === 400) {
+              const c = await r.json().catch(() => ({}));
+              if (c.champ === "contact") {
+                setErreur("contact");
+                return champContact.current?.focus();
+              }
+            }
+            // L'API ne prend pas la demande : la messagerie, comme avant.
             setPrete(true);
             window.location.href = lienDemande(adresse, d);
           }}
@@ -166,11 +201,50 @@ export function DemandeCle({
               placeholder="lynx-conakry-2"
             />
           </div>
-          <button type="submit" className={styles.bouton}>
-            Envoyer ma demande
+          <div className={styles.champ}>
+            <label htmlFor="cle-contact">Votre adresse e-mail</label>
+            <input
+              id="cle-contact"
+              ref={champContact}
+              type="email"
+              value={contact}
+              onChange={(e) => {
+                setContact(e.target.value);
+                if (erreur === "contact") setErreur(null);
+              }}
+              placeholder="vous@exemple.com"
+              autoComplete="email"
+              required
+              aria-invalid={erreur === "contact" || undefined}
+              aria-describedby="cle-contact-aide"
+            />
+            <span
+              id="cle-contact-aide"
+              className={erreur === "contact" ? styles.erreur : styles.discret}
+            >
+              {erreur === "contact"
+                ? "Indiquez une adresse e-mail valide."
+                : "Seulement pour vous envoyer la clé : elle est effacée ensuite."}
+            </span>
+          </div>
+          <button
+            type="submit"
+            className={styles.bouton}
+            disabled={envoi || envoyee}
+          >
+            {envoi
+              ? "Envoi…"
+              : envoyee
+                ? "Demande envoyée"
+                : "Envoyer ma demande"}
           </button>
           <p className={styles.petit} role="status">
-            {prete ? (
+            {envoyee ? (
+              <>
+                Demande reçue. L&apos;équipe vous envoie votre clé à{" "}
+                {contact.trim()}.
+              </>
+            ) : prete ? (
               <>
                 Votre messagerie s&apos;ouvre avec le message prêt : il ne reste
                 qu&apos;à l&apos;envoyer. Rien ne s&apos;ouvre ? Copiez le
@@ -178,8 +252,8 @@ export function DemandeCle({
               </>
             ) : (
               <>
-                Votre messagerie s&apos;ouvre avec le message déjà écrit, vers{" "}
-                {adresse}. La clé vous est envoyée en réponse.
+                La demande part directement à l&apos;équipe, qui vous répond
+                avec la clé.
               </>
             )}
           </p>
