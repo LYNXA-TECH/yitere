@@ -13,11 +13,14 @@ export function BoutonAMarche({
   id,
   className,
   texte,
+  votes: votesPage,
   message,
 }: {
   id: string;
   className?: string;
   texte: string;
+  /** Le nombre de votes connu de la page ; mis a jour par la reponse de l'API. */
+  votes: number;
   /** Le message d'avant, tant que la connexion n'est pas ouverte. */
   message: string;
 }) {
@@ -25,7 +28,9 @@ export function BoutonAMarche({
   // Un clic avant la reponse de l'API est garde : il agit des qu'elle arrive.
   const [clic, setClic] = useState(false);
   const [envoi, setEnvoi] = useState(false);
+  // null : pas encore vote depuis cette page.
   const [votes, setVotes] = useState<number | null>(null);
+  const n = votes ?? votesPage;
   const [erreur, setErreur] = useState("");
 
   async function voter() {
@@ -71,7 +76,7 @@ export function BoutonAMarche({
         aria-pressed={votes !== null || undefined}
         data-actif={votes !== null || undefined}
       >
-        {votes === null ? texte : `${texte} · ${votes}`}
+        {n > 0 ? `${texte} · ${n}` : texte}
       </button>
       {clic && compte.etat === "fermee" && (
         <span role="status" className="message-connexion">

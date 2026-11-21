@@ -102,6 +102,16 @@ export default async function Confidentialite({ params }: Props) {
                 <td>Tant que la publication existe</td>
               </tr>
               <tr>
+                <th scope="row">Vous demandez une sonde</th>
+                <td>
+                  Pays, ville et opérateur, liés à votre identifiant GitHub.
+                  Aucune adresse e-mail. La clé de la sonde n&apos;est jamais
+                  gardée : seule son empreinte l&apos;est.
+                </td>
+                <td>Créer votre sonde, puis vous laisser générer sa clé</td>
+                <td>Tant que la demande ou la sonde existe</td>
+              </tr>
+              <tr>
                 <th scope="row">Vous publiez sans compte</th>
                 <td>
                   Le pseudonyme que vous choisissez, le texte, la commande si

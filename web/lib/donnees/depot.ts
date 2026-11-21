@@ -47,14 +47,21 @@ const CHAMP_DE: Record<string, ChampDepot> = {
 };
 
 export type ResultatDepot =
-  | { etat: "recu" }
+  /** publiee : avec un compte, en ligne tout de suite ; sinon en attente de relecture. */
+  | { etat: "recu"; publiee: boolean }
   | { etat: "invalide"; champ: ChampDepot | null; erreur: string }
   | { etat: "plus-tard"; raison: "trop" | "indisponible" }
   | { etat: "echec" };
 
-/** Lit la reponse de l'API : 201 recu, 400 erreur par champ, 429 et 503 plus tard. */
+/**
+ * Lit la reponse de l'API : 201 recu (statut « publiee » avec un compte, « en-attente »
+ * sans), 400 erreur par champ, 429 et 503 plus tard.
+ */
 export async function lireReponseDepot(r: Response): Promise<ResultatDepot> {
-  if (r.status === 201) return { etat: "recu" };
+  if (r.status === 201) {
+    const c = (await r.json().catch(() => null)) as { statut?: unknown } | null;
+    return { etat: "recu", publiee: c?.statut === "publiee" };
+  }
   if (r.status === 429) return { etat: "plus-tard", raison: "trop" };
   if (r.status === 503) return { etat: "plus-tard", raison: "indisponible" };
   if (r.status === 400) {

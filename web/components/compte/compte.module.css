@@ -36,3 +36,66 @@
   background: var(--etat-degrade-fond);
   color: var(--texte);
 }
+
+/* Mon espace : la cle, affichee une seule fois (components/compte/Sondes.tsx). */
+.cle {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--interaction);
+  border-radius: 10px;
+  background: var(--surface-haute);
+}
+
+.ligneCle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ligneCle code {
+  overflow-wrap: anywhere;
+}
+
+.demande {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.formulaire {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+}
+
+.formulaire label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 180px;
+  font-size: 14px;
+  color: var(--texte-secondaire);
+}
+
+.formulaire input,
+.formulaire select {
+  min-height: 44px;
+  padding: 0 12px;
+  background: var(--surface-creuse);
+  border: 1px solid var(--trait-fort);
+  border-radius: 10px;
+  color: var(--texte);
+  font: inherit;
+  font-size: 16px;
+}
+
+.erreur {
+  flex-basis: 100%;
+  color: var(--etat-degrade);
+  font-size: 13px;
+}

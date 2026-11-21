@@ -129,7 +129,12 @@ export function FormulaireDepot({ services, pays }: Props) {
     resultat === null
       ? null
       : resultat.etat === "recu"
-        ? { texte: MESSAGES.recu, genre: "recu" }
+        ? {
+            texte: resultat.publiee
+              ? `Publié en tant que @${connecte ? compte.login : ""}.`
+              : MESSAGES.recu,
+            genre: "recu",
+          }
         : resultat.etat === "plus-tard"
           ? { texte: MESSAGES[resultat.raison], genre: "erreur" }
           : resultat.etat === "echec"
@@ -275,8 +280,8 @@ export function FormulaireDepot({ services, pays }: Props) {
 
       {connecte ? (
         <p className={styles.petit}>
-          Publié en tant que <strong>@{compte.login}</strong>, votre identifiant
-          GitHub.
+          Vous publiez en tant que <strong>@{compte.login}</strong>, votre
+          identifiant GitHub.
         </p>
       ) : (
         <div className={styles.champ}>
@@ -314,11 +319,12 @@ export function FormulaireDepot({ services, pays }: Props) {
 
       <div className={styles.envoi}>
         <button type="submit" className={styles.bouton} disabled={envoi}>
-          {envoi ? "Envoi…" : "Envoyer pour relecture"}
+          {envoi ? "Envoi…" : connecte ? "Publier" : "Envoyer pour relecture"}
         </button>
         <span className={styles.petit}>
-          Relue par l&apos;équipe avant d&apos;apparaître. Aucune adresse IP
-          n&apos;est enregistrée.
+          {connecte
+            ? "En ligne tout de suite, sous votre compte GitHub ; l'équipe peut la masquer après coup. Aucune adresse IP n'est enregistrée."
+            : "Relue par l'équipe avant d'apparaître. Aucune adresse IP n'est enregistrée."}
         </span>
       </div>
       <p role="status" className={styles.resultat} data-genre={general?.genre}>

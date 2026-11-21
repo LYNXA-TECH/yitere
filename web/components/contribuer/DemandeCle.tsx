@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { BoutonCopier } from "@/components/BoutonCopier";
+import { useCompte } from "@/lib/compte";
 import {
   DEMANDE_VIDE,
   lienDemande,
@@ -11,13 +13,47 @@ import {
 import styles from "./contribuer.module.css";
 
 /**
- * Demander sa cle sans rediger d'e-mail : un bouton ouvre une petite fenetre (dialog
- * natif : Echap la ferme, le focus y reste), quelques champs, puis Envoyer.
- * La demande part directement a l'equipe (POST /api/v1/demandes-cle) ; si l'API ne la
- * prend pas (route absente, base pas migree, reseau), Envoyer ouvre la messagerie avec
- * le message deja ecrit, comme avant, et le message reste a copier.
+ * « Demander ma cle » (contrat, section 6, regle 7). Avec la connexion GitHub ouverte, la
+ * demande se fait dans Mon espace, sans adresse e-mail : connectee, le bouton y mene ;
+ * pas connectee, il envoie vers la connexion, qui ramene dans Mon espace. Tant que la
+ * connexion n'est pas ouverte, la demande par e-mail d'avant.
  */
 export function DemandeCle({
+  adresse,
+  pays,
+  espace = "/fr/moi",
+}: {
+  adresse: string;
+  pays: { iso: string; nom: string }[];
+  /** Le chemin de Mon espace, dans la langue de la page. */
+  espace?: string;
+}) {
+  const compte = useCompte();
+  if (compte.etat === "connecte")
+    return (
+      <Link href={`${espace}#demande`} className={styles.github}>
+        Demander ma clé
+      </Link>
+    );
+  if (compte.etat === "anonyme")
+    return (
+      <a
+        href={`/api/v1/connexion/github?retour=${encodeURIComponent(espace)}`}
+        className={styles.github}
+      >
+        Demander ma clé
+      </a>
+    );
+  return <DemandeParEmail adresse={adresse} pays={pays} />;
+}
+
+/**
+ * Demander sa cle sans rediger d'e-mail : un bouton ouvre une petite fenetre (dialog
+ * natif : Echap la ferme, le focus y reste), quelques champs, puis Envoyer ouvre la
+ * messagerie avec le message deja ecrit. Si rien ne s'ouvre (pas de messagerie
+ * configuree), le message et l'adresse restent a copier.
+ */
+function DemandeParEmail({
   adresse,
   pays,
 }: {
@@ -26,14 +62,8 @@ export function DemandeCle({
 }) {
   const [d, setD] = useState<Demande>(DEMANDE_VIDE);
   // Le premier champ obligatoire laisse vide : la ville, puis l'operateur.
-  const [erreur, setErreur] = useState<
-    "ville" | "operateur" | "contact" | null
-  >(null);
+  const [erreur, setErreur] = useState<"ville" | "operateur" | null>(null);
   const [prete, setPrete] = useState(false);
-  const [envoyee, setEnvoyee] = useState(false);
-  const [envoi, setEnvoi] = useState(false);
-  const [contact, setContact] = useState("");
-  const champContact = useRef<HTMLInputElement>(null);
   const champVille = useRef<HTMLInputElement>(null);
   const champOperateur = useRef<HTMLInputElement>(null);
   const fenetre = useRef<HTMLDialogElement>(null);
@@ -89,7 +119,7 @@ export function DemandeCle({
         <form
           className={styles.demande}
           noValidate
-          onSubmit={async (e) => {
+          onSubmit={(e) => {
             e.preventDefault();
             if (!d.ville.trim()) {
               setErreur("ville");
@@ -101,34 +131,6 @@ export function DemandeCle({
               champOperateur.current?.focus();
               return;
             }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.trim())) {
-              setErreur("contact");
-              champContact.current?.focus();
-              return;
-            }
-            setEnvoi(true);
-            const iso = pays.find((p) => p.nom === d.pays)?.iso ?? "";
-            const r = await fetch("/api/v1/demandes-cle", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify({
-                pseudonyme: d.pseudonyme.trim() || d.ville.trim(),
-                pays: iso,
-                ville: d.ville.trim(),
-                operateur: d.operateur.trim(),
-                contact: contact.trim(),
-              }),
-            }).catch(() => null);
-            setEnvoi(false);
-            if (r?.status === 201) return setEnvoyee(true);
-            if (r?.status === 400) {
-              const c = await r.json().catch(() => ({}));
-              if (c.champ === "contact") {
-                setErreur("contact");
-                return champContact.current?.focus();
-              }
-            }
-            // L'API ne prend pas la demande : la messagerie, comme avant.
             setPrete(true);
             window.location.href = lienDemande(adresse, d);
           }}
@@ -201,50 +203,11 @@ export function DemandeCle({
               placeholder="lynx-conakry-2"
             />
           </div>
-          <div className={styles.champ}>
-            <label htmlFor="cle-contact">Votre adresse e-mail</label>
-            <input
-              id="cle-contact"
-              ref={champContact}
-              type="email"
-              value={contact}
-              onChange={(e) => {
-                setContact(e.target.value);
-                if (erreur === "contact") setErreur(null);
-              }}
-              placeholder="vous@exemple.com"
-              autoComplete="email"
-              required
-              aria-invalid={erreur === "contact" || undefined}
-              aria-describedby="cle-contact-aide"
-            />
-            <span
-              id="cle-contact-aide"
-              className={erreur === "contact" ? styles.erreur : styles.discret}
-            >
-              {erreur === "contact"
-                ? "Indiquez une adresse e-mail valide."
-                : "Seulement pour vous envoyer la clé : elle est effacée ensuite."}
-            </span>
-          </div>
-          <button
-            type="submit"
-            className={styles.bouton}
-            disabled={envoi || envoyee}
-          >
-            {envoi
-              ? "Envoi…"
-              : envoyee
-                ? "Demande envoyée"
-                : "Envoyer ma demande"}
+          <button type="submit" className={styles.bouton}>
+            Envoyer ma demande
           </button>
           <p className={styles.petit} role="status">
-            {envoyee ? (
-              <>
-                Demande reçue. L&apos;équipe vous envoie votre clé à{" "}
-                {contact.trim()}.
-              </>
-            ) : prete ? (
+            {prete ? (
               <>
                 Votre messagerie s&apos;ouvre avec le message prêt : il ne reste
                 qu&apos;à l&apos;envoyer. Rien ne s&apos;ouvre ? Copiez le
@@ -252,8 +215,8 @@ export function DemandeCle({
               </>
             ) : (
               <>
-                La demande part directement à l&apos;équipe, qui vous répond
-                avec la clé.
+                Votre messagerie s&apos;ouvre avec le message déjà écrit, vers{" "}
+                {adresse}. La clé vous est envoyée en réponse.
               </>
             )}
           </p>

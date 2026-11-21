@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { seDeconnecter, urlConnexion, useCompte, type Moi } from "@/lib/compte";
 import styles from "@/styles/document.module.css";
 import petits from "./compte.module.css";
+import { MesSondes } from "./Sondes";
 
 const STATUT_PUBLICATION: Record<
   Moi["publications"][number]["statut"],
@@ -31,12 +32,15 @@ const date = (iso: string) =>
  */
 export function Espace({
   fallback,
+  pays,
   guide,
   echanges,
   publier,
   confidentialite,
 }: {
   fallback: ReactNode;
+  /** Les pays proposes a la demande de sonde : [code ISO, nom]. */
+  pays: [string, string][];
   guide: string;
   echanges: string;
   publier: string;
@@ -66,10 +70,10 @@ export function Espace({
             </p>
           )}
           <p className={styles.chapeau}>
-            Pour voir vos sondes et vos publications, et dire qu&apos;une
-            solution a marché pour vous. YITERE ne garde que votre identifiant
-            GitHub et son numéro : ni votre adresse e-mail, ni accès à vos
-            dépôts.
+            Pour demander une sonde et générer sa clé, voir vos publications, et
+            dire qu&apos;une solution a marché pour vous. YITERE ne garde que
+            votre identifiant GitHub et son numéro : ni votre adresse e-mail, ni
+            accès à vos dépôts.
           </p>
           <p>
             <a href={urlConnexion()} className={styles.bouton}>
@@ -108,48 +112,7 @@ export function Espace({
         </div>
       </div>
 
-      <section
-        className={styles.section}
-        aria-labelledby="mes-sondes"
-        lang="fr"
-      >
-        <h2 id="mes-sondes">Mes sondes · {moi.sondes.length}</h2>
-        {moi.sondes.length === 0 ? (
-          <p className={styles.discret}>
-            Aucune sonde liée à votre compte. Vous hébergez déjà une sonde ?
-            L&apos;équipe la relie à votre identifiant GitHub sur demande. Sinon
-            : <Link href={guide}>héberger une sonde</Link>.
-          </p>
-        ) : (
-          moi.sondes.map((s) => (
-            <div key={s.pseudonyme} className={styles.cadre}>
-              <div className={styles.titreLigne}>
-                <span className={`${styles.gras} ${styles.mono}`}>
-                  {s.pseudonyme}
-                </span>
-                <span className={s.active ? styles.gras : styles.discret}>
-                  {s.active ? "Active" : "Désactivée"}
-                </span>
-              </div>
-              <span className={styles.discret}>
-                {[s.ville, s.pays, s.asn ? `AS${s.asn}` : null]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </span>
-              <dl className={styles.chiffres}>
-                <div>
-                  <dt>Mesures sur 24 h</dt>
-                  <dd>{s.mesures_24h}</dd>
-                </div>
-                <div>
-                  <dt>Dernier passage</dt>
-                  <dd>{s.vue_le ? date(s.vue_le) : "jamais"}</dd>
-                </div>
-              </dl>
-            </div>
-          ))
-        )}
-      </section>
+      <MesSondes moi={moi} pays={pays} guide={guide} />
 
       <section
         className={styles.section}

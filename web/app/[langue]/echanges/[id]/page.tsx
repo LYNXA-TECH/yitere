@@ -124,14 +124,9 @@ export default async function DetailPublication({ params }: Props) {
                 id={p.id}
                 className={styles.bouton}
                 texte={pub.aMarche}
+                votes={p.votes}
                 message={pub.connexionRequise}
               />
-              <BoutonConnexion
-                className={styles.bouton}
-                message={pub.connexionRequise}
-              >
-                Utile · {p.votes}
-              </BoutonConnexion>
               <BoutonConnexion
                 className={styles.bouton}
                 message={pub.connexionRequise}

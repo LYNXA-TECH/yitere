@@ -1,5 +1,6 @@
 import { Bientot } from "@/components/Bientot";
 import { Espace } from "@/components/compte/Espace";
+import { PAYS_AFRIQUE } from "@/lib/geo/afrique";
 import { nomOperateur } from "@/lib/affichage/sondes";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -46,6 +47,9 @@ export default async function MonEspace({ params }: Props) {
       <>
         <MentionFrancais langue={langue} />
         <Espace
+          pays={PAYS_AFRIQUE.filter(({ iso }) => /^[A-Z]{2}$/.test(iso))
+            .map(({ iso }): [string, string] => [iso, nomPays("fr", iso)])
+            .sort((a, b) => a[1].localeCompare(b[1], "fr"))}
           guide={lien(langue, "/contribuer/sonde")}
           echanges={lien(langue, "/echanges")}
           publier={lien(langue, "/publier")}

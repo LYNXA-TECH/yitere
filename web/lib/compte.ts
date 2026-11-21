@@ -11,6 +11,15 @@ import { useEffect, useState } from "react";
 /** GET /api/v1/moi. */
 export type Moi = {
   login: string;
+  /** Les demandes de sonde ; absentes d'une API plus ancienne. */
+  demandes?: {
+    id: number;
+    pays: string;
+    ville: string;
+    operateur: string;
+    statut: "en-attente" | "acceptee" | "refusee";
+    cree_le: string;
+  }[];
   sondes: {
     pseudonyme: string;
     pays: string;
@@ -19,6 +28,8 @@ export type Moi = {
     active: boolean;
     vue_le: string | null;
     mesures_24h: number;
+    /** Faux : la sonde attend sa premiere cle (« Generer ma cle »). */
+    cle_generee?: boolean;
   }[];
   publications: {
     id: number;
@@ -76,6 +87,28 @@ function lire(): Promise<EtatCompte> {
     )
     .catch((): EtatCompte => ({ etat: "fermee" }));
   return lecture;
+}
+
+/** Une ecriture depuis Mon espace, en JSON. Rend le statut et le corps lu. */
+export async function ecrire(
+  chemin: string,
+  corps?: unknown,
+): Promise<{ statut: number; corps: Record<string, unknown> }> {
+  try {
+    const r = await fetch(chemin, {
+      method: "POST",
+      credentials: "same-origin",
+      headers:
+        corps === undefined
+          ? undefined
+          : { "content-type": "application/json" },
+      body: corps === undefined ? undefined : JSON.stringify(corps),
+    });
+    const c = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+    return { statut: r.status, corps: c };
+  } catch {
+    return { statut: 0, corps: {} };
+  }
 }
 
 export function oublierCompte() {

@@ -161,7 +161,11 @@ export default async function HebergerSonde({ params }: Props) {
                   Votre ville, votre pays, et c&apos;est envoyé : l&apos;équipe
                   vous répond avec une clé personnelle.
                 </p>
-                <DemandeCle adresse={CONTACT} pays={pays} />
+                <DemandeCle
+                  adresse={CONTACT}
+                  pays={pays}
+                  espace={lien(langue, "/moi")}
+                />
                 <p className={styles.petit}>
                   La connexion avec GitHub, qui donnera la clé directement,
                   ouvre après le 23 novembre.
