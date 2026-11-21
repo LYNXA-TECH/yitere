@@ -47,8 +47,13 @@ describe("contenu", () => {
     const html = renderToStaticMarkup(
       await Methodologie(params({ langue: "fr" })),
     );
-    expect(html).toContain("<h2>1. Ce que nous mesurons</h2>");
+    expect(html).toContain(
+      '<h2 id="ce-que-nous-mesurons">1. Ce que nous mesurons</h2>',
+    );
     expect(html).toContain("<table>");
+    // Le sommaire repliable renvoie vers chaque partie.
+    expect(html).toContain("<summary>Sommaire");
+    expect(html).toContain('<a href="#objet-temoin">');
   });
 
   it("une publication montre le contexte mesuré et qui l'a confirmée", async () => {

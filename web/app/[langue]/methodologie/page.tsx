@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MentionFrancais } from "@/components/MentionFrancais";
+import { Sommaire } from "@/components/document/Sommaire";
 import { langueDe } from "@/lib/i18n/params";
-import { lireMethodologie } from "@/lib/methodologie";
+import { lireMethodologie, sommaireMethodologie } from "@/lib/methodologie";
 import { lien } from "@/lib/navigation";
 import styles from "@/styles/document.module.css";
 
@@ -17,6 +18,7 @@ export const metadata: Metadata = { title: "Méthodologie" };
 export default async function Methodologie({ params }: Props) {
   const langue = await langueDe(params);
   const html = await lireMethodologie();
+  const entrees = await sommaireMethodologie();
   return (
     <main className={styles.page}>
       <MentionFrancais langue={langue} />
@@ -28,6 +30,7 @@ export default async function Methodologie({ params }: Props) {
           devez pouvoir comprendre pourquoi.
         </p>
       </div>
+      <Sommaire entrees={entrees} />
       <article
         lang="fr"
         className={styles.prose}

@@ -287,8 +287,12 @@
 }
 
 .titre {
-  display: inline-flex;
-  align-items: center;
+  /* Trois lignes au plus dans la liste : le texte entier est sur la fiche de la publication. */
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   min-height: 24px;
   color: var(--texte);
   font-size: 18px;
@@ -447,5 +451,32 @@
 
   .entete h1 {
     font-size: 30px;
+  }
+}
+
+/* Apparition progressive au defilement (refonte, lot 2) : seulement si le navigateur
+   sait lier une animation au defilement et si l'appareil ne demande pas moins de mouvement. */
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .carte,
+    .encadre {
+      animation: apparition linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+/* Telephone : zones tactiles de 44 px (refonte, lot 2). */
+@media (max-width: 860px) {
+  .onglets button {
+    min-height: var(--zone-tactile);
   }
 }

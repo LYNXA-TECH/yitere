@@ -5,6 +5,7 @@ import styles from "@/components/contribuer/contribuer.module.css";
 import { EtapesCle } from "@/components/contribuer/EtapesCle";
 import { GuideSonde } from "@/components/contribuer/GuideSonde";
 import { MentionFrancais } from "@/components/MentionFrancais";
+import { Sommaire } from "@/components/document/Sommaire";
 import {
   ecritureOuverte,
   estService,
@@ -88,6 +89,15 @@ export default async function HebergerSonde({ params }: Props) {
           </span>
         </pre>
       </div>
+
+      <Sommaire
+        entrees={[
+          { id: "etapes", texte: "Quatre étapes, environ cinq minutes" },
+          { id: "installer-titre", texte: "Installer la sonde, pas à pas" },
+          { id: "exactement", texte: "Ce que fait votre sonde, exactement" },
+          { id: "faq", texte: "Questions fréquentes" },
+        ]}
+      />
 
       <section aria-labelledby="etapes" className={styles.section} lang="fr">
         <h2 id="etapes">Quatre étapes, environ cinq minutes</h2>

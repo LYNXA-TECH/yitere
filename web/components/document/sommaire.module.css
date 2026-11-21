@@ -1,0 +1,66 @@
+.sommaire {
+  margin: 0 0 28px;
+  background: var(--surface);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
+}
+
+.sommaire summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--zone-tactile);
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.sommaire summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Le chevron tourne quand le sommaire s'ouvre. */
+.sommaire summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  border-right: 2px solid var(--texte-secondaire);
+  border-bottom: 2px solid var(--texte-secondaire);
+  transform: rotate(45deg);
+  transition: transform var(--duree-moyenne) var(--courbe);
+}
+
+.sommaire[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+.compte {
+  color: var(--texte-secondaire);
+  font-size: var(--taille-petite);
+  font-weight: 500;
+}
+
+.sommaire ul {
+  margin: 0;
+  padding: 0 18px 12px;
+  list-style: none;
+}
+
+.sommaire li + li {
+  border-top: 1px solid var(--trait);
+}
+
+.sommaire li a {
+  display: block;
+  min-height: var(--zone-tactile);
+  padding: 11px 0;
+  color: var(--texte-corps);
+  text-decoration: none;
+}
+
+.sommaire li a:hover {
+  color: var(--interaction);
+}
