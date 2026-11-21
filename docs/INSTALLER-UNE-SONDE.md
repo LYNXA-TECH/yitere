@@ -26,8 +26,9 @@ Windows : choisissez la partie qui correspond à votre machine.
    quand la machine est éveillée.
 2. Node.js 20 ou plus. Vérifiez avec `node --version` ; sinon, installez la version LTS
    depuis [nodejs.org](https://nodejs.org).
-3. Votre clé personnelle, envoyée par l'équipe LYNXA. Ne la publiez pas et ne la
-   partagez pas : elle identifie votre sonde.
+3. Votre clé personnelle. Connectée avec GitHub, demandez votre sonde dans Mon espace,
+   puis cliquez sur « Générer ma clé » une fois la demande acceptée : la clé ne s'affiche
+   qu'une fois. Ne la publiez pas et ne la partagez pas : elle identifie votre sonde.
 
 Partout dans ce guide, remplacez `VOTRE-CLE` par cette clé.
 
@@ -173,7 +174,7 @@ passées restent publiées.
 | Message | Cause | Que faire |
 |---|---|---|
 | `YITERE_JETON manquant` | La clé n'est pas passée à la commande | Revérifier le fichier `cle` (Linux) ou `lancer.cmd` (Windows) |
-| `401 ... jeton inconnu` | Clé mal recopiée, ou pas encore enregistrée par l'équipe | Recopier la clé ; si le message reste, nous écrire |
+| `401 ... jeton inconnu` | Clé mal recopiée, ou remplacée par une clé régénérée | Recopier la clé, ou en générer une nouvelle dans Mon espace ; si le message reste, nous écrire |
 | `403 ... sonde desactivee` | Votre sonde a été désactivée | Nous écrire |
 | `passage echoue` puis une erreur réseau | Pas de connexion à ce moment-là | Rien : le passage suivant reprend seul |
 

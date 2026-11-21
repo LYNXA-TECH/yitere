@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BoutonConnexion } from "@/components/BoutonConnexion";
 import styles from "@/components/contribuer/contribuer.module.css";
-import { DemandeCle } from "@/components/contribuer/DemandeCle";
+import { EtapesCle } from "@/components/contribuer/EtapesCle";
 import { GuideSonde } from "@/components/contribuer/GuideSonde";
 import { MentionFrancais } from "@/components/MentionFrancais";
 import {
@@ -153,37 +153,12 @@ export default async function HebergerSonde({ params }: Props) {
               </form>
             </>
           ) : (
-            <>
-              <div className={styles.etape} data-active>
-                <span className={styles.numero}>1 · à faire maintenant</span>
-                <h3>Demander votre clé</h3>
-                <p className={styles.corps}>
-                  Votre ville, votre pays, et c&apos;est envoyé : l&apos;équipe
-                  vous répond avec une clé personnelle.
-                </p>
-                <DemandeCle
-                  adresse={CONTACT}
-                  pays={pays}
-                  espace={lien(langue, "/moi")}
-                />
-                <p className={styles.petit}>
-                  La connexion avec GitHub, qui donnera la clé directement,
-                  ouvre après le 23 novembre.
-                </p>
-              </div>
-              <div className={styles.etape}>
-                <span className={styles.numero}>2 · ensuite</span>
-                <h3>Recevoir votre clé</h3>
-                <p className={styles.corps}>
-                  L&apos;équipe enregistre votre sonde sous un pseudonyme, avec
-                  votre pays et votre ville, jamais plus précis. Jamais votre
-                  nom.
-                </p>
-                <p className={styles.petit}>
-                  La clé est personnelle : ne la publiez pas.
-                </p>
-              </div>
-            </>
+            // Avec l'API : le parcours GitHub une fois la connexion ouverte, sinon l'e-mail.
+            <EtapesCle
+              adresse={CONTACT}
+              pays={pays}
+              espace={lien(langue, "/moi")}
+            />
           )}
           <div className={styles.etape}>
             <span className={styles.numero}>3 · ensuite</span>

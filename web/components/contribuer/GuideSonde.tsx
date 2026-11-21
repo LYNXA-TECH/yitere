@@ -128,8 +128,8 @@ const MESSAGES: [string, string, string][] = [
   ],
   [
     "401 ... jeton inconnu",
-    "Clé mal recopiée, ou pas encore enregistrée par l'équipe",
-    "Recopier la clé ; si le message reste, nous écrire",
+    "Clé mal recopiée, ou remplacée par une clé régénérée",
+    "Recopier la clé, ou en générer une nouvelle dans Mon espace ; si le message reste, nous écrire",
   ],
   ["403 ... sonde desactivee", "Votre sonde a été désactivée", "Nous écrire"],
   [
