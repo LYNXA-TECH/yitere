@@ -62,10 +62,10 @@
     display: flex;
     justify-content: space-around;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-    background: rgb(11 18 32 / 0.95);
-    border-top: 1px solid var(--trait);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
+    background: var(--verre-repli);
+    border-top: 1px solid var(--verre-trait);
+    -webkit-backdrop-filter: blur(var(--flou)) saturate(170%);
+    backdrop-filter: blur(var(--flou)) saturate(170%);
   }
 
   /* Une icone au-dessus du nom : on reconnait l'onglet d'un coup d'oeil. */
@@ -93,8 +93,8 @@
     height: 30px;
     border-radius: 999px;
     transition:
-      background-color var(--duree-moyenne) ease,
-      transform var(--duree-courte) ease;
+      background-color var(--duree-moyenne) var(--courbe),
+      transform var(--duree-courte) var(--courbe);
   }
 
   .plein {
@@ -109,6 +109,14 @@
   .onglets a[aria-current="page"] {
     color: var(--texte);
     font-weight: 600;
+  }
+
+  @supports (
+    (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+  ) {
+    .onglets {
+      background: var(--verre);
+    }
   }
 
   .onglets a[aria-current="page"] .pastille {

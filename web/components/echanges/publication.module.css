@@ -62,7 +62,8 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .carte[data-confirmee] {
@@ -286,7 +287,8 @@
   padding: 14px 16px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 16px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .reponse strong {
@@ -300,7 +302,8 @@
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 16px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .formulaire > * {
@@ -310,7 +313,7 @@
 .formulaire textarea {
   padding: 12px;
   border: 1px solid var(--trait-fort);
-  border-radius: 10px;
+  border-radius: var(--rayon-champ);
   background: var(--surface-creuse);
   color: var(--texte);
   font: inherit;

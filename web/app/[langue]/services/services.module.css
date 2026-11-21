@@ -93,7 +93,8 @@ a.nomService {
   padding: 18px;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .alerte[data-teinte="degrade"],
@@ -191,7 +192,8 @@ a.nomService {
   overflow-x: auto;
   background: var(--surface);
   border: 1px solid var(--trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .tableau table {
@@ -298,7 +300,8 @@ td.nombre {
   padding: 18px;
   background: var(--surface);
   border: 1px dashed var(--demande-trait);
-  border-radius: 18px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .navigateur a {
@@ -315,7 +318,8 @@ td.nombre {
   gap: 14px 24px;
   padding: 22px;
   background: var(--surface-haute);
-  border-radius: 20px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .appel > div {

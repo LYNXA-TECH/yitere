@@ -192,16 +192,17 @@
   display: flex;
   gap: 2px;
   padding: 4px;
-  background: var(--surface);
-  border: 1px solid var(--trait);
-  border-radius: 12px;
+  background: var(--verre-repli);
+  border: 1px solid var(--verre-trait);
+  border-radius: 999px;
+  box-shadow: var(--ombre-carte);
 }
 
 .groupe button {
   min-height: 36px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   background: transparent;
   color: var(--texte);
   font: inherit;
@@ -211,8 +212,22 @@
 
 .groupe button[aria-pressed="true"],
 .groupe button[aria-current="true"] {
-  background: var(--surface-haute);
+  background: rgb(47 208 200 / 0.16);
+  color: var(--texte);
   font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgb(47 208 200 / 0.35);
+}
+
+/* Les commandes flottent au-dessus de la carte : verre depoli, avec un repli opaque. */
+@supports (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .groupe,
+  .zooms button {
+    background: var(--verre);
+    -webkit-backdrop-filter: blur(var(--flou)) saturate(170%);
+    backdrop-filter: blur(var(--flou)) saturate(170%);
+  }
 }
 
 .repere {
@@ -309,9 +324,10 @@
 .zooms button {
   width: 44px;
   height: 44px;
-  border: 1px solid var(--trait);
-  border-radius: 10px;
-  background: var(--surface);
+  border: 1px solid var(--verre-trait);
+  border-radius: 999px;
+  background: var(--verre-repli);
+  box-shadow: var(--ombre-carte);
   color: var(--texte);
   font-size: 20px;
   cursor: pointer;
@@ -643,7 +659,8 @@
   padding: 14px 16px;
   background: var(--surface);
   border: 1px solid var(--trait-fort);
-  border-radius: 16px;
+  border-radius: var(--rayon-carte);
+  box-shadow: var(--ombre-carte);
 }
 
 .selectionTitre {
@@ -707,6 +724,30 @@
   .libelles,
   .repere {
     display: none;
+  }
+
+  /* Deux lignes de commandes au lieu de trois, avec des zones tactiles de 44 px. */
+  .droite {
+    display: contents;
+  }
+
+  .controles {
+    gap: 6px;
+  }
+
+  .groupe button {
+    min-height: 40px;
+  }
+
+  /* La carte est reduite sur telephone : les noms et les nombres grossissent d'autant
+     pour rester lisibles (unites du dessin, pas des pixels). */
+  .nomVille {
+    font-size: 30px;
+    stroke-width: 6px;
+  }
+
+  .nombre {
+    font-size: 24px;
   }
 
   .panneau {
