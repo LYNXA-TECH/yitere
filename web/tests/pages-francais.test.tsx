@@ -176,6 +176,9 @@ describe("confidentialité", () => {
     expect(html).toContain("jamais le jeton de GitHub");
     expect(html).toContain("ni votre adresse e-mail");
     expect(html).toContain("Cookie de session : 30 jours.");
+    expect(html).toContain(
+      "Seuls deux cookies existent, et seulement si vous vous connectez à GitHub : un cookie de 10 minutes pendant la connexion, qui la protège, puis le cookie de session, pour 30 jours.",
+    );
     // La demande de sonde se fait dans Mon espace, sans adresse e-mail.
     expect(html).toContain("Vous demandez une sonde");
     expect(html).toContain("Aucune adresse e-mail. La clé de la sonde");

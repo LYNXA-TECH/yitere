@@ -128,8 +128,10 @@ export default async function Confidentialite({ params }: Props) {
         </div>
         <p>
           Nous ne lisons aucun fichier de votre ordinateur, ne déposons aucun
-          cookie publicitaire et ne vendons aucune donnée. Le seul cookie est
-          celui de la session, après connexion à GitHub, pour 30 jours.
+          cookie publicitaire et ne vendons aucune donnée. Seuls deux cookies
+          existent, et seulement si vous vous connectez à GitHub : un cookie de
+          10 minutes pendant la connexion, qui la protège, puis le cookie de
+          session, pour 30 jours.
         </p>
       </section>
 
